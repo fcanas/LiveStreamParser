@@ -154,6 +154,21 @@
     XCTAssertEqualObjects(tag.uri, [NSURL URLWithString:@"s1/eng/prog_index.m3u8"]);
 }
 
+- (void)testSessionDataTag
+{
+    NSString *tagString = @"#EXT-X-SESSION-DATA:DATA-ID=\"com.example.hls.sessiondata\",VALUE=\"Session Value\",LANGUAGE=\"eng\"";
+    FFCTagParser *parser = [[FFCTagParser alloc] initWithString:tagString];
+    
+    FFCSessionDataTag *tag = (FFCSessionDataTag *)[parser nextTag];
+    XCTAssertNotNil(tag);
+    XCTAssertTrue([tag isKindOfClass:[FFCSessionDataTag class]]);
+    
+    XCTAssertEqualObjects(tag.dataID, @"com.example.hls.sessiondata");
+    XCTAssertEqualObjects(tag.value, @"Session Value");
+    XCTAssertEqualObjects(tag.language, @"eng");
+}
+
+
 #pragma mark - Performance
 
 - (void)testPerformanceExample

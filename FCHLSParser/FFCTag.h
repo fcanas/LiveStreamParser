@@ -277,4 +277,40 @@ typedef NS_ENUM(NSInteger, FFCMediaType) {
 
 @end
 
+@interface FFCSessionDataTag : FFCTag <FFCAttributedTag>
+
+/**
+ Identifies the data value. Should use reverse DNS namespace to avoid collisions.
+ 
+ Required value.
+ */
+@property (nonatomic, readonly) NSString *dataID;
+
+/**
+ Value. 
+ 
+ If LANGUAGE is specified, value should be human-readable in that language. 
+ Tag must have either VALUE or URI.
+ */
+@property (nonatomic, readonly, nullable) NSString *value;
+
+/**
+ URI to a JSON resource. 
+ 
+ Tag must have either VALUE or URI
+ */
+@property (nonatomic, readonly, nullable) NSURL *uri;
+
+/**
+ Language
+ 
+ RFC5646
+ */
+@property (nonatomic, readonly, nullable) NSString *language;
+
+- (instancetype)initWithName:(NSString *)name NS_UNAVAILABLE;
+
+@end
+
+
 NS_ASSUME_NONNULL_END

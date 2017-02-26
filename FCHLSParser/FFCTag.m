@@ -321,6 +321,62 @@
     return self;
 }
 
+@end
+
+
+@implementation FFCSessionDataTag
+
++ (FFCAttributeType)attributeTypeForKey:(NSString *)key
+{
+    static NSDictionary<NSString *, NSNumber *> *attributeTypeForKey;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        attributeTypeForKey = @{@"DATA-ID": @(FFCAttributeTypeQuotedString),
+                                @"VALUE": @(FFCAttributeTypeQuotedString),
+                                @"GROUP-ID": @(FFCAttributeTypeQuotedString),
+                                @"LANGUAGE": @(FFCAttributeTypeQuotedString),
+                                };
+    });
+    return [attributeTypeForKey[key] integerValue];
+}
+
+- (nullable instancetype)initWithAttributes:(NSDictionary<NSString *, id> *)attributes
+{
+    self = [super initWithName:@"EXT-X-SESSION-DATA"];
+    
+    if (self == nil) {
+        return nil;
+    }
+
+    NSString *dataID = attributes[@"DATA-ID"];
+    if ([dataID isKindOfClass:[NSString class]]) {
+        _dataID = dataID;
+    } else {
+        return nil;
+    }
+    
+    NSString *valueString = attributes[@"VALUE"];
+    if ([valueString isKindOfClass:[NSString class]]) {
+        _value = valueString;
+    }
+    
+    NSString *uriString = attributes[@"URI"];
+    if ([uriString isKindOfClass:[NSString class]]) {
+        NSURL *uri = [NSURL URLWithString:uriString];
+        _uri = uri;
+    }
+    
+    if (_uri == nil && _value == nil) {
+        return nil;
+    }
+    
+    NSString *language = attributes[@"LANGUAGE"];
+    if ([language isKindOfClass:[NSString class]]) {
+        _language = language;
+    }
+    
+    return self;
+}
 
 @end
 

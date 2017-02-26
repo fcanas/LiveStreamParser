@@ -33,7 +33,8 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
         tagParameterTypeMap = @{@"EXT-X-VERSION": [FFCVersionTag class],
                                 @"EXT-X-STREAM-INF" : [FFCStreamInfoTag class],
                                 @"EXT-X-I-FRAME-STREAM-INF" : [FFCIFrameStreamInfoTag class],
-                                @"EXT-X-MEDIA" : [FFCMediaTag class]};
+                                @"EXT-X-MEDIA" : [FFCMediaTag class],
+                                @"EXT-X-SESSION-DATA" : [FFCSessionDataTag class]};
     });
     return tagParameterTypeMap[tagName];
 }
@@ -46,7 +47,8 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
         tagParameterTypeMap = @{@"EXT-X-VERSION" : @(FFCTagParameterTypeNumber),
                                 @"EXT-X-STREAM-INF" : @(FFCTagParameterTypeAttribtueList),
                                 @"EXT-X-I-FRAME-STREAM-INF" : @(FFCTagParameterTypeAttribtueList),
-                                @"EXT-X-MEDIA" : @(FFCTagParameterTypeAttribtueList)};
+                                @"EXT-X-MEDIA" : @(FFCTagParameterTypeAttribtueList),
+                                @"EXT-X-SESSION-DATA" : @(FFCTagParameterTypeAttribtueList)};
     });
     return [tagParameterTypeMap[tagName] integerValue];
 }

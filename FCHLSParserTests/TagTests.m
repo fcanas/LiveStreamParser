@@ -384,5 +384,36 @@
 
 @end
 
+@interface SessionDataTests : XCTestCase
 
+@end
+
+@implementation SessionDataTests
+
+- (void)testSessionDataTagRequiredFields
+{
+    FFCSessionDataTag *tag = [[FFCSessionDataTag alloc] initWithAttributes:@{}];
+    XCTAssertNil(tag, @"Session Data tags require a data id");
+    
+    tag = [[FFCSessionDataTag alloc] initWithAttributes:@{@"DATA-ID" : @"data id value"}];
+    XCTAssertNil(tag, @"Session data requires euther a VALUE or a URI");
+    
+    
+    tag = [[FFCSessionDataTag alloc] initWithAttributes:@{@"DATA-ID" : @"data id value", @"VALUE":@"session data value"}];
+    XCTAssertEqualObjects(tag.value, @"session data value");
+    
+    tag = [[FFCSessionDataTag alloc] initWithAttributes:@{@"DATA-ID" : @"data id value", @"URI":@"session/data/path.json"}];
+    XCTAssertEqualObjects(tag.uri, [NSURL URLWithString:@"session/data/path.json"]);
+}
+
+- (void)testLanguage
+{
+    FFCSessionDataTag *tag = [[FFCSessionDataTag alloc] initWithAttributes:@{@"DATA-ID" : @"data id value", @"VALUE":@"session data value"}];
+    XCTAssertNil(tag.language);
+    
+    tag = [[FFCSessionDataTag alloc] initWithAttributes:@{@"DATA-ID" : @"data id value", @"VALUE":@"session data value", @"LANGUAGE":@"en"}];
+    XCTAssertEqualObjects(tag.language, @"en");
+}
+
+@end
 
