@@ -417,3 +417,79 @@
 
 @end
 
+@interface SessionKeyTests : XCTestCase
+
+@end
+
+@implementation SessionKeyTests
+
+- (void)testSessionKeyRequiredFields
+{
+    FFCSessionKeyTag *tag = [[FFCSessionKeyTag alloc] initWithAttributes:@{}];
+    XCTAssertNil(tag, @"METHOD is required");
+    
+    tag = [[FFCSessionKeyTag alloc] initWithAttributes:@{@"METHOD":@"NONE"}];
+    XCTAssertEqualObjects(tag.name, @"EXT-X-SESSION-KEY");
+    XCTAssertEqual(tag.method, FFCEncryptionMethodNone);
+    
+    tag = [[FFCSessionKeyTag alloc] initWithAttributes:@{@"METHOD":@"AES-128"}];
+    XCTAssertNil(tag,@"URI is required if method is not none");
+    
+    tag = [[FFCSessionKeyTag alloc] initWithAttributes:@{@"METHOD":@"SAMPLE-AES"}];
+    XCTAssertNil(tag,@"URI is required if method is not none");
+    
+    tag = [[FFCSessionKeyTag alloc] initWithAttributes:@{@"METHOD":@"AES-128", @"URI":@"http://example.com/key"}];
+    XCTAssertEqualObjects(tag.name, @"EXT-X-SESSION-KEY");
+    XCTAssertEqual(tag.method, FFCEncryptionMethodAES128);
+    
+    tag = [[FFCSessionKeyTag alloc] initWithAttributes:@{@"METHOD":@"SAMPLE-AES", @"URI":@"http://example.com/key"}];
+    XCTAssertEqualObjects(tag.name, @"EXT-X-SESSION-KEY");
+    XCTAssertEqual(tag.method, FFCEncryptionMethodSampleAES);
+}
+
+- (void)testKeyFormat
+{
+    FFCSessionKeyTag *tag = [[FFCSessionKeyTag alloc] initWithAttributes:@{@"METHOD":@"NONE"}];
+    XCTAssertEqualObjects(tag.keyFormat, @"identity");
+    
+    tag = [[FFCSessionKeyTag alloc] initWithAttributes:@{@"METHOD":@"NONE", @"KEYFORMAT":@2}];
+    XCTAssertEqualObjects(tag.keyFormat, @"identity", @"Incompatible class for quoted string key format will be ignored and have default value");
+    
+    tag = [[FFCSessionKeyTag alloc] initWithAttributes:@{@"METHOD":@"NONE", @"KEYFORMAT":@"SomeKeyFormat"}];
+    XCTAssertEqualObjects(tag.keyFormat, @"SomeKeyFormat");
+}
+
+- (void)testKeyFormatVersions
+{
+    FFCSessionKeyTag *tag = [[FFCSessionKeyTag alloc] initWithAttributes:@{@"METHOD":@"NONE"}];
+    XCTAssertEqualObjects(tag.keyFormatVersions, @[]);
+    
+    tag = [[FFCSessionKeyTag alloc] initWithAttributes:@{@"METHOD":@"NONE", @"KEYFORMATVERSIONS" : @"1"}];
+    XCTAssertEqualObjects(tag.keyFormatVersions, @[@1]);
+
+    tag = [[FFCSessionKeyTag alloc] initWithAttributes:@{@"METHOD":@"NONE", @"KEYFORMATVERSIONS" : @1}];
+    XCTAssertEqualObjects(tag.keyFormatVersions, @[]);
+    
+    tag = [[FFCSessionKeyTag alloc] initWithAttributes:@{@"METHOD":@"NONE", @"KEYFORMATVERSIONS" : @"1/2/3/4"}];
+    NSArray *oneToFourArray = @[@1, @2, @3, @4];
+    XCTAssertEqualObjects(tag.keyFormatVersions, oneToFourArray);
+    
+    tag = [[FFCSessionKeyTag alloc] initWithAttributes:@{@"METHOD":@"NONE", @"KEYFORMATVERSIONS" : oneToFourArray}];
+    XCTAssertEqualObjects(tag.keyFormatVersions, @[]);
+}
+
+- (void)testInitializationVector
+{
+    FFCSessionKeyTag *tag = [[FFCSessionKeyTag alloc] initWithAttributes:@{@"METHOD":@"NONE"}];
+    XCTAssertNil(tag.initializationVector);
+    
+    tag = [[FFCSessionKeyTag alloc] initWithAttributes:@{@"METHOD":@"NONE", @"IV":@"1234567890abcdef"}];
+    XCTAssertEqualObjects(tag.initializationVector, @"1234567890abcdef");
+    
+    tag = [[FFCSessionKeyTag alloc] initWithAttributes:@{@"METHOD":@"NONE", @"IV":@1324}];
+    XCTAssertNil(tag.initializationVector);
+}
+
+@end
+
+

@@ -312,5 +312,51 @@ typedef NS_ENUM(NSInteger, FFCMediaType) {
 
 @end
 
+typedef NS_ENUM(NSInteger, FFCEncryptionMethod) {
+    FFCEncryptionMethodNone,
+    FFCEncryptionMethodAES128,
+    FFCEncryptionMethodSampleAES
+};
+
+@interface FFCSessionKeyTag : FFCTag <FFCAttributedTag>
+
+/**
+ AES-128, or SAMPLE-AES
+ */
+@property (nonatomic, readonly) FFCEncryptionMethod method;
+
+/**
+ Where to obtain the key. Required if method is not NONE
+ */
+@property (nonatomic, nullable, readonly) NSURL *uri;
+
+/**
+ 128-bit initialization vector for use with the key as a hex string.
+ 
+ Compatibility version >= 2
+ */
+@property (nonatomic, nullable, readonly) NSString *initializationVector;
+
+/**
+ How the key is represented. Absence is implicit "identity"
+ 
+ Version >= 5.
+ */
+@property (nonatomic, readonly) NSString *keyFormat;
+
+/**
+ Array of integers, indicates version compatibility of key
+ 
+ Initialized with a string consisting of integers separated by "/".
+ If parameter is omitted, will be an empyy array
+ 
+ Version >= 5
+ */
+@property (nonatomic, readonly) NSArray<NSNumber *> *keyFormatVersions;
+
+- (instancetype)initWithName:(NSString *)name NS_UNAVAILABLE;
+
+@end
+
 
 NS_ASSUME_NONNULL_END

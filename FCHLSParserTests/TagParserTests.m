@@ -168,6 +168,21 @@
     XCTAssertEqualObjects(tag.language, @"eng");
 }
 
+- (void)testSessionKeyTag
+{
+    NSString *tagString = @"#EXT-X-SESSION-KEY:METHOD=AES-128,URI=\"http://example.com/key\",IV=0x12345678901234567890123456ABCDEF,KEYFORMATVERSIONS=\"6/7/10\"";
+    FFCTagParser *parser = [[FFCTagParser alloc] initWithString:tagString];
+    
+    FFCSessionKeyTag *tag = [parser nextTag];
+    XCTAssertNotNil(tag);
+    XCTAssertTrue([tag isKindOfClass:[FFCSessionKeyTag class]]);
+    
+    XCTAssertEqual(tag.method, FFCEncryptionMethodAES128);
+    XCTAssertEqualObjects(tag.uri, [NSURL URLWithString:@"http://example.com/key"]);
+    XCTAssertEqualObjects(tag.initializationVector, @"0x12345678901234567890123456ABCDEF");
+    NSArray *versionsArray = @[@6, @7, @10];
+    XCTAssertEqualObjects(tag.keyFormatVersions, versionsArray);
+}
 
 #pragma mark - Performance
 

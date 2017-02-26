@@ -380,4 +380,82 @@
 
 @end
 
+@implementation FFCSessionKeyTag
+
++ (FFCAttributeType)attributeTypeForKey:(NSString *)key
+{
+    static NSDictionary<NSString *, NSNumber *> *attributeTypeForKey;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        attributeTypeForKey = @{@"METHOD": @(FFCAttributeTypeEnumeratedString),
+                                @"URI": @(FFCAttributeTypeQuotedString),
+                                @"IV": @(FFCAttributeTypeHexidecimalSequence),
+                                @"KEYFORMAT": @(FFCAttributeTypeQuotedString),
+                                @"KEYFORMATVERSIONS": @(FFCAttributeTypeQuotedString),
+                                };
+    });
+    return [attributeTypeForKey[key] integerValue];
+}
+
+- (nullable instancetype)initWithAttributes:(NSDictionary<NSString *, id> *)attributes
+{
+    self = [super initWithName:@"EXT-X-SESSION-KEY"];
+    
+    if (self == nil) {
+        return nil;
+    }
+
+    NSString *method = attributes[@"METHOD"];
+    if ([method isKindOfClass:[NSString class]]) {
+        if ([method isEqualToString:@"NONE"]) {
+            _method = FFCEncryptionMethodNone;
+        } else if ([method isEqualToString:@"AES-128"]) {
+            _method = FFCEncryptionMethodAES128;
+        } else if ([method isEqualToString:@"SAMPLE-AES"]) {
+            _method = FFCEncryptionMethodSampleAES;
+        } else {
+            return nil;
+        }
+    } else {
+        return nil;
+    }
+    
+    NSString *uriString = attributes[@"URI"];
+    if ([uriString isKindOfClass:[NSString class]]) {
+        _uri = [NSURL URLWithString:uriString];
+    }
+    
+    if (_method != FFCEncryptionMethodNone && _uri == nil) {
+        return nil;
+    }
+
+    NSString *keyFormatString = attributes[@"KEYFORMAT"];
+    if ([keyFormatString isKindOfClass:[NSString class]]) {
+        _keyFormat = keyFormatString;
+    } else {
+        _keyFormat = @"identity";
+    }
+    
+    NSString *keyFormatVersionsString = attributes[@"KEYFORMATVERSIONS"];
+    if ([keyFormatVersionsString isKindOfClass:[NSString class]]) {
+        NSArray *components = [keyFormatVersionsString componentsSeparatedByString:@"/"];
+        NSMutableArray *versions = [[NSMutableArray alloc] initWithCapacity:components.count];
+        for (NSString *componentString in components) {
+            [versions addObject:@([componentString integerValue])];
+        }
+        _keyFormatVersions = [versions copy];
+    } else {
+        _keyFormatVersions = @[];
+    }
+    
+    NSString *ivString = attributes[@"IV"];
+    if ([ivString isKindOfClass:[NSString class]]) {
+        _initializationVector = ivString;
+    }
+    
+    return self;
+}
+
+@end
+
 

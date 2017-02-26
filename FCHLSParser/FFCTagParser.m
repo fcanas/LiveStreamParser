@@ -34,7 +34,8 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
                                 @"EXT-X-STREAM-INF" : [FFCStreamInfoTag class],
                                 @"EXT-X-I-FRAME-STREAM-INF" : [FFCIFrameStreamInfoTag class],
                                 @"EXT-X-MEDIA" : [FFCMediaTag class],
-                                @"EXT-X-SESSION-DATA" : [FFCSessionDataTag class]};
+                                @"EXT-X-SESSION-DATA" : [FFCSessionDataTag class],
+                                @"EXT-X-SESSION-KEY" : [FFCSessionKeyTag class]};
     });
     return tagParameterTypeMap[tagName];
 }
@@ -48,7 +49,8 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
                                 @"EXT-X-STREAM-INF" : @(FFCTagParameterTypeAttribtueList),
                                 @"EXT-X-I-FRAME-STREAM-INF" : @(FFCTagParameterTypeAttribtueList),
                                 @"EXT-X-MEDIA" : @(FFCTagParameterTypeAttribtueList),
-                                @"EXT-X-SESSION-DATA" : @(FFCTagParameterTypeAttribtueList)};
+                                @"EXT-X-SESSION-DATA" : @(FFCTagParameterTypeAttribtueList),
+                                @"EXT-X-SESSION-KEY" : @(FFCTagParameterTypeAttribtueList),};
     });
     return [tagParameterTypeMap[tagName] integerValue];
 }
@@ -73,6 +75,16 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
         set = [NSMutableCharacterSet characterSetWithCharactersInString:@"\"'\n\r,"];
         [set formUnionWithCharacterSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         [set invert];
+    });
+    return set;
+}
+
++ (NSCharacterSet *)hexCharacterSet
+{
+    static NSCharacterSet *set;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        set = [NSCharacterSet characterSetWithCharactersInString:@"0123456789ABCDEF"];
     });
     return set;
 }
@@ -244,6 +256,23 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
             }
             
             return enumeratedString;
+        }
+            break;
+        case FFCAttributeTypeHexidecimalSequence:{
+            NSString *prefixString = nil;
+            NSString *hexValueString = nil;
+            
+            if (!([self.scanner scanString:@"0x" intoString:&prefixString] || [self.scanner scanString:@"0X" intoString:&prefixString])) {
+                return nil;
+            }
+            
+            if (![self.scanner scanCharactersFromSet:[FFCTagParser hexCharacterSet] intoString:&hexValueString]) {
+                return nil;
+            }
+            
+            // Output the original string.
+            // We've validated it's in a good format.
+            return [NSString stringWithFormat:@"%@%@", prefixString, hexValueString];
         }
             break;
         default:
