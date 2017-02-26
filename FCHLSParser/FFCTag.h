@@ -104,7 +104,7 @@ typedef NS_ENUM(NSInteger, FFCAttributeType) {
  
  Not required. Will be CGSizeZero if not present in attributes.
  */
-@property (nonatomic) CGSize resolution;
+@property (nonatomic, readonly) CGSize resolution;
 
 /**
  Maximum frame rate for all video in the variant stream. 
@@ -113,35 +113,35 @@ typedef NS_ENUM(NSInteger, FFCAttributeType) {
  
  Not required. Will be zero if not present in attributes.
  */
-@property (nonatomic) double frameRate;
+@property (nonatomic, readonly) double frameRate;
 
 /**
  The Group name of an associated Audio media
  
  Must match GROUP-ID attribute of an EXT-X-MEDIA tag with an AUDIO type
  */
-@property (nonatomic, nullable, copy) NSString *audio;
+@property (nonatomic, nullable, readonly, copy) NSString *audio;
 
 /**
  The Group name of an associated Video media
  
  Must match GROUP-ID attribute of an EXT-X-MEDIA tag with an VIDEO type
  */
-@property (nonatomic, nullable, copy) NSString *video;
+@property (nonatomic, nullable, readonly, copy) NSString *video;
 
 /**
  The Group name of an associated Subtitles media
  
  Must match GROUP-ID attribute of an EXT-X-MEDIA tag with an SUBTITLES type
  */
-@property (nonatomic, nullable, copy) NSString *subtitles;
+@property (nonatomic, nullable, readonly, copy) NSString *subtitles;
 
 /**
  The Group name of an associated Closed-Captions media
  
  Must match GROUP-ID attribute of an EXT-X-MEDIA tag with an CLOSED-CAPTIONS type
  */
-@property (nonatomic, nullable, copy) NSString *closedCaptions;
+@property (nonatomic, nullable, readonly, copy) NSString *closedCaptions;
 
 - (instancetype)initWithName:(NSString *)name NS_UNAVAILABLE;
 
@@ -183,7 +183,7 @@ typedef NS_ENUM(NSInteger, FFCAttributeType) {
  
  Not required. Will be CGSizeZero if not present in attributes.
  */
-@property (nonatomic) CGSize resolution;
+@property (nonatomic, readonly) CGSize resolution;
 
 /**
  Maximum frame rate for all video in the variant stream.
@@ -192,12 +192,88 @@ typedef NS_ENUM(NSInteger, FFCAttributeType) {
  
  Not required. Will be zero if not present in attributes.
  */
-@property (nonatomic) double frameRate;
+@property (nonatomic, readonly) double frameRate;
 
 /**
  Identifies media playlist file.
  */
 @property (nonatomic, readonly) NSURL *uri;
+
+@end
+
+typedef NS_ENUM(NSInteger, FFCMediaType) {
+    FFCMediaTypeUnknown,
+    FFCMediaTypeAudio,
+    FFCMediaTypeVideo,
+    FFCMediaTypeSubtitles,
+    FFCMediaTypeClosedCaptions
+};
+
+/**
+ A tag for EXT-X-MEDIA
+ */
+@interface FFCMediaTag : FFCTag <FFCAttributedTag>
+
+/**
+ The type of media represented by this Tag.
+ */
+@property (nonatomic, readonly) FFCMediaType type;
+
+/**
+ Identifies the Media Playlist
+ */
+@property (nonatomic, readonly, nullable) NSURL *uri;
+
+/**
+ Group to which Rendition belongs
+ */
+@property (nonatomic, readonly, copy) NSString *groupID;
+
+/**
+ Primary language used in the Rendition as a string described by RFC 5646
+ */
+@property (nonatomic, readonly, nullable, copy) NSString *language;
+
+/**
+ Associated language used in the Rendition as a string described by RFC 5646
+ */
+@property (nonatomic, readonly, nullable, copy) NSString *associatedLanguage;
+
+/**
+ Name of the rendition
+ */
+@property (nonatomic, readonly, copy) NSString *renditionName;
+
+/**
+ If YES, client should play this media until user says otherwise. Absence is NO
+ 
+ Absence in attribute dictionary implies NO
+ */
+@property (nonatomic, readonly) BOOL defaultRendition;
+
+/**
+ Makes media eligible for automatic playback based on environment reasons 
+ (e.g. language)
+ 
+ Absence in attribute dictionary implies NO
+ */
+@property (nonatomic, readonly) BOOL autoselect;
+
+/**
+ Must only appear for TYPE=SUBTITLES. YES means content is essential.
+ 
+ Absence in attribute dictionary implies NO.
+ */
+@property (nonatomic, readonly) BOOL forced;
+
+@property (nonatomic, readonly, copy) NSString *instreamID;
+
+/**
+ UTIs
+ */
+@property (nonatomic, readonly, copy) NSArray<NSString *> *characteristics;
+
+- (instancetype)initWithName:(NSString *)name NS_UNAVAILABLE;
 
 @end
 

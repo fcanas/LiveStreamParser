@@ -172,7 +172,7 @@
 
 - (nullable instancetype)initWithAttributes:(NSDictionary<NSString *, id> *)attributes
 {
-    self = [super initWithName:@"EXT-X-STREAM-INF"];
+    self = [super initWithName:@"EXT-X-I-FRAME-STREAM-INF"];
     
     if (self == nil) {
         return nil;
@@ -210,6 +210,117 @@
     
     return self;
 }
+
+@end
+
+
+@implementation FFCMediaTag
+
++ (FFCAttributeType)attributeTypeForKey:(NSString *)key
+{
+    static NSDictionary<NSString *, NSNumber *> *attributeTypeForKey;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        attributeTypeForKey = @{@"TYPE": @(FFCAttributeTypeEnumeratedString),
+                                @"URI": @(FFCAttributeTypeQuotedString),
+                                @"GROUP-ID": @(FFCAttributeTypeQuotedString),
+                                @"LANGUAGE": @(FFCAttributeTypeQuotedString),
+                                @"ASSOC-LANGUAGE": @(FFCAttributeTypeQuotedString),
+                                @"NAME": @(FFCAttributeTypeQuotedString),
+                                @"DEFAULT": @(FFCAttributeTypeEnumeratedString),
+                                @"AUTOSELECT": @(FFCAttributeTypeEnumeratedString),
+                                @"FORCED": @(FFCAttributeTypeEnumeratedString),
+                                @"INSTREAM-ID": @(FFCAttributeTypeQuotedString),
+                                @"CHARACTERISTICS": @(FFCAttributeTypeQuotedString),};
+    });
+    return [attributeTypeForKey[key] integerValue];
+}
+
+- (nullable instancetype)initWithAttributes:(NSDictionary<NSString *, id> *)attributes
+{
+    self = [super initWithName:@"EXT-X-MEDIA"];
+    
+    if (self == nil) {
+        return nil;
+    }
+
+    NSString *type = attributes[@"TYPE"];
+    if (![type isKindOfClass:[NSString class]]) {
+        return nil;
+    }
+    if ([type isEqualToString:@"AUDIO"]) {
+        _type = FFCMediaTypeAudio;
+    } else if ([type isEqualToString:@"VIDEO"]) {
+        _type = FFCMediaTypeVideo;
+    } else if ([type isEqualToString:@"SUBTITLES"]) {
+        _type = FFCMediaTypeSubtitles;
+    } else if ([type isEqualToString:@"CLOSED-CAPTIONS"]) {
+        _type = FFCMediaTypeClosedCaptions;
+    } else {
+        _type = FFCMediaTypeUnknown;
+    }
+
+    NSString *name = attributes[@"NAME"];
+    if ([name isKindOfClass:[NSString class]]) {
+        _renditionName = name;
+    } else {
+        return nil;
+    }
+
+    NSString *group = attributes[@"GROUP-ID"];
+    if ([group isKindOfClass:[NSString class]]) {
+        _groupID = group;
+    } else {
+        return nil;
+    }
+
+    NSString *language = attributes[@"LANGUAGE"];
+    if ([language isKindOfClass:[NSString class]]) {
+        _language = language;
+    }
+    
+    NSString *assocLanguage = attributes[@"ASSOC-LANGUAGE"];
+    if ([assocLanguage isKindOfClass:[NSString class]]) {
+        _associatedLanguage = assocLanguage;
+    }
+    
+    NSString *uriString = attributes[@"URI"];
+    if ([uriString isKindOfClass:[NSString class]]) {
+        NSURL *uri = [NSURL URLWithString:uriString];
+        _uri = uri;
+    }
+    
+    NSString *defaultString = attributes[@"DEFAULT"];
+    if ([defaultString isKindOfClass:[NSString class]] && [defaultString isEqualToString:@"YES"]) {
+        _defaultRendition = YES;
+    }
+
+    NSString *autoselectString = attributes[@"AUTOSELECT"];
+    if ([autoselectString isKindOfClass:[NSString class]] && [autoselectString isEqualToString:@"YES"]) {
+        _autoselect = YES;
+    }
+
+    NSString *forcedString = attributes[@"FORCED"];
+    if ([forcedString isKindOfClass:[NSString class]] && [forcedString isEqualToString:@"YES"]) {
+        _forced = YES;
+    }
+    
+    NSString *instreamID = attributes[@"INSTREAM-ID"];
+    if ([instreamID isKindOfClass:[NSString class]]) {
+        _instreamID = instreamID;
+    }
+    
+    NSString *characteristicsString = attributes[@"CHARACTERISTICS"];
+    if ([characteristicsString isKindOfClass:[NSString class]]) {
+        _characteristics = [characteristicsString componentsSeparatedByString:@","];
+    } else {
+        _characteristics = @[];
+    }
+
+    
+    return self;
+}
+
 
 @end
 

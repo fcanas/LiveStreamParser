@@ -116,6 +116,43 @@
     XCTAssertTrue(CGSizeEqualToSize(tag.resolution, CGSizeMake(768,432)));
 }
 
+- (void)testAudioMediaTag
+{
+    NSString *tagString = @"#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"aud1\",LANGUAGE=\"eng\",NAME=\"English\",AUTOSELECT=YES,DEFAULT=YES,URI=\"a1/prog_index.m3u8\"";
+    FFCTagParser *parser = [[FFCTagParser alloc] initWithString:tagString];
+    
+    FFCMediaTag *tag = (FFCMediaTag *)[parser nextTag];
+    XCTAssertNotNil(tag);
+    XCTAssertTrue([tag isKindOfClass:[FFCMediaTag class]]);
+    
+    XCTAssertEqual(tag.type, FFCMediaTypeAudio);
+    XCTAssertEqualObjects(tag.groupID, @"aud1");
+    XCTAssertEqualObjects(tag.language, @"eng");
+    XCTAssertEqualObjects(tag.renditionName, @"English");
+    XCTAssertTrue(tag.autoselect);
+    XCTAssertTrue(tag.defaultRendition);
+    XCTAssertFalse(tag.forced);
+    XCTAssertEqualObjects(tag.uri, [NSURL URLWithString:@"a1/prog_index.m3u8"]);
+}
+
+- (void)testSubtitlesMediaTag
+{
+    NSString *tagString = @"#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID=\"sub1\",NAME=\"English\",LANGUAGE=\"eng\",DEFAULT=YES,AUTOSELECT=YES,FORCED=NO,URI=\"s1/eng/prog_index.m3u8\"";
+    FFCTagParser *parser = [[FFCTagParser alloc] initWithString:tagString];
+    
+    FFCMediaTag *tag = (FFCMediaTag *)[parser nextTag];
+    XCTAssertNotNil(tag);
+    XCTAssertTrue([tag isKindOfClass:[FFCMediaTag class]]);
+    
+    XCTAssertEqual(tag.type, FFCMediaTypeSubtitles);
+    XCTAssertEqualObjects(tag.groupID, @"sub1");
+    XCTAssertEqualObjects(tag.language, @"eng");
+    XCTAssertEqualObjects(tag.renditionName, @"English");
+    XCTAssertTrue(tag.autoselect);
+    XCTAssertTrue(tag.defaultRendition);
+    XCTAssertFalse(tag.forced);
+    XCTAssertEqualObjects(tag.uri, [NSURL URLWithString:@"s1/eng/prog_index.m3u8"]);
+}
 
 #pragma mark - Performance
 

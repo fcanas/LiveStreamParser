@@ -165,17 +165,19 @@
 
 @implementation IFrameStreamInfoTagTests
 
-- (void)testBasicStreamInfoTag
+- (void)testBasicIFrameStreamInfoTag
 {
     FFCIFrameStreamInfoTag *infoTag = [[FFCIFrameStreamInfoTag alloc] initWithAttributes:@{}];
     XCTAssertNil(infoTag, @"Info Tag needs bandwidth attribute");
     infoTag = [[FFCIFrameStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @"1"}];
+    
     XCTAssertNil(infoTag, @"Bandwidth needs to be a number");
+    
     infoTag = [[FFCIFrameStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @1.2}];
+    XCTAssertEqualObjects(infoTag.name, @"EXT-X-I-FRAME-STREAM-INF");
     XCTAssertEqual(infoTag.bandwidth, (NSUInteger)1, @"Bandwidth will be rounded to an integer");
     
     infoTag = [[FFCIFrameStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @1}];
-    XCTAssertEqualObjects(infoTag.name, @"EXT-X-STREAM-INF");
     XCTAssertEqual(infoTag.bandwidth, (NSUInteger)1);
     infoTag = [[FFCIFrameStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @1234568}];
     XCTAssertEqual(infoTag.bandwidth, (NSUInteger)1234568);
@@ -230,3 +232,157 @@
 }
 
 @end
+
+@interface MediaTagTests : XCTestCase
+
+@end
+
+@implementation MediaTagTests
+
+- (void)testMediaTagRequiredFields
+{
+    FFCMediaTag *tag = [[FFCMediaTag alloc] initWithAttributes:@{}];
+    XCTAssertNil(tag, @"Media tags require a type");
+    
+    tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO"}];
+    XCTAssertNil(tag, @"Media tags require a group-id");
+    
+    tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO", @"GROUP-ID": @"group"}];
+    XCTAssertNil(tag, @"Media tags require a name");
+    
+    tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO", @"NAME":@"rendition name"}];
+    XCTAssertNil(tag, @"Media tags require a group-id");
+    
+    tag = [[FFCMediaTag alloc] initWithAttributes:@{@"GROUP-ID": @"group"}];
+    XCTAssertNil(tag, @"Media tags require a name");
+    
+    tag = [[FFCMediaTag alloc] initWithAttributes:@{@"GROUP-ID": @"group", @"NAME":@"rendition name"}];
+    XCTAssertNil(tag, @"Media tags require a type");
+    
+    tag = [[FFCMediaTag alloc] initWithAttributes:@{@"NAME":@"rendition name"}];
+    XCTAssertNil(tag, @"Media tags require a type");
+    
+    tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO", @"GROUP-ID": @"group", @"NAME":@"rendition name"}];
+    XCTAssertTrue([tag isKindOfClass:[FFCMediaTag class]]);
+    
+    XCTAssertEqualObjects(tag.name, @"EXT-X-MEDIA");
+    XCTAssertEqual(tag.type, FFCMediaTypeVideo);
+    XCTAssertEqualObjects(tag.renditionName, @"rendition name");
+    XCTAssertEqualObjects(tag.groupID, @"group");
+    
+    tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"AUDIO", @"GROUP-ID": @"xyz", @"NAME":@"abc"}];
+    XCTAssertEqual(tag.type, FFCMediaTypeAudio);
+    XCTAssertEqualObjects(tag.renditionName, @"abc");
+    XCTAssertEqualObjects(tag.groupID, @"xyz");
+}
+
+- (void)testMediaTypeEnum
+{
+    FFCMediaTag *tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO", @"GROUP-ID": @"group", @"NAME":@"rendition name"}];
+    XCTAssertEqual(tag.type, FFCMediaTypeVideo);
+    
+    tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"AUDIO", @"GROUP-ID": @"group", @"NAME":@"rendition name"}];
+    XCTAssertEqual(tag.type, FFCMediaTypeAudio);
+    
+    tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"SUBTITLES", @"GROUP-ID": @"group", @"NAME":@"rendition name"}];
+    XCTAssertEqual(tag.type, FFCMediaTypeSubtitles);
+    
+    tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"CLOSED-CAPTIONS", @"GROUP-ID": @"group", @"NAME":@"rendition name"}];
+    XCTAssertEqual(tag.type, FFCMediaTypeClosedCaptions);
+    
+    tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"OTHER", @"GROUP-ID": @"group", @"NAME":@"rendition name"}];
+    XCTAssertEqual(tag.type, FFCMediaTypeUnknown); // Should this fail instead?
+}
+
+- (void)testLanguage
+{
+    FFCMediaTag *tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO", @"GROUP-ID": @"group", @"NAME":@"rendition name"}];
+    XCTAssertNil(tag.language);
+    
+    tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO", @"GROUP-ID": @"group", @"NAME":@"rendition name", @"LANGUAGE":@"en"}];
+    XCTAssertEqualObjects(tag.language, @"en");
+}
+
+- (void)testAssociatedLanguage
+{
+    FFCMediaTag *tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO", @"GROUP-ID": @"group", @"NAME":@"rendition name"}];
+    XCTAssertNil(tag.associatedLanguage);
+    
+    tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO", @"GROUP-ID": @"group", @"NAME":@"rendition name", @"ASSOC-LANGUAGE":@"en"}];
+    XCTAssertEqualObjects(tag.associatedLanguage, @"en");
+}
+
+- (void)testURI
+{
+    FFCMediaTag *tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO", @"GROUP-ID": @"group", @"NAME":@"rendition name"}];
+    XCTAssertNil(tag.uri);
+    
+    tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO", @"GROUP-ID": @"group", @"NAME":@"rendition name", @"URI":@"../media.m3u"}];
+    XCTAssertTrue([tag.uri isKindOfClass:[NSURL class]]);
+    XCTAssertEqualObjects(tag.uri, [NSURL URLWithString:@"../media.m3u"]); // This might be made more stringent.
+}
+
+- (void)testDefault
+{
+    FFCMediaTag *tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO", @"GROUP-ID": @"group", @"NAME":@"rendition name"}];
+    XCTAssertFalse(tag.defaultRendition);
+    
+    tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO", @"GROUP-ID": @"group", @"NAME":@"rendition name", @"DEFAULT":@"YES"}];
+    XCTAssertTrue(tag.defaultRendition);
+    
+    tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO", @"GROUP-ID": @"group", @"NAME":@"rendition name", @"DEFAULT":@"NO"}];
+    XCTAssertFalse(tag.defaultRendition);
+}
+
+- (void)testAutoselect
+{
+    FFCMediaTag *tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO", @"GROUP-ID": @"group", @"NAME":@"rendition name"}];
+    XCTAssertFalse(tag.autoselect);
+    
+    tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO", @"GROUP-ID": @"group", @"NAME":@"rendition name", @"AUTOSELECT":@"YES"}];
+    XCTAssertTrue(tag.autoselect);
+    
+    tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO", @"GROUP-ID": @"group", @"NAME":@"rendition name", @"AUTOSELECT":@"NO"}];
+    XCTAssertFalse(tag.autoselect);
+}
+
+- (void)testForced
+{
+    FFCMediaTag *tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO", @"GROUP-ID": @"group", @"NAME":@"rendition name"}];
+    XCTAssertFalse(tag.forced);
+    
+    tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO", @"GROUP-ID": @"group", @"NAME":@"rendition name", @"FORCED":@"YES"}];
+    XCTAssertTrue(tag.forced);
+    
+    tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO", @"GROUP-ID": @"group", @"NAME":@"rendition name", @"FORCED":@"NO"}];
+    XCTAssertFalse(tag.forced);
+}
+
+- (void)testInstreamID
+{
+    FFCMediaTag *tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO", @"GROUP-ID": @"group", @"NAME":@"rendition name"}];
+    XCTAssertNil(tag.instreamID);
+    
+    tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO", @"GROUP-ID": @"group", @"NAME":@"rendition name", @"INSTREAM-ID":@"Something?"}];
+    XCTAssertEqualObjects(tag.instreamID, @"Something?");
+}
+
+- (void)testCharacteristics
+{
+    FFCMediaTag *tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO", @"GROUP-ID": @"group", @"NAME":@"rendition name"}];
+    XCTAssertEqualObjects(tag.characteristics, @[]);
+    
+    tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO", @"GROUP-ID": @"group", @"NAME":@"rendition name", @"CHARACTERISTICS":@"one"}];
+    NSArray *one = @[@"one"];
+    XCTAssertEqualObjects(tag.characteristics, one);
+    
+    tag = [[FFCMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO", @"GROUP-ID": @"group", @"NAME":@"rendition name", @"CHARACTERISTICS":@"one,two,three"}];
+    NSArray *three = @[@"one", @"two", @"three"];
+    XCTAssertEqualObjects(tag.characteristics, three);
+
+}
+
+@end
+
+
+

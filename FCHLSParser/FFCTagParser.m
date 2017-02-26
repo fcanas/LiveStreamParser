@@ -32,7 +32,8 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
     dispatch_once(&onceToken, ^{
         tagParameterTypeMap = @{@"EXT-X-VERSION": [FFCVersionTag class],
                                 @"EXT-X-STREAM-INF" : [FFCStreamInfoTag class],
-                                @"EXT-X-I-FRAME-STREAM-INF" : [FFCIFrameStreamInfoTag class]};
+                                @"EXT-X-I-FRAME-STREAM-INF" : [FFCIFrameStreamInfoTag class],
+                                @"EXT-X-MEDIA" : [FFCMediaTag class]};
     });
     return tagParameterTypeMap[tagName];
 }
@@ -44,7 +45,8 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
     dispatch_once(&onceToken, ^{
         tagParameterTypeMap = @{@"EXT-X-VERSION" : @(FFCTagParameterTypeNumber),
                                 @"EXT-X-STREAM-INF" : @(FFCTagParameterTypeAttribtueList),
-                                @"EXT-X-I-FRAME-STREAM-INF" : @(FFCTagParameterTypeAttribtueList)};
+                                @"EXT-X-I-FRAME-STREAM-INF" : @(FFCTagParameterTypeAttribtueList),
+                                @"EXT-X-MEDIA" : @(FFCTagParameterTypeAttribtueList)};
     });
     return [tagParameterTypeMap[tagName] integerValue];
 }
@@ -57,6 +59,18 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
         set = [NSMutableCharacterSet uppercaseLetterCharacterSet];
         [set formUnionWithCharacterSet:[NSCharacterSet decimalDigitCharacterSet]];
         [set addCharactersInString:@"-"];
+    });
+    return set;
+}
+
++ (NSCharacterSet *)enumeratedStringCharacterSet
+{
+    static NSMutableCharacterSet *set;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        set = [NSMutableCharacterSet characterSetWithCharactersInString:@"\"'\n\r,"];
+        [set formUnionWithCharacterSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        [set invert];
     });
     return set;
 }
@@ -217,6 +231,17 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
                 return nil;
             }
             return quotedString;
+        }
+            break;
+        case FFCAttributeTypeEnumeratedString:{
+            NSString *enumeratedString = nil;
+            
+            BOOL scanned = [self.scanner scanCharactersFromSet:[FFCTagParser enumeratedStringCharacterSet] intoString:&enumeratedString];
+            if (!scanned) {
+                return nil;
+            }
+            
+            return enumeratedString;
         }
             break;
         default:
