@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E757B2571E6209EA0046872B /* FFCTagParser.h in Headers */ = {isa = PBXBuildFile; fileRef = E757B2551E6209EA0046872B /* FFCTagParser.h */; };
+		E757B2581E6209EA0046872B /* FFCTagParser.m in Sources */ = {isa = PBXBuildFile; fileRef = E757B2561E6209EA0046872B /* FFCTagParser.m */; };
+		E757B25A1E620A030046872B /* TagParserTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E757B2591E620A030046872B /* TagParserTests.m */; };
+		E757B25D1E6215FB0046872B /* FFCTag.h in Headers */ = {isa = PBXBuildFile; fileRef = E757B25B1E6215FB0046872B /* FFCTag.h */; };
+		E757B25E1E6215FB0046872B /* FFCTag.m in Sources */ = {isa = PBXBuildFile; fileRef = E757B25C1E6215FB0046872B /* FFCTag.m */; };
+		E757B2611E621E9E0046872B /* TagTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E757B2601E621E9E0046872B /* TagTests.m */; };
+		E757B2631E623A1A0046872B /* master.m3u8 in Resources */ = {isa = PBXBuildFile; fileRef = E757B2621E623A1A0046872B /* master.m3u8 */; };
 		E75ADEDF1E61F27A005B49CE /* FCHLSParser.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E75ADED51E61F279005B49CE /* FCHLSParser.framework */; };
 		E75ADEE41E61F27A005B49CE /* FCHLSParserTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E75ADEE31E61F27A005B49CE /* FCHLSParserTests.m */; };
 		E75ADEE61E61F27A005B49CE /* FCHLSParser.h in Headers */ = {isa = PBXBuildFile; fileRef = E75ADED81E61F279005B49CE /* FCHLSParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -23,6 +30,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		E757B2551E6209EA0046872B /* FFCTagParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFCTagParser.h; sourceTree = "<group>"; };
+		E757B2561E6209EA0046872B /* FFCTagParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FFCTagParser.m; sourceTree = "<group>"; };
+		E757B2591E620A030046872B /* TagParserTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagParserTests.m; sourceTree = "<group>"; };
+		E757B25B1E6215FB0046872B /* FFCTag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFCTag.h; sourceTree = "<group>"; };
+		E757B25C1E6215FB0046872B /* FFCTag.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FFCTag.m; sourceTree = "<group>"; };
+		E757B25F1E621AEB0046872B /* FFCXprojConfig.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = FFCXprojConfig.xcconfig; sourceTree = "<group>"; };
+		E757B2601E621E9E0046872B /* TagTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagTests.m; sourceTree = "<group>"; };
+		E757B2621E623A1A0046872B /* master.m3u8 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = master.m3u8; sourceTree = "<group>"; };
 		E75ADED51E61F279005B49CE /* FCHLSParser.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FCHLSParser.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E75ADED81E61F279005B49CE /* FCHLSParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FCHLSParser.h; sourceTree = "<group>"; };
 		E75ADED91E61F279005B49CE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -73,6 +88,11 @@
 			children = (
 				E75ADED81E61F279005B49CE /* FCHLSParser.h */,
 				E75ADED91E61F279005B49CE /* Info.plist */,
+				E757B2551E6209EA0046872B /* FFCTagParser.h */,
+				E757B2561E6209EA0046872B /* FFCTagParser.m */,
+				E757B25B1E6215FB0046872B /* FFCTag.h */,
+				E757B25C1E6215FB0046872B /* FFCTag.m */,
+				E757B25F1E621AEB0046872B /* FFCXprojConfig.xcconfig */,
 			);
 			path = FCHLSParser;
 			sourceTree = "<group>";
@@ -80,8 +100,11 @@
 		E75ADEE21E61F27A005B49CE /* FCHLSParserTests */ = {
 			isa = PBXGroup;
 			children = (
+				E757B2621E623A1A0046872B /* master.m3u8 */,
 				E75ADEE31E61F27A005B49CE /* FCHLSParserTests.m */,
 				E75ADEE51E61F27A005B49CE /* Info.plist */,
+				E757B2591E620A030046872B /* TagParserTests.m */,
+				E757B2601E621E9E0046872B /* TagTests.m */,
 			);
 			path = FCHLSParserTests;
 			sourceTree = "<group>";
@@ -93,6 +116,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E757B2571E6209EA0046872B /* FFCTagParser.h in Headers */,
+				E757B25D1E6215FB0046872B /* FFCTag.h in Headers */,
 				E75ADEE61E61F27A005B49CE /* FCHLSParser.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -187,6 +212,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E757B2631E623A1A0046872B /* master.m3u8 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -197,6 +223,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E757B25E1E6215FB0046872B /* FFCTag.m in Sources */,
+				E757B2581E6209EA0046872B /* FFCTagParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -205,6 +233,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				E75ADEE41E61F27A005B49CE /* FCHLSParserTests.m in Sources */,
+				E757B2611E621E9E0046872B /* TagTests.m in Sources */,
+				E757B25A1E620A030046872B /* TagParserTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -221,6 +251,7 @@
 /* Begin XCBuildConfiguration section */
 		E75ADEE71E61F27A005B49CE /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E757B25F1E621AEB0046872B /* FFCXprojConfig.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -272,6 +303,7 @@
 		};
 		E75ADEE81E61F27A005B49CE /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E757B25F1E621AEB0046872B /* FFCXprojConfig.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -392,6 +424,7 @@
 				E75ADEEB1E61F27A005B49CE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		E75ADEEC1E61F27A005B49CE /* Build configuration list for PBXNativeTarget "FCHLSParserTests" */ = {
 			isa = XCConfigurationList;
@@ -400,6 +433,7 @@
 				E75ADEEE1E61F27A005B49CE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
