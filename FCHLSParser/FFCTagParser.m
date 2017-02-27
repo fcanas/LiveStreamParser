@@ -55,7 +55,15 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
     return [tagParameterTypeMap[tagName] integerValue];
 }
 
-+ (NSCharacterSet *)uppercaseAlphanumericCharacterSet
+/**
+ A Character Set that matches tag names (not including the preceeding #) and
+ attribute names.
+ 
+ [A..Z], [0..9] and -
+
+ @return A character set for matching tags and attribute names
+ */
++ (NSCharacterSet *)tagAndAttributeNameCharacterSet
 {
     static NSMutableCharacterSet *set;
     static dispatch_once_t onceToken;
@@ -67,6 +75,14 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
     return set;
 }
 
+/**
+ Character set for matching enumerated strings in attribute values
+ 
+ Attributes will never contain ", ', or whitespace. They will also not cross
+ line breaks.
+
+ @return A character set for matching enumerated strings in attribute values
+ */
 + (NSCharacterSet *)enumeratedStringCharacterSet
 {
     static NSMutableCharacterSet *set;
@@ -79,6 +95,14 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
     return set;
 }
 
+/**
+ A Character Set for matching hex values.
+
+ Hex values are [0-9], [A-F]. Lower-case [a-f] are not allowed. The x or X from
+ a hex prefix are also not included.
+ 
+ @return A Character Set for matching hex values.
+ */
 + (NSCharacterSet *)hexCharacterSet
 {
     static NSCharacterSet *set;
@@ -120,7 +144,7 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
     
     NSString *name = nil;
     [self.scanner scanString:@"#" intoString:NULL];
-    [self.scanner scanCharactersFromSet:[FFCTagParser uppercaseAlphanumericCharacterSet] intoString:&name];
+    [self.scanner scanCharactersFromSet:[FFCTagParser tagAndAttributeNameCharacterSet] intoString:&name];
     
     if (name == nil) {
         return nil;
@@ -167,12 +191,16 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
 {
     NSParameterAssert([tagClass conformsToProtocol:@protocol(FFCAttributedTag)]);
     
+    if (![tagClass conformsToProtocol:@protocol(FFCAttributedTag)]) {
+        return nil;
+    }
+
     NSMutableDictionary<NSString *, id> *attributeList = [[NSMutableDictionary alloc] init];
     
     BOOL hasAttributes = YES;
     while (hasAttributes) {
         NSString *key = nil;
-        [self.scanner scanCharactersFromSet:[FFCTagParser uppercaseAlphanumericCharacterSet] intoString:&key];
+        [self.scanner scanCharactersFromSet:[FFCTagParser tagAndAttributeNameCharacterSet] intoString:&key];
         [self.scanner scanString:@"=" intoString:NULL];
         id value = [self parseAttributeValueOfType:[tagClass attributeTypeForKey:key]];
         if (value != nil) {
