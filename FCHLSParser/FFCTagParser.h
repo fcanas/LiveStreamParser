@@ -8,7 +8,7 @@
 
 @import Foundation;
 
-@class FFCTag;
+@protocol FFCTag;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,9 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithString:(NSString *)string NS_DESIGNATED_INITIALIZER;
 
-- (nullable __kindof FFCTag *)nextTag;
+- (nullable id <FFCTag>)nextTag;
 
-- (NSArray<FFCTag *> *)parse;
+- (NSArray<id<FFCTag>> *)parse;
 
 @end
 

@@ -17,12 +17,12 @@
 @implementation TagTests
 
 - (void)testTagNameEquality {
-    FFCTag *tag1 = [[FFCTag alloc] initWithName:@"EXTM3U"];
-    FFCTag *tag2 = [[FFCTag alloc] initWithName:@"EXT-X-VERSION"];
-    FFCTag *tag3 = [[FFCTag alloc] initWithName:@"EXTM3U"];
+    FFCBasicTag *tag1 = [[FFCBasicTag alloc] initWithName:@"EXTM3U"];
+    FFCBasicTag *tag2 = [[FFCBasicTag alloc] initWithName:@"EXT-X-VERSION"];
+    FFCBasicTag *tag3 = [[FFCBasicTag alloc] initWithName:@"EXTM3U"];
     
-    XCTAssertNotEqualObjects(tag1, tag2);
-    XCTAssertEqualObjects(tag1, tag3);
+    XCTAssertNotEqualObjects(tag1.name, tag2.name);
+    XCTAssertEqualObjects(tag1.name, tag3.name);
 }
 
 - (void)testVersionTag
@@ -491,5 +491,43 @@
 }
 
 @end
+
+@interface StartTagTests : XCTestCase
+
+@end
+
+@implementation StartTagTests
+
+- (void)testRequiredFields
+{
+    FFCStartTag *tag = [[FFCStartTag alloc] initWithAttributes:@{}];
+    XCTAssertNil(tag, @"TIME-OFFSET is required");
+    
+    tag = [[FFCStartTag alloc] initWithAttributes:@{@"TIME-OFFSET":@(1.5)}];
+    XCTAssertNotNil(tag);
+    XCTAssertTrue([tag isKindOfClass:[FFCStartTag class]]);
+    XCTAssertEqualWithAccuracy(tag.timeOffset, 1.5, 0.0001);
+
+    tag = [[FFCStartTag alloc] initWithAttributes:@{@"TIME-OFFSET":@"1.5"}];
+    XCTAssertNil(tag, @"TIME-OFFSET must be a number");
+}
+
+- (void)testPrecise
+{
+    FFCStartTag *tag = [[FFCStartTag alloc] initWithAttributes:@{@"TIME-OFFSET":@(1.5)}];
+    XCTAssertFalse(tag.precise);
+    
+    tag = [[FFCStartTag alloc] initWithAttributes:@{@"TIME-OFFSET":@(1.5), @"PRECISE":@YES}];
+    XCTAssertFalse(tag.precise, @"PRECISE needs to be a string");
+    
+    tag = [[FFCStartTag alloc] initWithAttributes:@{@"TIME-OFFSET":@(1.5), @"PRECISE":@"NO"}];
+    XCTAssertFalse(tag.precise);
+    
+    tag = [[FFCStartTag alloc] initWithAttributes:@{@"TIME-OFFSET":@(1.5), @"PRECISE":@"YES"}];
+    XCTAssertTrue(tag.precise);
+}
+
+@end
+
 
 

@@ -34,28 +34,85 @@ typedef NS_ENUM(NSInteger, FFCAttributeType) {
     FFCAttributeTypeDecimalResolution,
 };
 
-@protocol FFCAttributedTag <NSObject>
+/**
+ A common protocol for all HLS tags.
+ */
+@protocol FFCTag <NSObject>
 
-+ (FFCAttributeType)attributeTypeForKey:(NSString *)key;
-
-- (nullable instancetype)initWithAttributes:(NSDictionary<NSString *, NSObject *> *)attributes;
+/**
+ The name of the tag. This is how the tag appears in a playlist, excluding the
+ # prefix.
+ 
+ For example, #EXTM3U is the first line of a playlist. An FFCTag representing it
+ would have the name EXTM3U
+ */
+@property(nonatomic, readonly) NSString *name;
 
 @end
 
-@interface FFCTag : NSObject
+/**
+ A protocol for tags that have attribute lists.
+ 
+ The protocol provides a mechanism for the tag to specify the type of a specific
+ attribute and for initializing a tag with an atttribute list.
+ */
+@protocol FFCAttributedTag <FFCTag>
+
+/**
+ Allows an AttributedTag to specify the type of the attribute for a given
+ attribute key.
+ 
+ A tag parser will determine the tag class based on the tag string that is
+ parsed. If that tag expects to have an attribute list each attribue will be
+ parsed according to its expected type. First the attribute name is parsed, then
+ the tag class is asked what the expected type is via @c +attributeTypeForKey:.
+ The parser will then parse the value according to rules for that type. If the
+ value does not validate for that type, the attribute will be skipped. All
+ attribute name-value pairs are accumulated into a dictionary passed to the
+ initializer for the tag class, @c -initWithAttributes:
+
+ @see -initWithAttributes:
+ @param key An attribute name
+ @return The type of the attribute, or nil if the tag does not recognize the
+         attribute.
+ */
++ (FFCAttributeType)attributeTypeForKey:(NSString *)key;
+
+/**
+ Initialized the receiving attribute tag class with parsed attribute list.
+
+ @see +attributeTypeForKey:
+ @param attributes Key-value pairs for attribute names and their values
+ @return An initialized tag or nil if the tag cannot be properly initialized
+         with the provided attributes.
+ */
+- (nullable instancetype)initWithAttributes:(NSDictionary<NSString *, id> *)attributes;
+
+@end
+
+/**
+ A basic tag class.
+ 
+ Tags such as EXTM3U that have no additional parameters should be of this type.
+ */
+@interface FFCBasicTag : NSObject <FFCTag>
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithName:(NSString *)name;
+/**
+ Initializes a basic tag whose only information is its name.
 
-@property(nonatomic, readonly) NSString *name;
+ @param name The name of the tag
+ @return An initialized tag
+ */
+- (instancetype)initWithName:(NSString *)name;
 
 @end
 
 /**
  A tag for EXT-X-VERSION
  */
-@interface FFCVersionTag : FFCTag
+@interface FFCVersionTag : NSObject<FFCTag>
 
 - (instancetype)initWithName:(NSString *)name NS_UNAVAILABLE;
 
@@ -73,7 +130,7 @@ typedef NS_ENUM(NSInteger, FFCAttributeType) {
 /**
  A tag for EXT-X-STREAM-INF
  */
-@interface FFCStreamInfoTag : FFCTag <FFCAttributedTag>
+@interface FFCStreamInfoTag : NSObject <FFCAttributedTag>
 
 /**
  Bits per second, represents the peak segment bit rate
@@ -145,14 +202,12 @@ typedef NS_ENUM(NSInteger, FFCAttributeType) {
 
 - (instancetype)initWithName:(NSString *)name NS_UNAVAILABLE;
 
-- (nullable instancetype)initWithAttributes:(NSDictionary<NSString *, NSObject *> *)attributes;
-
 @end
 
 /**
  A tag for EXT-X-I-FRAME-STREAM-INF
  */
-@interface FFCIFrameStreamInfoTag : FFCTag <FFCAttributedTag>
+@interface FFCIFrameStreamInfoTag : NSObject <FFCAttributedTag>
 
 /**
  Bits per second, represents the peak segment bit rate
@@ -201,6 +256,15 @@ typedef NS_ENUM(NSInteger, FFCAttributeType) {
 
 @end
 
+/**
+ The type of media specified in a media tag.
+
+ - FFCMediaTypeUnknown: The media type is unknown
+ - FFCMediaTypeAudio: Audio
+ - FFCMediaTypeVideo: Video
+ - FFCMediaTypeSubtitles: Subtitles
+ - FFCMediaTypeClosedCaptions: Closed Captions
+ */
 typedef NS_ENUM(NSInteger, FFCMediaType) {
     FFCMediaTypeUnknown,
     FFCMediaTypeAudio,
@@ -212,7 +276,7 @@ typedef NS_ENUM(NSInteger, FFCMediaType) {
 /**
  A tag for EXT-X-MEDIA
  */
-@interface FFCMediaTag : FFCTag <FFCAttributedTag>
+@interface FFCMediaTag : NSObject <FFCAttributedTag>
 
 /**
  The type of media represented by this Tag.
@@ -277,7 +341,10 @@ typedef NS_ENUM(NSInteger, FFCMediaType) {
 
 @end
 
-@interface FFCSessionDataTag : FFCTag <FFCAttributedTag>
+/**
+ A tag reprenenting EXT-X-SESSION-DATA
+ */
+@interface FFCSessionDataTag : NSObject <FFCAttributedTag>
 
 /**
  Identifies the data value. Should use reverse DNS namespace to avoid collisions.
@@ -318,7 +385,7 @@ typedef NS_ENUM(NSInteger, FFCEncryptionMethod) {
     FFCEncryptionMethodSampleAES
 };
 
-@interface FFCSessionKeyTag : FFCTag <FFCAttributedTag>
+@interface FFCSessionKeyTag : NSObject <FFCAttributedTag>
 
 /**
  AES-128, or SAMPLE-AES
@@ -355,6 +422,28 @@ typedef NS_ENUM(NSInteger, FFCEncryptionMethod) {
 @property (nonatomic, readonly) NSArray<NSNumber *> *keyFormatVersions;
 
 - (instancetype)initWithName:(NSString *)name NS_UNAVAILABLE;
+
+@end
+
+/**
+ Tag for #EXT-X-START
+
+ Represents the preferred point to start playing a playlist.
+ */
+@interface FFCStartTag : NSObject <FFCAttributedTag>
+
+/**
+ Time offset from beginning of the playlist if positive. Time offset before the
+ end of playlist if negative.
+ */
+@property (nonatomic, readonly) NSTimeInterval timeOffset;
+
+/**
+  If yes, then presentation should start at TIME-OFFSET and media before that
+ point should not be rendered. If NO, then the whole segment containing 
+ TIME-OFFSET should be rendered.
+ */
+@property (nonatomic, readonly) BOOL precise;
 
 @end
 

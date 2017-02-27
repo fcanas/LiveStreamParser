@@ -37,8 +37,8 @@
 - (void)testOneTag
 {
     FFCTagParser *parser = [[FFCTagParser alloc] initWithString:@"#EXTM3U"];
-    FFCTag *tag = [parser nextTag];
-    XCTAssertTrue([tag isKindOfClass:[FFCTag class]]);
+    FFCBasicTag *tag = [parser nextTag];
+    XCTAssertTrue([tag isKindOfClass:[FFCBasicTag class]]);
     XCTAssertEqualObjects(tag.name, @"EXTM3U");
     
     tag = [parser nextTag];
@@ -48,7 +48,7 @@
 - (void)testSequentialTags
 {
     FFCTagParser *parser = [[FFCTagParser alloc] initWithString:@"#EXTM3U\n#EXT-X-VERSION:6\n#EXT-X-INDEPENDENT-SEGMENTS"];
-    FFCTag *tag = [parser nextTag];
+    FFCBasicTag *tag = [parser nextTag];
     XCTAssertEqualObjects(tag.name, @"EXTM3U");
     tag = [parser nextTag];
     XCTAssertEqualObjects(tag.name, @"EXT-X-VERSION");
@@ -71,12 +71,12 @@
 - (void)testParseVersionTag
 {
     FFCTagParser *parser = [[FFCTagParser alloc] initWithString:@"#EXT-X-VERSION:6"];
-    FFCVersionTag *versionTag = [parser nextTag];
+    FFCVersionTag *versionTag = (FFCVersionTag *)[parser nextTag];
     XCTAssert([versionTag isKindOfClass:[FFCVersionTag class]]);
     XCTAssertEqual(versionTag.version, 6);
     
     parser = [[FFCTagParser alloc] initWithString:@"#EXT-X-VERSION:3"];
-    versionTag = [parser nextTag];
+    versionTag = (FFCVersionTag *)[parser nextTag];
     XCTAssertEqual(versionTag.version, 3);
 }
 
@@ -173,7 +173,7 @@
     NSString *tagString = @"#EXT-X-SESSION-KEY:METHOD=AES-128,URI=\"http://example.com/key\",IV=0x12345678901234567890123456ABCDEF,KEYFORMATVERSIONS=\"6/7/10\"";
     FFCTagParser *parser = [[FFCTagParser alloc] initWithString:tagString];
     
-    FFCSessionKeyTag *tag = [parser nextTag];
+    FFCSessionKeyTag *tag = (FFCSessionKeyTag *)[parser nextTag];
     XCTAssertNotNil(tag);
     XCTAssertTrue([tag isKindOfClass:[FFCSessionKeyTag class]]);
     
@@ -182,6 +182,17 @@
     XCTAssertEqualObjects(tag.initializationVector, @"0x12345678901234567890123456ABCDEF");
     NSArray *versionsArray = @[@6, @7, @10];
     XCTAssertEqualObjects(tag.keyFormatVersions, versionsArray);
+}
+
+- (void)testStartTag
+{
+    NSString *tagString = @"#EXT-X-START:TIME-OFFSET=-1.5,PRECISE=YES";
+    FFCTagParser *parser = [[FFCTagParser alloc] initWithString:tagString];
+    
+    FFCStartTag *tag = (FFCStartTag *)[parser nextTag];
+    XCTAssertNotNil(tag);
+    XCTAssertTrue([tag isKindOfClass:[FFCStartTag class]]);
+    
 }
 
 #pragma mark - Performance

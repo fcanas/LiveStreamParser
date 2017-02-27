@@ -35,7 +35,8 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
                                 @"EXT-X-I-FRAME-STREAM-INF" : [FFCIFrameStreamInfoTag class],
                                 @"EXT-X-MEDIA" : [FFCMediaTag class],
                                 @"EXT-X-SESSION-DATA" : [FFCSessionDataTag class],
-                                @"EXT-X-SESSION-KEY" : [FFCSessionKeyTag class]};
+                                @"EXT-X-SESSION-KEY" : [FFCSessionKeyTag class],
+                                @"EXT-X-START" : [FFCStartTag class]};
     });
     return tagParameterTypeMap[tagName];
 }
@@ -50,7 +51,9 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
                                 @"EXT-X-I-FRAME-STREAM-INF" : @(FFCTagParameterTypeAttribtueList),
                                 @"EXT-X-MEDIA" : @(FFCTagParameterTypeAttribtueList),
                                 @"EXT-X-SESSION-DATA" : @(FFCTagParameterTypeAttribtueList),
-                                @"EXT-X-SESSION-KEY" : @(FFCTagParameterTypeAttribtueList),};
+                                @"EXT-X-SESSION-KEY" : @(FFCTagParameterTypeAttribtueList),
+                                @"EXT-X-START" : @(FFCTagParameterTypeAttribtueList)
+                                };
     });
     return [tagParameterTypeMap[tagName] integerValue];
 }
@@ -126,10 +129,10 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
     return self;
 }
 
-- (NSArray<FFCTag *> *)parse
+- (NSArray<id<FFCTag>> *)parse
 {
     NSMutableArray *tags = [[NSMutableArray alloc] init];
-    FFCTag *tag = nil;
+    id<FFCTag> tag = nil;
     while ((tag = [self nextTag])) {
         [tags addObject:tag];
     }
@@ -137,9 +140,9 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
     return tags;
 }
 
-- (nullable __kindof FFCTag *)nextTag
+- (nullable id<FFCTag>)nextTag
 {
-    FFCTag *tag = nil;
+    id<FFCTag> tag = nil;
     [self scanToNextTag];
     
     NSString *name = nil;
@@ -169,13 +172,13 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
             }
                 break;
             default:
-                tag = [[FFCTag alloc] initWithName:name];
+                tag = [[FFCBasicTag alloc] initWithName:name];
                 break;
         }
     }
     
     if (tag == nil) {
-        tag = [[FFCTag alloc] initWithName:name];
+        tag = [[FFCBasicTag alloc] initWithName:name];
     }
     
     return tag;
@@ -190,10 +193,6 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
 - (NSDictionary<NSString *, id> *)parseAttributeListForTagClass:(Class)tagClass
 {
     NSParameterAssert([tagClass conformsToProtocol:@protocol(FFCAttributedTag)]);
-    
-    if (![tagClass conformsToProtocol:@protocol(FFCAttributedTag)]) {
-        return nil;
-    }
 
     NSMutableDictionary<NSString *, id> *attributeList = [[NSMutableDictionary alloc] init];
     
@@ -230,6 +229,7 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
             return nil;
         }
             break;
+        case FFCAttributeTypeSignedDecimalFloatingPoint:
         case FFCAttributeTypeDecimalFloatingPoint:{
             double floatValue;
             BOOL scanned = [self.scanner scanDouble:&floatValue];

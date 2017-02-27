@@ -10,7 +10,9 @@
 
 #import "FFCTag.h"
 
-@implementation FFCTag
+@implementation FFCBasicTag
+
+@synthesize name = _name;
 
 - (instancetype)initWithName:(NSString *)name
 {
@@ -25,18 +27,6 @@
     return self;
 }
 
-- (BOOL)isEqual:(id)object
-{
-    if (![object isKindOfClass:[self class]]) {
-        return NO;
-    }
-    FFCTag *other = object;
-    
-    BOOL equalNames = (!self.name && !other.name) || [self.name isEqualToString:other.name];
-
-    return equalNames;
-}
-
 @end
 
 @implementation FFCVersionTag
@@ -48,7 +38,7 @@
 
 - (instancetype)initWithIntegerAttribute:(NSInteger)version
 {
-    self = [super initWithName:@"EXT-X-VERSION"];
+    self = [super init];
     
     if (self == nil) {
         return nil;
@@ -92,7 +82,7 @@
 
 - (nullable instancetype)initWithAttributes:(NSDictionary<NSString *, id> *)attributes
 {
-    self = [super initWithName:@"EXT-X-STREAM-INF"];
+    self = [super init];
     
     if (self == nil) {
         return nil;
@@ -151,6 +141,11 @@
     return self;
 }
 
+- (NSString *)name
+{
+    return @"EXT-X-STREAM-INF";
+}
+
 @end
 
 @implementation FFCIFrameStreamInfoTag
@@ -172,7 +167,7 @@
 
 - (nullable instancetype)initWithAttributes:(NSDictionary<NSString *, id> *)attributes
 {
-    self = [super initWithName:@"EXT-X-I-FRAME-STREAM-INF"];
+    self = [super init];
     
     if (self == nil) {
         return nil;
@@ -211,6 +206,11 @@
     return self;
 }
 
+- (NSString *)name
+{
+    return @"EXT-X-I-FRAME-STREAM-INF";
+}
+
 @end
 
 
@@ -238,7 +238,7 @@
 
 - (nullable instancetype)initWithAttributes:(NSDictionary<NSString *, id> *)attributes
 {
-    self = [super initWithName:@"EXT-X-MEDIA"];
+    self = [super init];
     
     if (self == nil) {
         return nil;
@@ -317,8 +317,12 @@
         _characteristics = @[];
     }
 
-    
     return self;
+}
+
+- (NSString *)name
+{
+    return @"EXT-X-MEDIA";
 }
 
 @end
@@ -342,7 +346,7 @@
 
 - (nullable instancetype)initWithAttributes:(NSDictionary<NSString *, id> *)attributes
 {
-    self = [super initWithName:@"EXT-X-SESSION-DATA"];
+    self = [super init];
     
     if (self == nil) {
         return nil;
@@ -378,6 +382,11 @@
     return self;
 }
 
+- (NSString *)name
+{
+    return @"EXT-X-SESSION-DATA";
+}
+
 @end
 
 @implementation FFCSessionKeyTag
@@ -399,7 +408,7 @@
 
 - (nullable instancetype)initWithAttributes:(NSDictionary<NSString *, id> *)attributes
 {
-    self = [super initWithName:@"EXT-X-SESSION-KEY"];
+    self = [super init];
     
     if (self == nil) {
         return nil;
@@ -456,6 +465,53 @@
     return self;
 }
 
+- (NSString *)name
+{
+    return @"EXT-X-SESSION-KEY";
+}
+
 @end
 
+@implementation FFCStartTag
+
++ (FFCAttributeType)attributeTypeForKey:(NSString *)key
+{
+    static NSDictionary<NSString *, NSNumber *> *attributeTypeForKey;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        attributeTypeForKey = @{@"TIME-OFFSET": @(FFCAttributeTypeSignedDecimalFloatingPoint),
+                                @"PRECISE": @(FFCAttributeTypeEnumeratedString),
+                                };
+    });
+    return [attributeTypeForKey[key] integerValue];
+}
+
+- (instancetype)initWithAttributes:(NSDictionary<NSString *, id> *)attributes
+{
+    self = [super init];
+    
+    if (self == nil) {
+        return nil;
+    }
+
+    NSNumber *timeOffsetNumer = attributes[@"TIME-OFFSET"];
+    if (![timeOffsetNumer isKindOfClass:[NSNumber class]]) {
+        return nil;
+    }
+    _timeOffset = [timeOffsetNumer doubleValue];
+    
+    NSString *preciseString = attributes[@"PRECISE"];
+    if ([preciseString isKindOfClass:[NSString class]] && [preciseString isEqualToString:@"YES"]) {
+        _precise = YES;
+    }
+    
+    return attributes[@"TIME-OFFSET"] ? [super init] : nil;
+}
+
+- (NSString *)name
+{
+    return @"";
+}
+
+@end
 
