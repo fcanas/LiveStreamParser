@@ -17,6 +17,7 @@
 		E75ADEDF1E61F27A005B49CE /* FCHLSParser.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E75ADED51E61F279005B49CE /* FCHLSParser.framework */; };
 		E75ADEE41E61F27A005B49CE /* FCHLSParserTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E75ADEE31E61F27A005B49CE /* FCHLSParserTests.m */; };
 		E75ADEE61E61F27A005B49CE /* FCHLSParser.h in Headers */ = {isa = PBXBuildFile; fileRef = E75ADED81E61F279005B49CE /* FCHLSParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E7A50E311E6B8F4700295787 /* MasterPlaylistParseTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A50E301E6B8F4700295787 /* MasterPlaylistParseTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +45,7 @@
 		E75ADEDE1E61F27A005B49CE /* FCHLSParserTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FCHLSParserTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E75ADEE31E61F27A005B49CE /* FCHLSParserTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FCHLSParserTests.m; sourceTree = "<group>"; };
 		E75ADEE51E61F27A005B49CE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E7A50E301E6B8F4700295787 /* MasterPlaylistParseTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MasterPlaylistParseTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +107,7 @@
 				E75ADEE51E61F27A005B49CE /* Info.plist */,
 				E757B2591E620A030046872B /* TagParserTests.m */,
 				E757B2601E621E9E0046872B /* TagTests.m */,
+				E7A50E301E6B8F4700295787 /* MasterPlaylistParseTests.m */,
 			);
 			path = FCHLSParserTests;
 			sourceTree = "<group>";
@@ -233,6 +236,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E75ADEE41E61F27A005B49CE /* FCHLSParserTests.m in Sources */,
+				E7A50E311E6B8F4700295787 /* MasterPlaylistParseTests.m in Sources */,
 				E757B2611E621E9E0046872B /* TagTests.m in Sources */,
 				E757B25A1E620A030046872B /* TagParserTests.m in Sources */,
 			);

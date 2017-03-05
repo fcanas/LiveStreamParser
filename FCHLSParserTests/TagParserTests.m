@@ -206,19 +206,4 @@
     XCTAssertTrue([tag isKindOfClass:[FFCStartTag class]]);
 }
 
-#pragma mark - Performance
-
-- (void)testPerformanceExample
-{
-    NSString *testPlaylistString = [NSString stringWithContentsOfURL:[[NSBundle bundleForClass:[self class]] URLForResource:@"master" withExtension:@"m3u8"] encoding:NSUTF8StringEncoding error:nil];
-    
-    // Sanity check to make sure we've loaded the test playlist
-    XCTAssertEqual(testPlaylistString.length, (NSUInteger)2621);
-    
-    [self measureBlock:^{
-        FFCTagParser *parser = [[FFCTagParser alloc] initWithString:testPlaylistString];
-        [parser parse];
-    }];
-}
-
 @end
