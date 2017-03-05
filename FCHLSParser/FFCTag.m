@@ -113,9 +113,9 @@
         _resolution = CGSizeZero;
     }
 
-    NSNumber *frameRate = attributes[@"FRAME-RATE"];
-    if ([frameRate isKindOfClass:[NSNumber class]]) {
-        _frameRate = [frameRate doubleValue];
+    NSNumber *frameRateNumber = attributes[@"FRAME-RATE"];
+    if ([frameRateNumber isKindOfClass:[NSNumber class]]) {
+        _frameRate = MAX([frameRateNumber doubleValue], 0);
     }
     
     NSString *audio = attributes[@"AUDIO"];

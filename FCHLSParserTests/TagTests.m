@@ -107,6 +107,9 @@
     
     infoTag = [[FFCStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @1, @"FRAME-RATE":@65}];
     XCTAssertEqual(infoTag.frameRate, (double)65);
+    
+    infoTag = [[FFCStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @1, @"FRAME-RATE":@(-24.0)}];
+    XCTAssertEqual(infoTag.frameRate, 0, @"Frame rate must be positive");
 }
 
 - (void)testAudio

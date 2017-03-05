@@ -125,6 +125,8 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
     }
     
     _scanner = [[NSScanner alloc] initWithString:[string copy]];
+    _scanner.caseSensitive = YES;
+    _scanner.charactersToBeSkipped = nil;
     
     return self;
 }
@@ -229,8 +231,16 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
             return nil;
         }
             break;
-        case FFCAttributeTypeSignedDecimalFloatingPoint:
         case FFCAttributeTypeDecimalFloatingPoint:{
+            if ([self.scanner scanString:@"-" intoString:NULL]) {
+                return nil;
+            }
+        }
+            // Fallthrough. Above we ensure an unsigned decimal float is not
+            // preceeded by a negative sign. The scanner otherwise scans
+            // positive or negative double values, and we don't want to
+            // implement custom floating point scanning.
+        case FFCAttributeTypeSignedDecimalFloatingPoint:{
             double floatValue;
             BOOL scanned = [self.scanner scanDouble:&floatValue];
             if (scanned) {

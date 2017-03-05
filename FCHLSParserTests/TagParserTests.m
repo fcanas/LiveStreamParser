@@ -100,6 +100,18 @@
     XCTAssertEqualObjects(tag.codecs, codecs);
 }
 
+- (void)testUnsignedDecimalFloatParsing
+{
+    NSString *tagString = @"#EXT-X-STREAM-INF:BANDWIDTH=1304252,FRAME-RATE=-29.970";
+    FFCTagParser *parser = [[FFCTagParser alloc] initWithString:tagString];
+    
+    FFCStreamInfoTag *tag = (FFCStreamInfoTag *)[parser nextTag];
+    XCTAssertNotNil(tag);
+    XCTAssert([tag isKindOfClass:[FFCStreamInfoTag class]]);
+    XCTAssertEqual(tag.bandwidth, (NSUInteger)1304252);
+    XCTAssertEqual(tag.frameRate, 0);
+}
+
 - (void)testIFrameStreamInfoTagParsing
 {
     NSString *tagString = @"#EXT-X-I-FRAME-STREAM-INF:AVERAGE-BANDWIDTH=80061,BANDWIDTH=83389,CODECS=\"avc1.64001e\",RESOLUTION=768x432,URI=\"v3/iframe_index.m3u8\"";
@@ -192,7 +204,6 @@
     FFCStartTag *tag = (FFCStartTag *)[parser nextTag];
     XCTAssertNotNil(tag);
     XCTAssertTrue([tag isKindOfClass:[FFCStartTag class]]);
-    
 }
 
 #pragma mark - Performance
