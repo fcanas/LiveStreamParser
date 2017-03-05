@@ -509,6 +509,7 @@
     tag = [[FFCStartTag alloc] initWithAttributes:@{@"TIME-OFFSET":@(1.5)}];
     XCTAssertNotNil(tag);
     XCTAssertTrue([tag isKindOfClass:[FFCStartTag class]]);
+    XCTAssertEqualObjects(tag.name, @"EXT-X-START");
     XCTAssertEqualWithAccuracy(tag.timeOffset, 1.5, 0.0001);
 
     tag = [[FFCStartTag alloc] initWithAttributes:@{@"TIME-OFFSET":@"1.5"}];

@@ -510,7 +510,7 @@
 
 - (NSString *)name
 {
-    return @"";
+    return @"EXT-X-START";
 }
 
 @end
