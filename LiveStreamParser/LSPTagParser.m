@@ -1,58 +1,58 @@
 //
-//  FFCTagParser.m
+//  LSPTagParser.m
 //  FCHLSParser
 //
 //  Created by Fabian Canas on 2/25/17.
 //  Copyright © 2017 Fabián Cañas. All rights reserved.
 //
 
-#import "FFCTagParser.h"
-#import "FFCTag.h"
+#import "LSPTagParser.h"
+#import "LSPTag.h"
 
 @import UIKit;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface FFCTagParser ()
+@interface LSPTagParser ()
 @property (nonatomic, copy) NSScanner *scanner;
 @end
 
-typedef NS_ENUM(NSInteger, FFCTagParameterType) {
-    FFCTagParameterTypeUnknown,
-    FFCTagParameterTypeNumber,
-    FFCTagParameterTypeAttribtueList,
+typedef NS_ENUM(NSInteger, LSPTagParameterType) {
+    LSPTagParameterTypeUnknown,
+    LSPTagParameterTypeNumber,
+    LSPTagParameterTypeAttribtueList,
 };
 
-@implementation FFCTagParser
+@implementation LSPTagParser
 
 + (Class)classForTagName:(NSString *)tagName
 {
     static NSDictionary<NSString *, Class> *tagParameterTypeMap;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        tagParameterTypeMap = @{@"EXT-X-VERSION": [FFCVersionTag class],
-                                @"EXT-X-STREAM-INF" : [FFCStreamInfoTag class],
-                                @"EXT-X-I-FRAME-STREAM-INF" : [FFCIFrameStreamInfoTag class],
-                                @"EXT-X-MEDIA" : [FFCMediaTag class],
-                                @"EXT-X-SESSION-DATA" : [FFCSessionDataTag class],
-                                @"EXT-X-SESSION-KEY" : [FFCSessionKeyTag class],
-                                @"EXT-X-START" : [FFCStartTag class]};
+        tagParameterTypeMap = @{@"EXT-X-VERSION": [LSPVersionTag class],
+                                @"EXT-X-STREAM-INF" : [LSPStreamInfoTag class],
+                                @"EXT-X-I-FRAME-STREAM-INF" : [LSPIFrameStreamInfoTag class],
+                                @"EXT-X-MEDIA" : [LSPMediaTag class],
+                                @"EXT-X-SESSION-DATA" : [LSPSessionDataTag class],
+                                @"EXT-X-SESSION-KEY" : [LSPSessionKeyTag class],
+                                @"EXT-X-START" : [LSPStartTag class]};
     });
     return tagParameterTypeMap[tagName];
 }
 
-+ (FFCTagParameterType)parameterTypeForTagName:(NSString *)tagName
++ (LSPTagParameterType)parameterTypeForTagName:(NSString *)tagName
 {
     static NSDictionary<NSString *, NSNumber *> *tagParameterTypeMap;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        tagParameterTypeMap = @{@"EXT-X-VERSION" : @(FFCTagParameterTypeNumber),
-                                @"EXT-X-STREAM-INF" : @(FFCTagParameterTypeAttribtueList),
-                                @"EXT-X-I-FRAME-STREAM-INF" : @(FFCTagParameterTypeAttribtueList),
-                                @"EXT-X-MEDIA" : @(FFCTagParameterTypeAttribtueList),
-                                @"EXT-X-SESSION-DATA" : @(FFCTagParameterTypeAttribtueList),
-                                @"EXT-X-SESSION-KEY" : @(FFCTagParameterTypeAttribtueList),
-                                @"EXT-X-START" : @(FFCTagParameterTypeAttribtueList)
+        tagParameterTypeMap = @{@"EXT-X-VERSION" : @(LSPTagParameterTypeNumber),
+                                @"EXT-X-STREAM-INF" : @(LSPTagParameterTypeAttribtueList),
+                                @"EXT-X-I-FRAME-STREAM-INF" : @(LSPTagParameterTypeAttribtueList),
+                                @"EXT-X-MEDIA" : @(LSPTagParameterTypeAttribtueList),
+                                @"EXT-X-SESSION-DATA" : @(LSPTagParameterTypeAttribtueList),
+                                @"EXT-X-SESSION-KEY" : @(LSPTagParameterTypeAttribtueList),
+                                @"EXT-X-START" : @(LSPTagParameterTypeAttribtueList)
                                 };
     });
     return [tagParameterTypeMap[tagName] integerValue];
@@ -131,10 +131,10 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
     return self;
 }
 
-- (NSArray<id<FFCTag>> *)parse
+- (NSArray<id<LSPTag>> *)parse
 {
     NSMutableArray *tags = [[NSMutableArray alloc] init];
-    id<FFCTag> tag = nil;
+    id<LSPTag> tag = nil;
     while ((tag = [self nextTag])) {
         [tags addObject:tag];
     }
@@ -142,9 +142,9 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
     return tags;
 }
 
-- (nullable id<FFCTag>)nextTag
+- (nullable id<LSPTag>)nextTag
 {
-    id<FFCTag> tag = nil;
+    id<LSPTag> tag = nil;
     
     NSString *name = nil;
     BOOL scanningTag = [self.scanner scanString:@"#" intoString:NULL];
@@ -152,11 +152,11 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
     if (!scanningTag) {
         // Scanning URI, a line not starting in #, into stand-in tag
         NSString *urlString = [self scanToNextTag];
-        FFCURITag *uriTag = [[FFCURITag alloc] initWithURIString:urlString];
+        LSPURITag *uriTag = [[LSPURITag alloc] initWithURIString:urlString];
         return uriTag;
     }
     
-    [self.scanner scanCharactersFromSet:[FFCTagParser tagAndAttributeNameCharacterSet] intoString:&name];
+    [self.scanner scanCharactersFromSet:[LSPTagParser tagAndAttributeNameCharacterSet] intoString:&name];
     
     if (name == nil) {
         return nil;
@@ -166,28 +166,28 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
     
     if (hasParameters) {
         
-        switch ([FFCTagParser parameterTypeForTagName:name]) {
-            case FFCTagParameterTypeNumber: {
+        switch ([LSPTagParser parameterTypeForTagName:name]) {
+            case LSPTagParameterTypeNumber: {
                 NSInteger number;
                 if ([self.scanner scanInteger:&number]) {
-                    tag = [[[FFCTagParser classForTagName:name] alloc] initWithIntegerAttribute:number];
+                    tag = [[[LSPTagParser classForTagName:name] alloc] initWithIntegerAttribute:number];
                 }
             }
                 break;
-            case FFCTagParameterTypeAttribtueList: {
-                Class tagClass = [FFCTagParser classForTagName:name];
+            case LSPTagParameterTypeAttribtueList: {
+                Class tagClass = [LSPTagParser classForTagName:name];
                 NSDictionary<NSString *, id> *attributes = [self parseAttributeListForTagClass:tagClass];
                 tag = [[tagClass alloc] initWithAttributes:attributes];
             }
                 break;
             default:
-                tag = [[FFCBasicTag alloc] initWithName:name];
+                tag = [[LSPBasicTag alloc] initWithName:name];
                 break;
         }
     }
     
     if (tag == nil) {
-        tag = [[FFCBasicTag alloc] initWithName:name];
+        tag = [[LSPBasicTag alloc] initWithName:name];
     }
     
     [self scanToNextTag];
@@ -197,19 +197,19 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
 /**
  Parses and returns an attribute list into a dictionary
 
- @param tagClass A tag class conforming to FFCAttributedTag
+ @param tagClass A tag class conforming to LSPAttributedTag
  @return A dictionary mapping attribute keys to value objects.
  */
 - (NSDictionary<NSString *, id> *)parseAttributeListForTagClass:(Class)tagClass
 {
-    NSParameterAssert([tagClass conformsToProtocol:@protocol(FFCAttributedTag)]);
+    NSParameterAssert([tagClass conformsToProtocol:@protocol(LSPAttributedTag)]);
 
     NSMutableDictionary<NSString *, id> *attributeList = [[NSMutableDictionary alloc] init];
     
     BOOL hasAttributes = YES;
     while (hasAttributes) {
         NSString *key = nil;
-        [self.scanner scanCharactersFromSet:[FFCTagParser tagAndAttributeNameCharacterSet] intoString:&key];
+        [self.scanner scanCharactersFromSet:[LSPTagParser tagAndAttributeNameCharacterSet] intoString:&key];
         [self.scanner scanString:@"=" intoString:NULL];
         id value = [self parseAttributeValueOfType:[tagClass attributeTypeForKey:key]];
         if (value != nil) {
@@ -227,10 +227,10 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
  @param type The type of attribute to parse
  @return An object representing the attribute value, or nil if an error ocurred.
  */
-- (nullable id)parseAttributeValueOfType:(FFCAttributeType)type
+- (nullable id)parseAttributeValueOfType:(LSPAttributeType)type
 {
     switch (type) {
-        case FFCAttributeTypeDecimalInteger:{
+        case LSPAttributeTypeDecimalInteger:{
             NSInteger integer;
             BOOL scanned = [self.scanner scanInteger:&integer];
             if (scanned) {
@@ -239,7 +239,7 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
             return nil;
         }
             break;
-        case FFCAttributeTypeDecimalFloatingPoint:{
+        case LSPAttributeTypeDecimalFloatingPoint:{
             if ([self.scanner scanString:@"-" intoString:NULL]) {
                 return nil;
             }
@@ -248,7 +248,7 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
             // preceeded by a negative sign. The scanner otherwise scans
             // positive or negative double values, and we don't want to
             // implement custom floating point scanning.
-        case FFCAttributeTypeSignedDecimalFloatingPoint:{
+        case LSPAttributeTypeSignedDecimalFloatingPoint:{
             double floatValue;
             BOOL scanned = [self.scanner scanDouble:&floatValue];
             if (scanned) {
@@ -257,7 +257,7 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
             return nil;
         }
             break;
-        case FFCAttributeTypeDecimalResolution:{
+        case LSPAttributeTypeDecimalResolution:{
             NSInteger width;
             NSInteger height;
             BOOL scanned = [self.scanner scanInteger:&width];
@@ -275,7 +275,7 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
             return [NSValue valueWithCGSize:CGSizeMake((CGFloat)width, (CGFloat)height)];
         }
             break;
-        case FFCAttributeTypeQuotedString:{
+        case LSPAttributeTypeQuotedString:{
             NSString *quotedString = nil;
             
             BOOL scanned = [self.scanner scanString:@"\"" intoString:NULL];
@@ -293,10 +293,10 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
             return quotedString;
         }
             break;
-        case FFCAttributeTypeEnumeratedString:{
+        case LSPAttributeTypeEnumeratedString:{
             NSString *enumeratedString = nil;
             
-            BOOL scanned = [self.scanner scanCharactersFromSet:[FFCTagParser enumeratedStringCharacterSet] intoString:&enumeratedString];
+            BOOL scanned = [self.scanner scanCharactersFromSet:[LSPTagParser enumeratedStringCharacterSet] intoString:&enumeratedString];
             if (!scanned) {
                 return nil;
             }
@@ -304,7 +304,7 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
             return enumeratedString;
         }
             break;
-        case FFCAttributeTypeHexidecimalSequence:{
+        case LSPAttributeTypeHexidecimalSequence:{
             NSString *prefixString = nil;
             NSString *hexValueString = nil;
             
@@ -312,7 +312,7 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
                 return nil;
             }
             
-            if (![self.scanner scanCharactersFromSet:[FFCTagParser hexCharacterSet] intoString:&hexValueString]) {
+            if (![self.scanner scanCharactersFromSet:[LSPTagParser hexCharacterSet] intoString:&hexValueString]) {
                 return nil;
             }
             

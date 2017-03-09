@@ -6,8 +6,8 @@
 //  Copyright © 2017 Fabián Cañas. All rights reserved.
 //
 
-#import "FFCTagParser.h"
-#import "FFCTag.h"
+#import "LSPTagParser.h"
+#import "LSPTag.h"
 
 @import CoreGraphics;
 @import XCTest;
@@ -30,15 +30,15 @@
 
 - (void)testNoTagToParse
 {
-    FFCTagParser *parser = [[FFCTagParser alloc] initWithString:@""];
+    LSPTagParser *parser = [[LSPTagParser alloc] initWithString:@""];
     XCTAssertNil([parser nextTag]);
 }
 
 - (void)testOneTag
 {
-    FFCTagParser *parser = [[FFCTagParser alloc] initWithString:@"#EXTM3U"];
-    FFCBasicTag *tag = [parser nextTag];
-    XCTAssertTrue([tag isKindOfClass:[FFCBasicTag class]]);
+    LSPTagParser *parser = [[LSPTagParser alloc] initWithString:@"#EXTM3U"];
+    LSPBasicTag *tag = [parser nextTag];
+    XCTAssertTrue([tag isKindOfClass:[LSPBasicTag class]]);
     XCTAssertEqualObjects(tag.name, @"EXTM3U");
     
     tag = [parser nextTag];
@@ -47,8 +47,8 @@
 
 - (void)testSequentialTags
 {
-    FFCTagParser *parser = [[FFCTagParser alloc] initWithString:@"#EXTM3U\n#EXT-X-VERSION:6\n#EXT-X-INDEPENDENT-SEGMENTS"];
-    FFCBasicTag *tag = [parser nextTag];
+    LSPTagParser *parser = [[LSPTagParser alloc] initWithString:@"#EXTM3U\n#EXT-X-VERSION:6\n#EXT-X-INDEPENDENT-SEGMENTS"];
+    LSPBasicTag *tag = [parser nextTag];
     XCTAssertEqualObjects(tag.name, @"EXTM3U");
     tag = [parser nextTag];
     XCTAssertEqualObjects(tag.name, @"EXT-X-VERSION");
@@ -60,7 +60,7 @@
 
 - (void)testParseMethodReturnsCorrectNumberOfTags
 {
-    FFCTagParser *parser = [[FFCTagParser alloc] initWithString:@"#EXTM3U\n#EXT-X-VERSION:6\n#EXT-X-INDEPENDENT-SEGMENTS"];
+    LSPTagParser *parser = [[LSPTagParser alloc] initWithString:@"#EXTM3U\n#EXT-X-VERSION:6\n#EXT-X-INDEPENDENT-SEGMENTS"];
     NSArray *tags = [parser parse];
     
     XCTAssertEqual(tags.count, (NSUInteger)3);
@@ -70,24 +70,24 @@
 
 - (void)testParseVersionTag
 {
-    FFCTagParser *parser = [[FFCTagParser alloc] initWithString:@"#EXT-X-VERSION:6"];
-    FFCVersionTag *versionTag = (FFCVersionTag *)[parser nextTag];
-    XCTAssert([versionTag isKindOfClass:[FFCVersionTag class]]);
+    LSPTagParser *parser = [[LSPTagParser alloc] initWithString:@"#EXT-X-VERSION:6"];
+    LSPVersionTag *versionTag = (LSPVersionTag *)[parser nextTag];
+    XCTAssert([versionTag isKindOfClass:[LSPVersionTag class]]);
     XCTAssertEqual(versionTag.version, 6);
     
-    parser = [[FFCTagParser alloc] initWithString:@"#EXT-X-VERSION:3"];
-    versionTag = (FFCVersionTag *)[parser nextTag];
+    parser = [[LSPTagParser alloc] initWithString:@"#EXT-X-VERSION:3"];
+    versionTag = (LSPVersionTag *)[parser nextTag];
     XCTAssertEqual(versionTag.version, 3);
 }
 
 - (void)testStreamInfoTagParsing
 {
     NSString *tagString = @"#EXT-X-STREAM-INF:AVERAGE-BANDWIDTH=1290298,BANDWIDTH=1304252,CODECS=\"avc1.64001e,mp4a.40.2\",RESOLUTION=768x432,FRAME-RATE=29.970,CLOSED-CAPTIONS=\"cc1\",AUDIO=\"aud1\",SUBTITLES=\"sub1\"";
-    FFCTagParser *parser = [[FFCTagParser alloc] initWithString:tagString];
+    LSPTagParser *parser = [[LSPTagParser alloc] initWithString:tagString];
     
-    FFCStreamInfoTag *tag = (FFCStreamInfoTag *)[parser nextTag];
+    LSPStreamInfoTag *tag = (LSPStreamInfoTag *)[parser nextTag];
     XCTAssertNotNil(tag);
-    XCTAssert([tag isKindOfClass:[FFCStreamInfoTag class]]);
+    XCTAssert([tag isKindOfClass:[LSPStreamInfoTag class]]);
     
     XCTAssertEqual(tag.bandwidth, (NSUInteger)1304252);
     XCTAssertEqual(tag.averageBandwidth, (NSUInteger)1290298);
@@ -103,11 +103,11 @@
 - (void)testUnsignedDecimalFloatParsing
 {
     NSString *tagString = @"#EXT-X-STREAM-INF:BANDWIDTH=1304252,FRAME-RATE=-29.970";
-    FFCTagParser *parser = [[FFCTagParser alloc] initWithString:tagString];
+    LSPTagParser *parser = [[LSPTagParser alloc] initWithString:tagString];
     
-    FFCStreamInfoTag *tag = (FFCStreamInfoTag *)[parser nextTag];
+    LSPStreamInfoTag *tag = (LSPStreamInfoTag *)[parser nextTag];
     XCTAssertNotNil(tag);
-    XCTAssert([tag isKindOfClass:[FFCStreamInfoTag class]]);
+    XCTAssert([tag isKindOfClass:[LSPStreamInfoTag class]]);
     XCTAssertEqual(tag.bandwidth, (NSUInteger)1304252);
     XCTAssertEqual(tag.frameRate, 0);
 }
@@ -115,11 +115,11 @@
 - (void)testIFrameStreamInfoTagParsing
 {
     NSString *tagString = @"#EXT-X-I-FRAME-STREAM-INF:AVERAGE-BANDWIDTH=80061,BANDWIDTH=83389,CODECS=\"avc1.64001e\",RESOLUTION=768x432,URI=\"v3/iframe_index.m3u8\"";
-    FFCTagParser *parser = [[FFCTagParser alloc] initWithString:tagString];
+    LSPTagParser *parser = [[LSPTagParser alloc] initWithString:tagString];
     
-    FFCIFrameStreamInfoTag *tag = (FFCIFrameStreamInfoTag *)[parser nextTag];
+    LSPIFrameStreamInfoTag *tag = (LSPIFrameStreamInfoTag *)[parser nextTag];
     XCTAssertNotNil(tag);
-    XCTAssert([tag isKindOfClass:[FFCIFrameStreamInfoTag class]]);
+    XCTAssert([tag isKindOfClass:[LSPIFrameStreamInfoTag class]]);
     
     XCTAssertEqual(tag.bandwidth, (NSUInteger)83389);
     XCTAssertEqual(tag.averageBandwidth, (NSUInteger)80061);
@@ -131,13 +131,13 @@
 - (void)testAudioMediaTag
 {
     NSString *tagString = @"#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"aud1\",LANGUAGE=\"eng\",NAME=\"English\",AUTOSELECT=YES,DEFAULT=YES,URI=\"a1/prog_index.m3u8\"";
-    FFCTagParser *parser = [[FFCTagParser alloc] initWithString:tagString];
+    LSPTagParser *parser = [[LSPTagParser alloc] initWithString:tagString];
     
-    FFCMediaTag *tag = (FFCMediaTag *)[parser nextTag];
+    LSPMediaTag *tag = (LSPMediaTag *)[parser nextTag];
     XCTAssertNotNil(tag);
-    XCTAssertTrue([tag isKindOfClass:[FFCMediaTag class]]);
+    XCTAssertTrue([tag isKindOfClass:[LSPMediaTag class]]);
     
-    XCTAssertEqual(tag.type, FFCMediaTypeAudio);
+    XCTAssertEqual(tag.type, LSPMediaTypeAudio);
     XCTAssertEqualObjects(tag.groupID, @"aud1");
     XCTAssertEqualObjects(tag.language, @"eng");
     XCTAssertEqualObjects(tag.renditionName, @"English");
@@ -150,13 +150,13 @@
 - (void)testSubtitlesMediaTag
 {
     NSString *tagString = @"#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID=\"sub1\",NAME=\"English\",LANGUAGE=\"eng\",DEFAULT=YES,AUTOSELECT=YES,FORCED=NO,URI=\"s1/eng/prog_index.m3u8\"";
-    FFCTagParser *parser = [[FFCTagParser alloc] initWithString:tagString];
+    LSPTagParser *parser = [[LSPTagParser alloc] initWithString:tagString];
     
-    FFCMediaTag *tag = (FFCMediaTag *)[parser nextTag];
+    LSPMediaTag *tag = (LSPMediaTag *)[parser nextTag];
     XCTAssertNotNil(tag);
-    XCTAssertTrue([tag isKindOfClass:[FFCMediaTag class]]);
+    XCTAssertTrue([tag isKindOfClass:[LSPMediaTag class]]);
     
-    XCTAssertEqual(tag.type, FFCMediaTypeSubtitles);
+    XCTAssertEqual(tag.type, LSPMediaTypeSubtitles);
     XCTAssertEqualObjects(tag.groupID, @"sub1");
     XCTAssertEqualObjects(tag.language, @"eng");
     XCTAssertEqualObjects(tag.renditionName, @"English");
@@ -169,11 +169,11 @@
 - (void)testSessionDataTag
 {
     NSString *tagString = @"#EXT-X-SESSION-DATA:DATA-ID=\"com.example.hls.sessiondata\",VALUE=\"Session Value\",LANGUAGE=\"eng\"";
-    FFCTagParser *parser = [[FFCTagParser alloc] initWithString:tagString];
+    LSPTagParser *parser = [[LSPTagParser alloc] initWithString:tagString];
     
-    FFCSessionDataTag *tag = (FFCSessionDataTag *)[parser nextTag];
+    LSPSessionDataTag *tag = (LSPSessionDataTag *)[parser nextTag];
     XCTAssertNotNil(tag);
-    XCTAssertTrue([tag isKindOfClass:[FFCSessionDataTag class]]);
+    XCTAssertTrue([tag isKindOfClass:[LSPSessionDataTag class]]);
     
     XCTAssertEqualObjects(tag.dataID, @"com.example.hls.sessiondata");
     XCTAssertEqualObjects(tag.value, @"Session Value");
@@ -183,13 +183,13 @@
 - (void)testSessionKeyTag
 {
     NSString *tagString = @"#EXT-X-SESSION-KEY:METHOD=AES-128,URI=\"http://example.com/key\",IV=0x12345678901234567890123456ABCDEF,KEYFORMATVERSIONS=\"6/7/10\"";
-    FFCTagParser *parser = [[FFCTagParser alloc] initWithString:tagString];
+    LSPTagParser *parser = [[LSPTagParser alloc] initWithString:tagString];
     
-    FFCSessionKeyTag *tag = (FFCSessionKeyTag *)[parser nextTag];
+    LSPSessionKeyTag *tag = (LSPSessionKeyTag *)[parser nextTag];
     XCTAssertNotNil(tag);
-    XCTAssertTrue([tag isKindOfClass:[FFCSessionKeyTag class]]);
+    XCTAssertTrue([tag isKindOfClass:[LSPSessionKeyTag class]]);
     
-    XCTAssertEqual(tag.method, FFCEncryptionMethodAES128);
+    XCTAssertEqual(tag.method, LSPEncryptionMethodAES128);
     XCTAssertEqualObjects(tag.uri, [NSURL URLWithString:@"http://example.com/key"]);
     XCTAssertEqualObjects(tag.initializationVector, @"0x12345678901234567890123456ABCDEF");
     NSArray *versionsArray = @[@6, @7, @10];
@@ -199,11 +199,11 @@
 - (void)testStartTag
 {
     NSString *tagString = @"#EXT-X-START:TIME-OFFSET=-1.5,PRECISE=YES";
-    FFCTagParser *parser = [[FFCTagParser alloc] initWithString:tagString];
+    LSPTagParser *parser = [[LSPTagParser alloc] initWithString:tagString];
     
-    FFCStartTag *tag = (FFCStartTag *)[parser nextTag];
+    LSPStartTag *tag = (LSPStartTag *)[parser nextTag];
     XCTAssertNotNil(tag);
-    XCTAssertTrue([tag isKindOfClass:[FFCStartTag class]]);
+    XCTAssertTrue([tag isKindOfClass:[LSPStartTag class]]);
 }
 
 @end

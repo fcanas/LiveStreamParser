@@ -9,11 +9,12 @@
 #import <UIKit/UIKit.h>
 
 //! Project version number for FCHLSParser.
-FOUNDATION_EXPORT double FCHLSParserVersionNumber;
+FOUNDATION_EXPORT double LiveStreamParserVersionNumber;
 
 //! Project version string for FCHLSParser.
-FOUNDATION_EXPORT const unsigned char FCHLSParserVersionString[];
+FOUNDATION_EXPORT const unsigned char LiveStreamParserVersionString[];
 
-// In this header, you should import all the public headers of your framework using statements like #import <FCHLSParser/PublicHeader.h>
+#import <FCHLSParser/LSPTag.h>
+#import <FCHLSParser/LSPTagParser.h>
 
 

@@ -1,5 +1,5 @@
 //
-//  FFCTag.h
+//  LSPTag.h
 //  FCHLSParser
 //
 //  Created by Fabian Canas on 2/25/17.
@@ -14,36 +14,36 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  Types available in an attribute list
 
- - FFCAttributeTypeUnknown: For use when an attribute name is unknown. May result in short-circuiting parsing for the current tag.
- - FFCAttributeTypeDecimalInteger: [0-9] in range 0 to 2^64-1 (implies 1 to 20 digits)
- - FFCAttributeTypeHexidecimalSequence: 0x or 0X prefix with characters [0..9], [A..F]. Max length is variable.
- - FFCAttributeTypeDecimalFloatingPoint: [0..9] and ., non-negative decimal
- - FFCAttributeTypeSignedDecimalFloatingPoint: [0..9], - and .
- - FFCAttributeTypeQuotedString:  within a pair of quotes (0x22). Must not contain CR (0xD) or LF (0xA) or " (0x22). Equality is determined by bytewise comparison.
- - FFCAttributeTypeEnumeratedString: unquoted string pre-defined by the Attribute it's used in. will never contain ", ', or whitespace.
- - FFCAttributeTypeDecimalResolution: two decimal-integer separated by x define a width and a height
+ - LSPAttributeTypeUnknown: For use when an attribute name is unknown. May result in short-circuiting parsing for the current tag.
+ - LSPAttributeTypeDecimalInteger: [0-9] in range 0 to 2^64-1 (implies 1 to 20 digits)
+ - LSPAttributeTypeHexidecimalSequence: 0x or 0X prefix with characters [0..9], [A..F]. Max length is variable.
+ - LSPAttributeTypeDecimalFloatingPoint: [0..9] and ., non-negative decimal
+ - LSPAttributeTypeSignedDecimalFloatingPoint: [0..9], - and .
+ - LSPAttributeTypeQuotedString:  within a pair of quotes (0x22). Must not contain CR (0xD) or LF (0xA) or " (0x22). Equality is determined by bytewise comparison.
+ - LSPAttributeTypeEnumeratedString: unquoted string pre-defined by the Attribute it's used in. will never contain ", ', or whitespace.
+ - LSPAttributeTypeDecimalResolution: two decimal-integer separated by x define a width and a height
  */
-typedef NS_ENUM(NSInteger, FFCAttributeType) {
-    FFCAttributeTypeUnknown,
-    FFCAttributeTypeDecimalInteger,
-    FFCAttributeTypeHexidecimalSequence,
-    FFCAttributeTypeDecimalFloatingPoint,
-    FFCAttributeTypeSignedDecimalFloatingPoint,
-    FFCAttributeTypeQuotedString,
-    FFCAttributeTypeEnumeratedString,
-    FFCAttributeTypeDecimalResolution,
+typedef NS_ENUM(NSInteger, LSPAttributeType) {
+    LSPAttributeTypeUnknown,
+    LSPAttributeTypeDecimalInteger,
+    LSPAttributeTypeHexidecimalSequence,
+    LSPAttributeTypeDecimalFloatingPoint,
+    LSPAttributeTypeSignedDecimalFloatingPoint,
+    LSPAttributeTypeQuotedString,
+    LSPAttributeTypeEnumeratedString,
+    LSPAttributeTypeDecimalResolution,
 };
 
 /**
  A common protocol for all HLS tags.
  */
-@protocol FFCTag <NSObject>
+@protocol LSPTag <NSObject>
 
 /**
  The name of the tag. This is how the tag appears in a playlist, excluding the
  # prefix.
  
- For example, #EXTM3U is the first line of a playlist. An FFCTag representing it
+ For example, #EXTM3U is the first line of a playlist. An LSPTag representing it
  would have the name EXTM3U
  */
 @property(nonatomic, readonly) NSString *name;
@@ -56,7 +56,7 @@ typedef NS_ENUM(NSInteger, FFCAttributeType) {
  The protocol provides a mechanism for the tag to specify the type of a specific
  attribute and for initializing a tag with an atttribute list.
  */
-@protocol FFCAttributedTag <FFCTag>
+@protocol LSPAttributedTag <LSPTag>
 
 /**
  Allows an AttributedTag to specify the type of the attribute for a given
@@ -76,7 +76,7 @@ typedef NS_ENUM(NSInteger, FFCAttributeType) {
  @return The type of the attribute, or nil if the tag does not recognize the
          attribute.
  */
-+ (FFCAttributeType)attributeTypeForKey:(NSString *)key;
++ (LSPAttributeType)attributeTypeForKey:(NSString *)key;
 
 /**
  Initialized the receiving attribute tag class with parsed attribute list.
@@ -93,7 +93,7 @@ typedef NS_ENUM(NSInteger, FFCAttributeType) {
 /**
  A tag to stand-in for URIs that occupy an entire line in a playlist.
  */
-@interface FFCURITag : NSObject <FFCTag>
+@interface LSPURITag : NSObject <LSPTag>
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -109,7 +109,7 @@ typedef NS_ENUM(NSInteger, FFCAttributeType) {
  
  Tags such as EXTM3U that have no additional parameters should be of this type.
  */
-@interface FFCBasicTag : NSObject <FFCTag>
+@interface LSPBasicTag : NSObject <LSPTag>
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -126,7 +126,7 @@ typedef NS_ENUM(NSInteger, FFCAttributeType) {
 /**
  A tag for EXT-X-VERSION
  */
-@interface FFCVersionTag : NSObject<FFCTag>
+@interface LSPVersionTag : NSObject<LSPTag>
 
 - (instancetype)initWithName:(NSString *)name NS_UNAVAILABLE;
 
@@ -144,7 +144,7 @@ typedef NS_ENUM(NSInteger, FFCAttributeType) {
 /**
  A tag for EXT-X-STREAM-INF
  */
-@interface FFCStreamInfoTag : NSObject <FFCAttributedTag>
+@interface LSPStreamInfoTag : NSObject <LSPAttributedTag>
 
 /**
  Bits per second, represents the peak segment bit rate
@@ -221,7 +221,7 @@ typedef NS_ENUM(NSInteger, FFCAttributeType) {
 /**
  A tag for EXT-X-I-FRAME-STREAM-INF
  */
-@interface FFCIFrameStreamInfoTag : NSObject <FFCAttributedTag>
+@interface LSPIFrameStreamInfoTag : NSObject <LSPAttributedTag>
 
 /**
  Bits per second, represents the peak segment bit rate
@@ -273,29 +273,29 @@ typedef NS_ENUM(NSInteger, FFCAttributeType) {
 /**
  The type of media specified in a media tag.
 
- - FFCMediaTypeUnknown: The media type is unknown
- - FFCMediaTypeAudio: Audio
- - FFCMediaTypeVideo: Video
- - FFCMediaTypeSubtitles: Subtitles
- - FFCMediaTypeClosedCaptions: Closed Captions
+ - LSPMediaTypeUnknown: The media type is unknown
+ - LSPMediaTypeAudio: Audio
+ - LSPMediaTypeVideo: Video
+ - LSPMediaTypeSubtitles: Subtitles
+ - LSPMediaTypeClosedCaptions: Closed Captions
  */
-typedef NS_ENUM(NSInteger, FFCMediaType) {
-    FFCMediaTypeUnknown,
-    FFCMediaTypeAudio,
-    FFCMediaTypeVideo,
-    FFCMediaTypeSubtitles,
-    FFCMediaTypeClosedCaptions
+typedef NS_ENUM(NSInteger, LSPMediaType) {
+    LSPMediaTypeUnknown,
+    LSPMediaTypeAudio,
+    LSPMediaTypeVideo,
+    LSPMediaTypeSubtitles,
+    LSPMediaTypeClosedCaptions
 };
 
 /**
  A tag for EXT-X-MEDIA
  */
-@interface FFCMediaTag : NSObject <FFCAttributedTag>
+@interface LSPMediaTag : NSObject <LSPAttributedTag>
 
 /**
  The type of media represented by this Tag.
  */
-@property (nonatomic, readonly) FFCMediaType type;
+@property (nonatomic, readonly) LSPMediaType type;
 
 /**
  Identifies the Media Playlist
@@ -358,7 +358,7 @@ typedef NS_ENUM(NSInteger, FFCMediaType) {
 /**
  A tag reprenenting EXT-X-SESSION-DATA
  */
-@interface FFCSessionDataTag : NSObject <FFCAttributedTag>
+@interface LSPSessionDataTag : NSObject <LSPAttributedTag>
 
 /**
  Identifies the data value. Should use reverse DNS namespace to avoid collisions.
@@ -393,18 +393,18 @@ typedef NS_ENUM(NSInteger, FFCMediaType) {
 
 @end
 
-typedef NS_ENUM(NSInteger, FFCEncryptionMethod) {
-    FFCEncryptionMethodNone,
-    FFCEncryptionMethodAES128,
-    FFCEncryptionMethodSampleAES
+typedef NS_ENUM(NSInteger, LSPEncryptionMethod) {
+    LSPEncryptionMethodNone,
+    LSPEncryptionMethodAES128,
+    LSPEncryptionMethodSampleAES
 };
 
-@interface FFCSessionKeyTag : NSObject <FFCAttributedTag>
+@interface LSPSessionKeyTag : NSObject <LSPAttributedTag>
 
 /**
  AES-128, or SAMPLE-AES
  */
-@property (nonatomic, readonly) FFCEncryptionMethod method;
+@property (nonatomic, readonly) LSPEncryptionMethod method;
 
 /**
  Where to obtain the key. Required if method is not NONE
@@ -444,7 +444,7 @@ typedef NS_ENUM(NSInteger, FFCEncryptionMethod) {
 
  Represents the preferred point to start playing a playlist.
  */
-@interface FFCStartTag : NSObject <FFCAttributedTag>
+@interface LSPStartTag : NSObject <LSPAttributedTag>
 
 /**
  Time offset from beginning of the playlist if positive. Time offset before the

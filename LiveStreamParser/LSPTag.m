@@ -1,5 +1,5 @@
 //
-//  FFCTag.m
+//  LSPTag.m
 //  FCHLSParser
 //
 //  Created by Fabian Canas on 2/25/17.
@@ -8,9 +8,9 @@
 
 @import UIKit;
 
-#import "FFCTag.h"
+#import "LSPTag.h"
 
-@implementation FFCBasicTag
+@implementation LSPBasicTag
 
 @synthesize name = _name;
 
@@ -29,7 +29,7 @@
 
 @end
 
-@implementation FFCURITag
+@implementation LSPURITag
 
 - (nullable instancetype)initWithURIString:(NSString *)URIString
 {
@@ -55,7 +55,7 @@
 @end
 
 
-@implementation FFCVersionTag
+@implementation LSPVersionTag
 
 - (instancetype)init
 {
@@ -86,22 +86,22 @@
 
 @end
 
-@implementation FFCStreamInfoTag
+@implementation LSPStreamInfoTag
 
-+ (FFCAttributeType)attributeTypeForKey:(NSString *)key
++ (LSPAttributeType)attributeTypeForKey:(NSString *)key
 {
     static NSDictionary<NSString *, NSNumber *> *attributeTypeForKey;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        attributeTypeForKey = @{@"BANDWIDTH": @(FFCAttributeTypeDecimalInteger),
-                                @"AVERAGE-BANDWIDTH": @(FFCAttributeTypeDecimalInteger),
-                                @"CODECS": @(FFCAttributeTypeQuotedString),
-                                @"RESOLUTION": @(FFCAttributeTypeDecimalResolution),
-                                @"FRAME-RATE": @(FFCAttributeTypeDecimalFloatingPoint),
-                                @"AUDIO": @(FFCAttributeTypeQuotedString),
-                                @"VIDEO": @(FFCAttributeTypeQuotedString),
-                                @"SUBTITLES": @(FFCAttributeTypeQuotedString),
-                                @"CLOSED-CAPTIONS": @(FFCAttributeTypeQuotedString)};
+        attributeTypeForKey = @{@"BANDWIDTH": @(LSPAttributeTypeDecimalInteger),
+                                @"AVERAGE-BANDWIDTH": @(LSPAttributeTypeDecimalInteger),
+                                @"CODECS": @(LSPAttributeTypeQuotedString),
+                                @"RESOLUTION": @(LSPAttributeTypeDecimalResolution),
+                                @"FRAME-RATE": @(LSPAttributeTypeDecimalFloatingPoint),
+                                @"AUDIO": @(LSPAttributeTypeQuotedString),
+                                @"VIDEO": @(LSPAttributeTypeQuotedString),
+                                @"SUBTITLES": @(LSPAttributeTypeQuotedString),
+                                @"CLOSED-CAPTIONS": @(LSPAttributeTypeQuotedString)};
     });
     return [attributeTypeForKey[key] integerValue];
 }
@@ -174,19 +174,19 @@
 
 @end
 
-@implementation FFCIFrameStreamInfoTag
+@implementation LSPIFrameStreamInfoTag
 
-+ (FFCAttributeType)attributeTypeForKey:(NSString *)key
++ (LSPAttributeType)attributeTypeForKey:(NSString *)key
 {
     static NSDictionary<NSString *, NSNumber *> *attributeTypeForKey;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        attributeTypeForKey = @{@"BANDWIDTH": @(FFCAttributeTypeDecimalInteger),
-                                @"AVERAGE-BANDWIDTH": @(FFCAttributeTypeDecimalInteger),
-                                @"CODECS": @(FFCAttributeTypeQuotedString),
-                                @"RESOLUTION": @(FFCAttributeTypeDecimalResolution),
-                                @"FRAME-RATE": @(FFCAttributeTypeDecimalFloatingPoint),
-                                @"URI": @(FFCAttributeTypeQuotedString)};
+        attributeTypeForKey = @{@"BANDWIDTH": @(LSPAttributeTypeDecimalInteger),
+                                @"AVERAGE-BANDWIDTH": @(LSPAttributeTypeDecimalInteger),
+                                @"CODECS": @(LSPAttributeTypeQuotedString),
+                                @"RESOLUTION": @(LSPAttributeTypeDecimalResolution),
+                                @"FRAME-RATE": @(LSPAttributeTypeDecimalFloatingPoint),
+                                @"URI": @(LSPAttributeTypeQuotedString)};
     });
     return [attributeTypeForKey[key] integerValue];
 }
@@ -240,24 +240,24 @@
 @end
 
 
-@implementation FFCMediaTag
+@implementation LSPMediaTag
 
-+ (FFCAttributeType)attributeTypeForKey:(NSString *)key
++ (LSPAttributeType)attributeTypeForKey:(NSString *)key
 {
     static NSDictionary<NSString *, NSNumber *> *attributeTypeForKey;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        attributeTypeForKey = @{@"TYPE": @(FFCAttributeTypeEnumeratedString),
-                                @"URI": @(FFCAttributeTypeQuotedString),
-                                @"GROUP-ID": @(FFCAttributeTypeQuotedString),
-                                @"LANGUAGE": @(FFCAttributeTypeQuotedString),
-                                @"ASSOC-LANGUAGE": @(FFCAttributeTypeQuotedString),
-                                @"NAME": @(FFCAttributeTypeQuotedString),
-                                @"DEFAULT": @(FFCAttributeTypeEnumeratedString),
-                                @"AUTOSELECT": @(FFCAttributeTypeEnumeratedString),
-                                @"FORCED": @(FFCAttributeTypeEnumeratedString),
-                                @"INSTREAM-ID": @(FFCAttributeTypeQuotedString),
-                                @"CHARACTERISTICS": @(FFCAttributeTypeQuotedString),};
+        attributeTypeForKey = @{@"TYPE": @(LSPAttributeTypeEnumeratedString),
+                                @"URI": @(LSPAttributeTypeQuotedString),
+                                @"GROUP-ID": @(LSPAttributeTypeQuotedString),
+                                @"LANGUAGE": @(LSPAttributeTypeQuotedString),
+                                @"ASSOC-LANGUAGE": @(LSPAttributeTypeQuotedString),
+                                @"NAME": @(LSPAttributeTypeQuotedString),
+                                @"DEFAULT": @(LSPAttributeTypeEnumeratedString),
+                                @"AUTOSELECT": @(LSPAttributeTypeEnumeratedString),
+                                @"FORCED": @(LSPAttributeTypeEnumeratedString),
+                                @"INSTREAM-ID": @(LSPAttributeTypeQuotedString),
+                                @"CHARACTERISTICS": @(LSPAttributeTypeQuotedString),};
     });
     return [attributeTypeForKey[key] integerValue];
 }
@@ -275,15 +275,15 @@
         return nil;
     }
     if ([type isEqualToString:@"AUDIO"]) {
-        _type = FFCMediaTypeAudio;
+        _type = LSPMediaTypeAudio;
     } else if ([type isEqualToString:@"VIDEO"]) {
-        _type = FFCMediaTypeVideo;
+        _type = LSPMediaTypeVideo;
     } else if ([type isEqualToString:@"SUBTITLES"]) {
-        _type = FFCMediaTypeSubtitles;
+        _type = LSPMediaTypeSubtitles;
     } else if ([type isEqualToString:@"CLOSED-CAPTIONS"]) {
-        _type = FFCMediaTypeClosedCaptions;
+        _type = LSPMediaTypeClosedCaptions;
     } else {
-        _type = FFCMediaTypeUnknown;
+        _type = LSPMediaTypeUnknown;
     }
 
     NSString *name = attributes[@"NAME"];
@@ -354,17 +354,17 @@
 @end
 
 
-@implementation FFCSessionDataTag
+@implementation LSPSessionDataTag
 
-+ (FFCAttributeType)attributeTypeForKey:(NSString *)key
++ (LSPAttributeType)attributeTypeForKey:(NSString *)key
 {
     static NSDictionary<NSString *, NSNumber *> *attributeTypeForKey;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        attributeTypeForKey = @{@"DATA-ID": @(FFCAttributeTypeQuotedString),
-                                @"VALUE": @(FFCAttributeTypeQuotedString),
-                                @"GROUP-ID": @(FFCAttributeTypeQuotedString),
-                                @"LANGUAGE": @(FFCAttributeTypeQuotedString),
+        attributeTypeForKey = @{@"DATA-ID": @(LSPAttributeTypeQuotedString),
+                                @"VALUE": @(LSPAttributeTypeQuotedString),
+                                @"GROUP-ID": @(LSPAttributeTypeQuotedString),
+                                @"LANGUAGE": @(LSPAttributeTypeQuotedString),
                                 };
     });
     return [attributeTypeForKey[key] integerValue];
@@ -415,18 +415,18 @@
 
 @end
 
-@implementation FFCSessionKeyTag
+@implementation LSPSessionKeyTag
 
-+ (FFCAttributeType)attributeTypeForKey:(NSString *)key
++ (LSPAttributeType)attributeTypeForKey:(NSString *)key
 {
     static NSDictionary<NSString *, NSNumber *> *attributeTypeForKey;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        attributeTypeForKey = @{@"METHOD": @(FFCAttributeTypeEnumeratedString),
-                                @"URI": @(FFCAttributeTypeQuotedString),
-                                @"IV": @(FFCAttributeTypeHexidecimalSequence),
-                                @"KEYFORMAT": @(FFCAttributeTypeQuotedString),
-                                @"KEYFORMATVERSIONS": @(FFCAttributeTypeQuotedString),
+        attributeTypeForKey = @{@"METHOD": @(LSPAttributeTypeEnumeratedString),
+                                @"URI": @(LSPAttributeTypeQuotedString),
+                                @"IV": @(LSPAttributeTypeHexidecimalSequence),
+                                @"KEYFORMAT": @(LSPAttributeTypeQuotedString),
+                                @"KEYFORMATVERSIONS": @(LSPAttributeTypeQuotedString),
                                 };
     });
     return [attributeTypeForKey[key] integerValue];
@@ -443,11 +443,11 @@
     NSString *method = attributes[@"METHOD"];
     if ([method isKindOfClass:[NSString class]]) {
         if ([method isEqualToString:@"NONE"]) {
-            _method = FFCEncryptionMethodNone;
+            _method = LSPEncryptionMethodNone;
         } else if ([method isEqualToString:@"AES-128"]) {
-            _method = FFCEncryptionMethodAES128;
+            _method = LSPEncryptionMethodAES128;
         } else if ([method isEqualToString:@"SAMPLE-AES"]) {
-            _method = FFCEncryptionMethodSampleAES;
+            _method = LSPEncryptionMethodSampleAES;
         } else {
             return nil;
         }
@@ -460,7 +460,7 @@
         _uri = [NSURL URLWithString:uriString];
     }
     
-    if (_method != FFCEncryptionMethodNone && _uri == nil) {
+    if (_method != LSPEncryptionMethodNone && _uri == nil) {
         return nil;
     }
 
@@ -498,15 +498,15 @@
 
 @end
 
-@implementation FFCStartTag
+@implementation LSPStartTag
 
-+ (FFCAttributeType)attributeTypeForKey:(NSString *)key
++ (LSPAttributeType)attributeTypeForKey:(NSString *)key
 {
     static NSDictionary<NSString *, NSNumber *> *attributeTypeForKey;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        attributeTypeForKey = @{@"TIME-OFFSET": @(FFCAttributeTypeSignedDecimalFloatingPoint),
-                                @"PRECISE": @(FFCAttributeTypeEnumeratedString),
+        attributeTypeForKey = @{@"TIME-OFFSET": @(LSPAttributeTypeSignedDecimalFloatingPoint),
+                                @"PRECISE": @(LSPAttributeTypeEnumeratedString),
                                 };
     });
     return [attributeTypeForKey[key] integerValue];
