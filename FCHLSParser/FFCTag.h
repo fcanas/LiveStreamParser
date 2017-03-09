@@ -91,6 +91,20 @@ typedef NS_ENUM(NSInteger, FFCAttributeType) {
 @end
 
 /**
+ A tag to stand-in for URIs that occupy an entire line in a playlist.
+ */
+@interface FFCURITag : NSObject <FFCTag>
+
+- (instancetype)init NS_UNAVAILABLE;
+
+- (nullable instancetype)initWithURIString:(NSString *)URIString;
+
+@property (nonatomic, nonnull, readonly) NSURL *uri;
+
+@end
+
+
+/**
  A basic tag class.
  
  Tags such as EXTM3U that have no additional parameters should be of this type.

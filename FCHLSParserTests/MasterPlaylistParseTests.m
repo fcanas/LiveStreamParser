@@ -29,20 +29,28 @@
     FFCTagParser *parser = [[FFCTagParser alloc] initWithString:testPlaylistString];
     
     NSArray<id<FFCTag>> *playlist = [parser parse];
-    XCTAssertEqual(playlist.count, (NSUInteger)18);
+    XCTAssertEqual(playlist.count, (NSUInteger)27);
     
-    XCTAssertEqualObjects(playlist[0].name, @"EXTM3U");
+    NSUInteger tagIndex = 0;
     
-    XCTAssertEqualObjects(playlist[1].name, @"EXT-X-VERSION");
-    XCTAssertTrue([playlist[1] isKindOfClass:[FFCVersionTag class]]);
-    XCTAssertEqual(((FFCVersionTag *)playlist[1]).version, 6);
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"EXTM3U");
     
-    XCTAssertEqualObjects(playlist[2].name, @"EXT-X-INDEPENDENT-SEGMENTS");
+    tagIndex++;
+    
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"EXT-X-VERSION");
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[FFCVersionTag class]]);
+    XCTAssertEqual(((FFCVersionTag *)playlist[tagIndex]).version, 6);
+    
+    tagIndex++;
+    
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"EXT-X-INDEPENDENT-SEGMENTS");
+    
+    tagIndex++;
     
     FFCStreamInfoTag *streamInfoTag;
-    XCTAssertEqualObjects(playlist[3].name, @"EXT-X-STREAM-INF");
-    XCTAssertTrue([playlist[3] isKindOfClass:[FFCStreamInfoTag class]]);
-    streamInfoTag = (FFCStreamInfoTag *)playlist[3];
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"EXT-X-STREAM-INF");
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[FFCStreamInfoTag class]]);
+    streamInfoTag = (FFCStreamInfoTag *)playlist[tagIndex];
     XCTAssertEqual(streamInfoTag.averageBandwidth, (NSUInteger)1290298);
     XCTAssertEqual(streamInfoTag.bandwidth, (NSUInteger)1304252);
     XCTAssertEqualObjects(streamInfoTag.codecs, (@[@"avc1.64001e",@"mp4a.40.2"]));
@@ -52,9 +60,18 @@
     XCTAssertEqualObjects(streamInfoTag.audio, @"aud1");
     XCTAssertEqualObjects(streamInfoTag.subtitles, @"sub1");
     
-    XCTAssertEqualObjects(playlist[4].name, @"EXT-X-STREAM-INF");
-    XCTAssertTrue([playlist[4] isKindOfClass:[FFCStreamInfoTag class]]);
-    streamInfoTag = (FFCStreamInfoTag *)playlist[4];
+    tagIndex++;
+    
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"uri-tag");
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[FFCURITag class]]);
+    FFCURITag *uri = playlist[tagIndex];
+    XCTAssertEqualObjects(uri.uri, [NSURL URLWithString:@"v3/prog_index.m3u8"]);
+    
+    tagIndex++;
+    
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"EXT-X-STREAM-INF");
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[FFCStreamInfoTag class]]);
+    streamInfoTag = (FFCStreamInfoTag *)playlist[tagIndex];
     XCTAssertEqual(streamInfoTag.averageBandwidth, (NSUInteger)912621);
     XCTAssertEqual(streamInfoTag.bandwidth, (NSUInteger)924620);
     XCTAssertEqualObjects(streamInfoTag.codecs, (@[@"avc1.64001e",@"mp4a.40.2"]));
@@ -64,9 +81,18 @@
     XCTAssertEqualObjects(streamInfoTag.audio, @"aud1");
     XCTAssertEqualObjects(streamInfoTag.subtitles, @"sub1");
     
-    XCTAssertEqualObjects(playlist[5].name, @"EXT-X-STREAM-INF");
-    XCTAssertTrue([playlist[5] isKindOfClass:[FFCStreamInfoTag class]]);
-    streamInfoTag = (FFCStreamInfoTag *)playlist[5];
+    tagIndex++;
+    
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"uri-tag");
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[FFCURITag class]]);
+    uri = playlist[tagIndex];
+    XCTAssertEqualObjects(uri.uri, [NSURL URLWithString:@"v2/prog_index.m3u8"]);
+    
+    tagIndex++;
+    
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"EXT-X-STREAM-INF");
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[FFCStreamInfoTag class]]);
+    streamInfoTag = (FFCStreamInfoTag *)playlist[tagIndex];
     XCTAssertEqual(streamInfoTag.averageBandwidth, (NSUInteger)539420);
     XCTAssertEqual(streamInfoTag.bandwidth, (NSUInteger)550248);
     XCTAssertEqualObjects(streamInfoTag.codecs, (@[@"avc1.640015",@"mp4a.40.2"]));
@@ -76,9 +102,18 @@
     XCTAssertEqualObjects(streamInfoTag.audio, @"aud1");
     XCTAssertEqualObjects(streamInfoTag.subtitles, @"sub1");
     
-    XCTAssertEqualObjects(playlist[6].name, @"EXT-X-STREAM-INF");
-    XCTAssertTrue([playlist[6] isKindOfClass:[FFCStreamInfoTag class]]);
-    streamInfoTag = (FFCStreamInfoTag *)playlist[6];
+    tagIndex++;
+    
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"uri-tag");
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[FFCURITag class]]);
+    uri = playlist[tagIndex];
+    XCTAssertEqualObjects(uri.uri, [NSURL URLWithString:@"v1/prog_index.m3u8"]);
+    
+    tagIndex++;
+    
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"EXT-X-STREAM-INF");
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[FFCStreamInfoTag class]]);
+    streamInfoTag = (FFCStreamInfoTag *)playlist[tagIndex];
     XCTAssertEqual(streamInfoTag.averageBandwidth, (NSUInteger)1514297);
     XCTAssertEqual(streamInfoTag.bandwidth, (NSUInteger)1528250);
     XCTAssertEqualObjects(streamInfoTag.codecs, (@[@"avc1.64001e",@"ac-3"]));
@@ -88,9 +123,18 @@
     XCTAssertEqualObjects(streamInfoTag.audio, @"aud2");
     XCTAssertEqualObjects(streamInfoTag.subtitles, @"sub1");
     
-    XCTAssertEqualObjects(playlist[7].name, @"EXT-X-STREAM-INF");
-    XCTAssertTrue([playlist[7] isKindOfClass:[FFCStreamInfoTag class]]);
-    streamInfoTag = (FFCStreamInfoTag *)playlist[7];
+    tagIndex++;
+    
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"uri-tag");
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[FFCURITag class]]);
+    uri = playlist[tagIndex];
+    XCTAssertEqualObjects(uri.uri, [NSURL URLWithString:@"v3/prog_index.m3u8"]);
+    
+    tagIndex++;
+    
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"EXT-X-STREAM-INF");
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[FFCStreamInfoTag class]]);
+    streamInfoTag = (FFCStreamInfoTag *)playlist[tagIndex];
     XCTAssertEqual(streamInfoTag.averageBandwidth, (NSUInteger)1136619);
     XCTAssertEqual(streamInfoTag.bandwidth, (NSUInteger)1148619);
     XCTAssertEqualObjects(streamInfoTag.codecs, (@[@"avc1.64001e",@"ac-3"]));
@@ -100,9 +144,18 @@
     XCTAssertEqualObjects(streamInfoTag.audio, @"aud2");
     XCTAssertEqualObjects(streamInfoTag.subtitles, @"sub1");
     
-    XCTAssertEqualObjects(playlist[8].name, @"EXT-X-STREAM-INF");
-    XCTAssertTrue([playlist[8] isKindOfClass:[FFCStreamInfoTag class]]);
-    streamInfoTag = (FFCStreamInfoTag *)playlist[8];
+    tagIndex++;
+    
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"uri-tag");
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[FFCURITag class]]);
+    uri = playlist[tagIndex];
+    XCTAssertEqualObjects(uri.uri, [NSURL URLWithString:@"v2/prog_index.m3u8"]);
+    
+    tagIndex++;
+    
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"EXT-X-STREAM-INF");
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[FFCStreamInfoTag class]]);
+    streamInfoTag = (FFCStreamInfoTag *)playlist[tagIndex];
     XCTAssertEqual(streamInfoTag.averageBandwidth, (NSUInteger)763419);
     XCTAssertEqual(streamInfoTag.bandwidth, (NSUInteger)774247);
     XCTAssertEqualObjects(streamInfoTag.codecs, (@[@"avc1.640015",@"ac-3"]));
@@ -112,9 +165,18 @@
     XCTAssertEqualObjects(streamInfoTag.audio, @"aud2");
     XCTAssertEqualObjects(streamInfoTag.subtitles, @"sub1");
     
-    XCTAssertEqualObjects(playlist[9].name, @"EXT-X-STREAM-INF");
-    XCTAssertTrue([playlist[9] isKindOfClass:[FFCStreamInfoTag class]]);
-    streamInfoTag = (FFCStreamInfoTag *)playlist[9];
+    tagIndex++;
+    
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"uri-tag");
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[FFCURITag class]]);
+    uri = playlist[tagIndex];
+    XCTAssertEqualObjects(uri.uri, [NSURL URLWithString:@"v1/prog_index.m3u8"]);
+    
+    tagIndex++;
+    
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"EXT-X-STREAM-INF");
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[FFCStreamInfoTag class]]);
+    streamInfoTag = (FFCStreamInfoTag *)playlist[tagIndex];
     XCTAssertEqual(streamInfoTag.averageBandwidth, (NSUInteger)1322297);
     XCTAssertEqual(streamInfoTag.bandwidth, (NSUInteger)1336250);
     XCTAssertEqualObjects(streamInfoTag.codecs, (@[@"avc1.64001e",@"ec-3"]));
@@ -124,9 +186,18 @@
     XCTAssertEqualObjects(streamInfoTag.audio, @"aud3");
     XCTAssertEqualObjects(streamInfoTag.subtitles, @"sub1");
     
-    XCTAssertEqualObjects(playlist[10].name, @"EXT-X-STREAM-INF");
-    XCTAssertTrue([playlist[10] isKindOfClass:[FFCStreamInfoTag class]]);
-    streamInfoTag = (FFCStreamInfoTag *)playlist[10];
+    tagIndex++;
+    
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"uri-tag");
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[FFCURITag class]]);
+    uri = playlist[tagIndex];
+    XCTAssertEqualObjects(uri.uri, [NSURL URLWithString:@"v3/prog_index.m3u8"]);
+    
+    tagIndex++;
+    
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"EXT-X-STREAM-INF");
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[FFCStreamInfoTag class]]);
+    streamInfoTag = (FFCStreamInfoTag *)playlist[tagIndex];
     XCTAssertEqual(streamInfoTag.averageBandwidth, (NSUInteger)944619);
     XCTAssertEqual(streamInfoTag.bandwidth, (NSUInteger)956619);
     XCTAssertEqualObjects(streamInfoTag.codecs, (@[@"avc1.64001e",@"ec-3"]));
@@ -136,9 +207,18 @@
     XCTAssertEqualObjects(streamInfoTag.audio, @"aud3");
     XCTAssertEqualObjects(streamInfoTag.subtitles, @"sub1");
     
-    XCTAssertEqualObjects(playlist[11].name, @"EXT-X-STREAM-INF");
-    XCTAssertTrue([playlist[11] isKindOfClass:[FFCStreamInfoTag class]]);
-    streamInfoTag = (FFCStreamInfoTag *)playlist[11];
+    tagIndex++;
+    
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"uri-tag");
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[FFCURITag class]]);
+    uri = playlist[tagIndex];
+    XCTAssertEqualObjects(uri.uri, [NSURL URLWithString:@"v2/prog_index.m3u8"]);
+    
+    tagIndex++;
+    
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"EXT-X-STREAM-INF");
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[FFCStreamInfoTag class]]);
+    streamInfoTag = (FFCStreamInfoTag *)playlist[tagIndex];
     XCTAssertEqual(streamInfoTag.averageBandwidth, (NSUInteger)571419);
     XCTAssertEqual(streamInfoTag.bandwidth, (NSUInteger)582247);
     XCTAssertEqualObjects(streamInfoTag.codecs, (@[@"avc1.640015",@"ec-3"]));
@@ -148,35 +228,50 @@
     XCTAssertEqualObjects(streamInfoTag.audio, @"aud3");
     XCTAssertEqualObjects(streamInfoTag.subtitles, @"sub1");
     
+    tagIndex++;
+    
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"uri-tag");
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[FFCURITag class]]);
+    uri = playlist[tagIndex];
+    XCTAssertEqualObjects(uri.uri, [NSURL URLWithString:@"v1/prog_index.m3u8"]);
+    
+    tagIndex++;
+    
     FFCIFrameStreamInfoTag *iFrameStreamInfoTag;
-    XCTAssertEqualObjects(playlist[12].name, @"EXT-X-I-FRAME-STREAM-INF");
-    XCTAssertTrue([playlist[12] isKindOfClass:[FFCIFrameStreamInfoTag class]]);
-    iFrameStreamInfoTag = (FFCIFrameStreamInfoTag *)playlist[12];
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"EXT-X-I-FRAME-STREAM-INF");
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[FFCIFrameStreamInfoTag class]]);
+    iFrameStreamInfoTag = (FFCIFrameStreamInfoTag *)playlist[tagIndex];
     XCTAssertEqual(iFrameStreamInfoTag.averageBandwidth, (NSUInteger)80061);
     XCTAssertEqual(iFrameStreamInfoTag.bandwidth, (NSUInteger)83389);
     XCTAssertEqualObjects(iFrameStreamInfoTag.codecs, (@[@"avc1.64001e"]));
     XCTAssertTrue(CGSizeEqualToSize(iFrameStreamInfoTag.resolution, CGSizeMake(768,432)));
     
-    XCTAssertEqualObjects(playlist[13].name, @"EXT-X-I-FRAME-STREAM-INF");
-    XCTAssertTrue([playlist[13] isKindOfClass:[FFCIFrameStreamInfoTag class]]);
-    iFrameStreamInfoTag = (FFCIFrameStreamInfoTag *)playlist[13];
+    tagIndex++;
+    
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"EXT-X-I-FRAME-STREAM-INF");
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[FFCIFrameStreamInfoTag class]]);
+    iFrameStreamInfoTag = (FFCIFrameStreamInfoTag *)playlist[tagIndex];
     XCTAssertEqual(iFrameStreamInfoTag.averageBandwidth, (NSUInteger)63776);
     XCTAssertEqual(iFrameStreamInfoTag.bandwidth, (NSUInteger)64939);
     XCTAssertEqualObjects(iFrameStreamInfoTag.codecs, (@[@"avc1.64001e"]));
     XCTAssertTrue(CGSizeEqualToSize(iFrameStreamInfoTag.resolution, CGSizeMake(640,360)));
     
-    XCTAssertEqualObjects(playlist[14].name, @"EXT-X-I-FRAME-STREAM-INF");
-    XCTAssertTrue([playlist[14] isKindOfClass:[FFCIFrameStreamInfoTag class]]);
-    iFrameStreamInfoTag = (FFCIFrameStreamInfoTag *)playlist[14];
+    tagIndex++;
+    
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"EXT-X-I-FRAME-STREAM-INF");
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[FFCIFrameStreamInfoTag class]]);
+    iFrameStreamInfoTag = (FFCIFrameStreamInfoTag *)playlist[tagIndex];
     XCTAssertEqual(iFrameStreamInfoTag.averageBandwidth, (NSUInteger)39837);
     XCTAssertEqual(iFrameStreamInfoTag.bandwidth, (NSUInteger)40568);
     XCTAssertEqualObjects(iFrameStreamInfoTag.codecs, (@[@"avc1.640015"]));
     XCTAssertTrue(CGSizeEqualToSize(iFrameStreamInfoTag.resolution, CGSizeMake(480,270)));
     
+    tagIndex++;
+    
     FFCMediaTag *mediaTag;
-    XCTAssertEqualObjects(playlist[15].name, @"EXT-X-MEDIA");
-    XCTAssertTrue([playlist[15] isKindOfClass:[FFCMediaTag class]]);
-    mediaTag = (FFCMediaTag *)playlist[15];
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"EXT-X-MEDIA");
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[FFCMediaTag class]]);
+    mediaTag = (FFCMediaTag *)playlist[tagIndex];
     XCTAssertEqual(mediaTag.type, FFCMediaTypeAudio);
     XCTAssertEqualObjects(mediaTag.groupID, @"aud1");
     XCTAssertEqualObjects(mediaTag.language, @"eng");
@@ -186,9 +281,11 @@
     XCTAssertFalse(mediaTag.forced);
     XCTAssertEqualObjects(mediaTag.uri, [NSURL URLWithString:@"a1/prog_index.m3u8"]);
     
-    XCTAssertEqualObjects(playlist[16].name, @"EXT-X-MEDIA");
-    XCTAssertTrue([playlist[16] isKindOfClass:[FFCMediaTag class]]);
-    mediaTag = (FFCMediaTag *)playlist[16];
+    tagIndex++;
+    
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"EXT-X-MEDIA");
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[FFCMediaTag class]]);
+    mediaTag = (FFCMediaTag *)playlist[tagIndex];
     XCTAssertEqual(mediaTag.type, FFCMediaTypeSubtitles);
     XCTAssertEqualObjects(mediaTag.groupID, @"sub1");
     XCTAssertEqualObjects(mediaTag.language, @"eng");
@@ -198,9 +295,11 @@
     XCTAssertFalse(mediaTag.forced);
     XCTAssertEqualObjects(mediaTag.uri, [NSURL URLWithString:@"s1/eng/prog_index.m3u8"]);
     
-    XCTAssertEqualObjects(playlist[17].name, @"EXT-X-MEDIA");
-    XCTAssertTrue([playlist[17] isKindOfClass:[FFCMediaTag class]]);
-    mediaTag = (FFCMediaTag *)playlist[17];
+    tagIndex++;
+    
+    XCTAssertEqualObjects(playlist[tagIndex].name, @"EXT-X-MEDIA");
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[FFCMediaTag class]]);
+    mediaTag = (FFCMediaTag *)playlist[tagIndex];
     XCTAssertEqual(mediaTag.type, FFCMediaTypeClosedCaptions);
     XCTAssertEqualObjects(mediaTag.groupID, @"cc1");
     XCTAssertEqualObjects(mediaTag.language, @"eng");
@@ -209,7 +308,6 @@
     XCTAssertTrue(mediaTag.defaultRendition);
     XCTAssertFalse(mediaTag.forced);
     XCTAssertEqualObjects(mediaTag.instreamID, @"CC1");
-    
 }
 
 #pragma mark - Performance

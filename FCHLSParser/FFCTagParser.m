@@ -145,10 +145,17 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
 - (nullable id<FFCTag>)nextTag
 {
     id<FFCTag> tag = nil;
-    [self scanToNextTag];
     
     NSString *name = nil;
-    [self.scanner scanString:@"#" intoString:NULL];
+    BOOL scanningTag = [self.scanner scanString:@"#" intoString:NULL];
+    
+    if (!scanningTag) {
+        // Scanning URI, a line not starting in #, into stand-in tag
+        NSString *urlString = [self scanToNextTag];
+        FFCURITag *uriTag = [[FFCURITag alloc] initWithURIString:urlString];
+        return uriTag;
+    }
+    
     [self.scanner scanCharactersFromSet:[FFCTagParser tagAndAttributeNameCharacterSet] intoString:&name];
     
     if (name == nil) {
@@ -183,6 +190,7 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
         tag = [[FFCBasicTag alloc] initWithName:name];
     }
     
+    [self scanToNextTag];
     return tag;
 }
 
@@ -320,10 +328,18 @@ typedef NS_ENUM(NSInteger, FFCTagParameterType) {
 
 }
 
+/**
+ Scans and returns the remaining characters on the current line and scans past
+ any remaining newline characters.
+
+ @return A string from the scanner's current location to the next newline 
+         character.
+ */
 - (nullable NSString *)scanToNextTag
 {
     NSString *scanned = nil;
-    [self.scanner scanUpToString:@"#" intoString:&scanned];
+    [self.scanner scanUpToCharactersFromSet:[NSCharacterSet newlineCharacterSet] intoString:&scanned];
+    [self.scanner scanCharactersFromSet:[NSCharacterSet newlineCharacterSet] intoString:NULL];
     return scanned;
 }
 

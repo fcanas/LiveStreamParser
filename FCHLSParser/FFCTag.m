@@ -29,6 +29,32 @@
 
 @end
 
+@implementation FFCURITag
+
+- (nullable instancetype)initWithURIString:(NSString *)URIString
+{
+    self = [super init];
+    
+    if (self == nil) {
+        return nil;
+    }
+
+    _uri = [NSURL URLWithString:URIString];
+    if (_uri == nil) {
+        return nil;
+    }
+
+    return self;
+}
+
+- (NSString *)name
+{
+    return @"uri-tag";
+}
+
+@end
+
+
 @implementation FFCVersionTag
 
 - (instancetype)init

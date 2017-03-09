@@ -37,6 +37,24 @@
 
 @end
 
+@interface URITagTests : XCTestCase
+
+@end
+
+@implementation URITagTests
+
+- (void)testURITag
+{
+    FFCURITag *tag = [[FFCURITag alloc] initWithURIString:@" "];
+    XCTAssertNil(tag, @"Must be initialized with a string that could be a url");
+    
+    tag = [[FFCURITag alloc] initWithURIString:@"http://www.example.com"];
+    XCTAssertTrue([tag isKindOfClass:[FFCURITag class]]);
+    XCTAssertEqualObjects(tag.uri, [NSURL URLWithString:@"http://www.example.com"]);
+}
+
+@end
+
 @interface StreamInfoTagTests : XCTestCase
 
 @end
