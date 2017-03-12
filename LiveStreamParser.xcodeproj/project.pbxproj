@@ -30,6 +30,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		E71218AC1E74D2C800F0C485 /* Readme.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Readme.md; sourceTree = "<group>"; };
 		E757B2551E6209EA0046872B /* LSPTagParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSPTagParser.h; sourceTree = "<group>"; };
 		E757B2561E6209EA0046872B /* LSPTagParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LSPTagParser.m; sourceTree = "<group>"; };
 		E757B2591E620A030046872B /* TagParserTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagParserTests.m; sourceTree = "<group>"; };
@@ -68,6 +69,7 @@
 		E75ADECB1E61F279005B49CE = {
 			isa = PBXGroup;
 			children = (
+				E71218AC1E74D2C800F0C485 /* Readme.md */,
 				E75ADED71E61F279005B49CE /* LiveStreamParser */,
 				E75ADEE21E61F27A005B49CE /* LiveStreamParserTests */,
 				E75ADED61E61F279005B49CE /* Products */,
