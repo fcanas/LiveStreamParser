@@ -515,5 +515,23 @@ typedef NS_ENUM(NSInteger, LSPEncryptionMethod) {
 
 @end
 
+/**
+ A tag for EXT-X-DISCONTINUITY-SEQUENCE
+ */
+@interface LSPDiscontinuitySequenceTag : NSObject<LSPTag>
+
+- (instancetype)initWithName:(NSString *)name NS_UNAVAILABLE;
+
+/**
+ Initialized a version tag with the default version, 1
+ */
+- (instancetype)init;
+
+- (instancetype)initWithIntegerAttribute:(NSInteger)number;
+
+@property (nonatomic, readonly) NSInteger number;
+
+@end
+
 
 NS_ASSUME_NONNULL_END

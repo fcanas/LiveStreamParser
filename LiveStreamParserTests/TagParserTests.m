@@ -243,4 +243,31 @@
     XCTAssertEqual(tag.number, 7345678);
 }
 
+- (void)testDiscontinuitySequenceTag
+{
+    NSString *tagString = @"#EXT-X-DISCONTINUITY-SEQUENCE:0";
+    LSPTagParser *parser = [[LSPTagParser alloc] initWithString:tagString];
+    
+    LSPDiscontinuitySequenceTag *tag = (LSPDiscontinuitySequenceTag *)[parser nextTag];
+    XCTAssertNotNil(tag);
+    XCTAssertTrue([tag isKindOfClass:[LSPDiscontinuitySequenceTag class]]);
+    XCTAssertEqual(tag.number, 0);
+    
+    tagString = @"#EXT-X-DISCONTINUITY-SEQUENCE:7";
+    parser = [[LSPTagParser alloc] initWithString:tagString];
+    
+    tag = (LSPDiscontinuitySequenceTag *)[parser nextTag];
+    XCTAssertNotNil(tag);
+    XCTAssertTrue([tag isKindOfClass:[LSPDiscontinuitySequenceTag class]]);
+    XCTAssertEqual(tag.number, 7);
+    
+    tagString = @"#EXT-X-DISCONTINUITY-SEQUENCE:7345678";
+    parser = [[LSPTagParser alloc] initWithString:tagString];
+    
+    tag = (LSPDiscontinuitySequenceTag *)[parser nextTag];
+    XCTAssertNotNil(tag);
+    XCTAssertTrue([tag isKindOfClass:[LSPDiscontinuitySequenceTag class]]);
+    XCTAssertEqual(tag.number, 7345678);
+}
+
 @end

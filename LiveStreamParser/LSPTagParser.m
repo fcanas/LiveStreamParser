@@ -40,6 +40,7 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
                                 @"EXT-X-START" : [LSPStartTag class],
                                 @"EXTINF" : [LSPInfoTag class],
                                 @"EXT-X-MEDIA-SEQUENCE" : [LSPMediaSequenceTag class],
+                                @"EXT-X-DISCONTINUITY-SEQUENCE" : [LSPDiscontinuitySequenceTag class],
                                 };
     });
     return tagParameterTypeMap[tagName];
@@ -59,6 +60,7 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
                                 @"EXT-X-START" : @(LSPTagParameterTypeAttribtueList),
                                 @"EXTINF" : @(LSPTagParameterTypeNumberOptionalString),
                                 @"EXT-X-MEDIA-SEQUENCE" : @(LSPTagParameterTypeNumber),
+                                @"EXT-X-DISCONTINUITY-SEQUENCE" : @(LSPTagParameterTypeNumber),
                                 };
     });
     return [tagParameterTypeMap[tagName] integerValue];
