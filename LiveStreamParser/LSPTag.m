@@ -562,3 +562,30 @@
 
 @end
 
+@implementation LSPMediaSequenceTag
+
+- (instancetype)init
+{
+    return [self initWithIntegerAttribute:1];
+}
+
+- (instancetype)initWithIntegerAttribute:(NSInteger)number
+{
+    self = [super init];
+    
+    if (self == nil) {
+        return nil;
+    }
+    
+    _number = number;
+    
+    return self;
+}
+
+- (NSString *)name
+{
+    return @"EXT-X-MEDIA-SEQUENCE";
+}
+
+@end
+

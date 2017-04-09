@@ -49,9 +49,8 @@
     tagIndex++;
     
     XCTAssertEqualObjects(playlist[tagIndex].name, @"EXT-X-MEDIA-SEQUENCE");
-    // TODO : parse media sequence tag
-    //    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[LSPVersionTag class]]);
-    //    XCTAssertEqual(((LSPVersionTag *)playlist[tagIndex]).version, 6);
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[LSPMediaSequenceTag class]]);
+    XCTAssertEqual(((LSPMediaSequenceTag *)playlist[tagIndex]).number, 0);
     
     tagIndex++;
     

@@ -216,4 +216,31 @@
     XCTAssertTrue([tag isKindOfClass:[LSPInfoTag class]]);
 }
 
+- (void)testMediaSequenceTag
+{
+    NSString *tagString = @"#EXT-X-MEDIA-SEQUENCE:0";
+    LSPTagParser *parser = [[LSPTagParser alloc] initWithString:tagString];
+    
+    LSPMediaSequenceTag *tag = (LSPMediaSequenceTag *)[parser nextTag];
+    XCTAssertNotNil(tag);
+    XCTAssertTrue([tag isKindOfClass:[LSPMediaSequenceTag class]]);
+    XCTAssertEqual(tag.number, 0);
+    
+    tagString = @"#EXT-X-MEDIA-SEQUENCE:7";
+    parser = [[LSPTagParser alloc] initWithString:tagString];
+    
+    tag = (LSPMediaSequenceTag *)[parser nextTag];
+    XCTAssertNotNil(tag);
+    XCTAssertTrue([tag isKindOfClass:[LSPMediaSequenceTag class]]);
+    XCTAssertEqual(tag.number, 7);
+    
+    tagString = @"#EXT-X-MEDIA-SEQUENCE:7345678";
+    parser = [[LSPTagParser alloc] initWithString:tagString];
+    
+    tag = (LSPMediaSequenceTag *)[parser nextTag];
+    XCTAssertNotNil(tag);
+    XCTAssertTrue([tag isKindOfClass:[LSPMediaSequenceTag class]]);
+    XCTAssertEqual(tag.number, 7345678);
+}
+
 @end
