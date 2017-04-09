@@ -541,3 +541,24 @@
 
 @end
 
+#pragma mark - Media Segment Tags
+
+@implementation LSPInfoTag
+
+- (instancetype)initWithDuration:(NSTimeInterval)duration title:(nullable NSString *)title
+{
+    self = [super init];
+    
+    _duration = duration;
+    _title = [title copy];
+    
+    return self;
+}
+
+- (NSString *)name
+{
+    return @"EXTINF";
+}
+
+@end
+

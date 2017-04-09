@@ -16,6 +16,7 @@
 		E757B2631E623A1A0046872B /* master.m3u8 in Resources */ = {isa = PBXBuildFile; fileRef = E757B2621E623A1A0046872B /* master.m3u8 */; };
 		E75ADEDF1E61F27A005B49CE /* LiveStreamParser.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E75ADED51E61F279005B49CE /* LiveStreamParser.framework */; };
 		E75ADEE61E61F27A005B49CE /* LiveStreamParser.h in Headers */ = {isa = PBXBuildFile; fileRef = E75ADED81E61F279005B49CE /* LiveStreamParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E7A0E1C01E9A8A0000E758BC /* prog_index.m3u8 in Resources */ = {isa = PBXBuildFile; fileRef = E7A0E1BF1E9A8A0000E758BC /* prog_index.m3u8 */; };
 		E7A50E311E6B8F4700295787 /* MasterPlaylistParseTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A50E301E6B8F4700295787 /* MasterPlaylistParseTests.m */; };
 /* End PBXBuildFile section */
 
@@ -44,6 +45,7 @@
 		E75ADED91E61F279005B49CE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E75ADEDE1E61F27A005B49CE /* LiveStreamParserTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LiveStreamParserTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E75ADEE51E61F27A005B49CE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E7A0E1BF1E9A8A0000E758BC /* prog_index.m3u8 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = prog_index.m3u8; sourceTree = "<group>"; };
 		E7A50E301E6B8F4700295787 /* MasterPlaylistParseTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MasterPlaylistParseTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -102,6 +104,7 @@
 		E75ADEE21E61F27A005B49CE /* LiveStreamParserTests */ = {
 			isa = PBXGroup;
 			children = (
+				E7A0E1BF1E9A8A0000E758BC /* prog_index.m3u8 */,
 				E757B2621E623A1A0046872B /* master.m3u8 */,
 				E75ADEE51E61F27A005B49CE /* Info.plist */,
 				E757B2591E620A030046872B /* TagParserTests.m */,
@@ -216,6 +219,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E757B2631E623A1A0046872B /* master.m3u8 in Resources */,
+				E7A0E1C01E9A8A0000E758BC /* prog_index.m3u8 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

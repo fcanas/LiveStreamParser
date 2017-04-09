@@ -21,6 +21,7 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
     LSPTagParameterTypeUnknown,
     LSPTagParameterTypeNumber,
     LSPTagParameterTypeAttribtueList,
+    LSPTagParameterTypeNumberOptionalString,
 };
 
 @implementation LSPTagParser
@@ -36,7 +37,8 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
                                 @"EXT-X-MEDIA" : [LSPMediaTag class],
                                 @"EXT-X-SESSION-DATA" : [LSPSessionDataTag class],
                                 @"EXT-X-SESSION-KEY" : [LSPSessionKeyTag class],
-                                @"EXT-X-START" : [LSPStartTag class]};
+                                @"EXT-X-START" : [LSPStartTag class],
+                                @"EXTINF" : [LSPInfoTag class],};
     });
     return tagParameterTypeMap[tagName];
 }
@@ -52,7 +54,8 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
                                 @"EXT-X-MEDIA" : @(LSPTagParameterTypeAttribtueList),
                                 @"EXT-X-SESSION-DATA" : @(LSPTagParameterTypeAttribtueList),
                                 @"EXT-X-SESSION-KEY" : @(LSPTagParameterTypeAttribtueList),
-                                @"EXT-X-START" : @(LSPTagParameterTypeAttribtueList)
+                                @"EXT-X-START" : @(LSPTagParameterTypeAttribtueList),
+                                @"EXTINF" : @(LSPTagParameterTypeNumberOptionalString),
                                 };
     });
     return [tagParameterTypeMap[tagName] integerValue];
@@ -178,6 +181,17 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
                 Class tagClass = [LSPTagParser classForTagName:name];
                 NSDictionary<NSString *, id> *attributes = [self parseAttributeListForTagClass:tagClass];
                 tag = [[tagClass alloc] initWithAttributes:attributes];
+            }
+                break;
+            case LSPTagParameterTypeNumberOptionalString: {
+                Class tagClass = [LSPTagParser classForTagName:name];
+                NSInteger number;
+                NSString *string = nil;
+                if ([self.scanner scanInteger:&number]) {
+                    [self.scanner scanString:@"," intoString:nil];
+                    [self.scanner scanUpToCharactersFromSet:[NSCharacterSet newlineCharacterSet] intoString:&string];
+                    tag = [[tagClass alloc] initWithDuration:number title:string];
+                }
             }
                 break;
             default:

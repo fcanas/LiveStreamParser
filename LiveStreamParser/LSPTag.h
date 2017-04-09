@@ -461,5 +461,39 @@ typedef NS_ENUM(NSInteger, LSPEncryptionMethod) {
 
 @end
 
+#pragma mark - Media Segment Tags
+
+/**
+ Tag for #EXTINF
+ */
+@interface LSPInfoTag : NSObject <LSPTag>
+
+- (instancetype)init NS_UNAVAILABLE;
+
+/**
+ The duration of the next segment.
+ */
+@property (nonatomic) NSTimeInterval duration;
+
+/**
+ A human-readable title of the segment
+ */
+@property (nonatomic, nullable, readonly, copy) NSString *title;
+
+/**
+ Initializes a new LSPInfoTag.
+ 
+ An EXTINF tag has one or two arguments, not in an argument list. The duration
+ is not optional, and the title is. Because the tag is unique in its
+ construction, it has its own initializer.
+
+ @param duration duration of the segment the tag represents
+ @param title the title of the segment the tag represents
+ @return an initialized LSPInfoTag
+ */
+- (instancetype)initWithDuration:(NSTimeInterval)duration title:(nullable NSString *)title;
+
+@end
+
 
 NS_ASSUME_NONNULL_END

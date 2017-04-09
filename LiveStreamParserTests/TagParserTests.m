@@ -206,4 +206,14 @@
     XCTAssertTrue([tag isKindOfClass:[LSPStartTag class]]);
 }
 
+- (void)testInfoTag
+{
+    NSString *tagString = @"#EXTINF:6.00000,";
+    LSPTagParser *parser = [[LSPTagParser alloc] initWithString:tagString];
+    
+    LSPInfoTag *tag = (LSPInfoTag *)[parser nextTag];
+    XCTAssertNotNil(tag);
+    XCTAssertTrue([tag isKindOfClass:[LSPInfoTag class]]);
+}
+
 @end

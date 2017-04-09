@@ -551,5 +551,43 @@
 
 @end
 
+@interface InfoTagTests : XCTestCase
+
+@end
+
+@implementation InfoTagTests
+
+- (void)testName
+{
+    LSPInfoTag *tag = [[LSPInfoTag alloc] initWithDuration:1.0 title:nil];
+    XCTAssertEqualObjects([tag name], @"EXTINF");
+}
+
+- (void)testDuration
+{
+    LSPInfoTag *tag = [[LSPInfoTag alloc] initWithDuration:1.0 title:nil];
+    XCTAssertEqual(tag.duration, 1.0);
+    
+    tag = [[LSPInfoTag alloc] initWithDuration:3.0 title:nil];
+    XCTAssertEqual(tag.duration, 3.0);
+}
+
+- (void)testTitle
+{
+    LSPInfoTag *tag = [[LSPInfoTag alloc] initWithDuration:1.0 title:nil];
+    XCTAssertNil(tag.title);
+    
+    tag = [[LSPInfoTag alloc] initWithDuration:1.0 title:@"title"];
+    XCTAssertEqualObjects(tag.title, @"title");
+    
+    NSMutableString *s = [@"mutable" mutableCopy];
+    tag = [[LSPInfoTag alloc] initWithDuration:1.0 title:s];
+    [s appendString:@" string"];
+    XCTAssertEqualObjects(tag.title, @"mutable");
+}
+
+@end
+
+
 
 
