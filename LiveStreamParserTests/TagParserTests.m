@@ -279,4 +279,23 @@
     XCTAssertEqual(tag.number, 7345678);
 }
 
+- (void)testTargetDurationTag
+{
+    NSString *tagString = @"#EXT-X-TARGETDURATION:5";
+    LSPTagParser *parser = [[LSPTagParser alloc] initWithString:tagString];
+    
+    LSPTargetDurationTag *tag = (LSPTargetDurationTag *)[parser nextTag];
+    XCTAssertNotNil(tag);
+    XCTAssertTrue([tag isKindOfClass:[LSPTargetDurationTag class]]);
+    XCTAssertEqual(tag.duration, 5);
+    
+    tagString = @"#EXT-X-TARGETDURATION:7";
+    parser = [[LSPTagParser alloc] initWithString:tagString];
+    
+    tag = (LSPTargetDurationTag *)[parser nextTag];
+    XCTAssertNotNil(tag);
+    XCTAssertTrue([tag isKindOfClass:[LSPTargetDurationTag class]]);
+    XCTAssertEqual(tag.duration, 7);
+}
+
 @end

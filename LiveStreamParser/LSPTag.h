@@ -533,5 +533,20 @@ typedef NS_ENUM(NSInteger, LSPEncryptionMethod) {
 
 @end
 
+/**
+ A tag for EXT-X-TARGETDURATION
+ */
+@interface LSPTargetDurationTag : NSObject<LSPTag>
+
+- (instancetype)initWithName:(NSString *)name NS_UNAVAILABLE;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithIntegerAttribute:(NSInteger)duration;
+
+@property (nonatomic, readonly) NSInteger duration;
+
+@end
+
 
 NS_ASSUME_NONNULL_END

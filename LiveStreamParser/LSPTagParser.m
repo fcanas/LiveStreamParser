@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, LSPTagParameterType) {
     LSPTagParameterTypeUnknown,
-    LSPTagParameterTypeNumber,
+    LSPTagParameterTypeInteger,
     LSPTagParameterTypeAttribtueList,
     LSPTagParameterTypeNumberOptionalString,
 };
@@ -41,6 +41,7 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
                                 @"EXTINF" : [LSPInfoTag class],
                                 @"EXT-X-MEDIA-SEQUENCE" : [LSPMediaSequenceTag class],
                                 @"EXT-X-DISCONTINUITY-SEQUENCE" : [LSPDiscontinuitySequenceTag class],
+                                @"EXT-X-TARGETDURATION" : [LSPTargetDurationTag class],
                                 };
     });
     return tagParameterTypeMap[tagName];
@@ -51,7 +52,7 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
     static NSDictionary<NSString *, NSNumber *> *tagParameterTypeMap;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        tagParameterTypeMap = @{@"EXT-X-VERSION" : @(LSPTagParameterTypeNumber),
+        tagParameterTypeMap = @{@"EXT-X-VERSION" : @(LSPTagParameterTypeInteger),
                                 @"EXT-X-STREAM-INF" : @(LSPTagParameterTypeAttribtueList),
                                 @"EXT-X-I-FRAME-STREAM-INF" : @(LSPTagParameterTypeAttribtueList),
                                 @"EXT-X-MEDIA" : @(LSPTagParameterTypeAttribtueList),
@@ -59,8 +60,9 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
                                 @"EXT-X-SESSION-KEY" : @(LSPTagParameterTypeAttribtueList),
                                 @"EXT-X-START" : @(LSPTagParameterTypeAttribtueList),
                                 @"EXTINF" : @(LSPTagParameterTypeNumberOptionalString),
-                                @"EXT-X-MEDIA-SEQUENCE" : @(LSPTagParameterTypeNumber),
-                                @"EXT-X-DISCONTINUITY-SEQUENCE" : @(LSPTagParameterTypeNumber),
+                                @"EXT-X-MEDIA-SEQUENCE" : @(LSPTagParameterTypeInteger),
+                                @"EXT-X-DISCONTINUITY-SEQUENCE" : @(LSPTagParameterTypeInteger),
+                                @"EXT-X-TARGETDURATION" : @(LSPTagParameterTypeInteger),
                                 };
     });
     return [tagParameterTypeMap[tagName] integerValue];
@@ -175,7 +177,7 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
     if (hasParameters) {
         
         switch ([LSPTagParser parameterTypeForTagName:name]) {
-            case LSPTagParameterTypeNumber: {
+            case LSPTagParameterTypeInteger: {
                 NSInteger number;
                 if ([self.scanner scanInteger:&number]) {
                     tag = [[[LSPTagParser classForTagName:name] alloc] initWithIntegerAttribute:number];

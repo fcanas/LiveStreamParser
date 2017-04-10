@@ -36,9 +36,8 @@
     tagIndex++;
     
     XCTAssertEqualObjects(playlist[tagIndex].name, @"EXT-X-TARGETDURATION");
-    // TODO : parse target duration tag
-    //    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[LSPVersionTag class]]);
-    //    XCTAssertEqual(((LSPVersionTag *)playlist[tagIndex]).version, 6);
+    XCTAssertTrue([playlist[tagIndex] isKindOfClass:[LSPTargetDurationTag class]]);
+    XCTAssertEqual(((LSPTargetDurationTag *)playlist[tagIndex]).duration, 6);
     
     tagIndex++;
     
@@ -69,8 +68,6 @@
     XCTAssertEqualObjects(playlist[tagIndex].name, @"EXTINF");
     XCTAssertTrue([playlist[tagIndex] isKindOfClass:[LSPInfoTag class]]);
     XCTAssertEqualWithAccuracy(((LSPInfoTag *)playlist[tagIndex]).duration, 6.0, 0.00001);
-    
-    
     
     XCTAssertEqualObjects(playlist[306].name, @"EXT-X-ENDLIST");
     XCTAssertTrue([playlist[306] isKindOfClass:[LSPBasicTag class]]);

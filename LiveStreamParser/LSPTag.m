@@ -615,3 +615,25 @@
 }
 
 @end
+
+@implementation LSPTargetDurationTag
+
+- (instancetype)initWithIntegerAttribute:(NSInteger)duration
+{
+    self = [super init];
+    
+    if (self == nil) {
+        return nil;
+    }
+    
+    _duration = duration;
+    
+    return self;
+}
+
+- (NSString *)name
+{
+    return @"EXT-X-TARGETDURATION";
+}
+
+@end
