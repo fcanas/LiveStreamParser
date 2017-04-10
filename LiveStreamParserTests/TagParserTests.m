@@ -212,6 +212,15 @@
     LSPTagParser *parser = [[LSPTagParser alloc] initWithString:tagString];
     
     LSPInfoTag *tag = (LSPInfoTag *)[parser nextTag];
+    XCTAssertEqualWithAccuracy(tag.duration, 6, 0);
+    XCTAssertNotNil(tag);
+    XCTAssertTrue([tag isKindOfClass:[LSPInfoTag class]]);
+    
+    tagString = @"#EXTINF:6.20000,";
+    parser = [[LSPTagParser alloc] initWithString:tagString];
+    
+    tag = (LSPInfoTag *)[parser nextTag];
+    XCTAssertEqualWithAccuracy(tag.duration, 6.2, 0.0001);
     XCTAssertNotNil(tag);
     XCTAssertTrue([tag isKindOfClass:[LSPInfoTag class]]);
 }

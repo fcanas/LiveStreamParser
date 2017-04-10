@@ -190,9 +190,9 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
                 break;
             case LSPTagParameterTypeNumberOptionalString: {
                 Class tagClass = [LSPTagParser classForTagName:name];
-                NSInteger number;
+                double number;
                 NSString *string = nil;
-                if ([self.scanner scanInteger:&number]) {
+                if ([self.scanner scanDouble:&number]) {
                     [self.scanner scanString:@"," intoString:nil];
                     [self.scanner scanUpToCharactersFromSet:[NSCharacterSet newlineCharacterSet] intoString:&string];
                     tag = [[tagClass alloc] initWithDuration:number title:string];
