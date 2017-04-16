@@ -83,7 +83,7 @@
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"LSPByteRange(offset:)"];
+    return [NSString stringWithFormat:@"LSPByteRange(length:%@, offset:%@)", @(self.length), self.offset];
 }
 
 @end
