@@ -549,9 +549,11 @@
 {
     self = [super init];
     
-    _duration = duration;
-    _title = [title copy];
-    
+    if (self != nil) {
+        _duration = duration;
+        _title = [title copy];
+    }
+
     return self;
 }
 
