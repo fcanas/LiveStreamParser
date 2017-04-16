@@ -633,6 +633,27 @@
 
 @end
 
+@implementation LSPProgramDateTimeTag
+
+- (instancetype)initWithDate:(NSDate *)date
+{
+    self = [super init];
+    
+    if (self != nil) {
+        _date = [date copy];
+    }
+
+    return self;
+}
+
+- (NSString *)name
+{
+    return @"EXT-X-PROGRAM-DATE-TIME";
+}
+
+@end
+
+
 @implementation LSPByteRangeTag
 
 - (instancetype)initWithByteRange:(LSPByteRange *)byteRange

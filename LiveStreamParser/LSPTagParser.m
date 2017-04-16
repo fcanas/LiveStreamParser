@@ -23,6 +23,7 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
     LSPTagParameterTypeAttribtueList,
     LSPTagParameterTypeNumberOptionalString,
     LSPTagParameterTypeByteRange,
+    LSPTagParameterTypeDate,
 };
 
 @implementation LSPTagParser
@@ -46,6 +47,7 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
                                 @"EXT-X-MAP" : [LSPMapTag class],
                                 @"EXT-X-BYTERANGE" : [LSPByteRangeTag class],
                                 @"EXT-X-KEY" : [LSPKeyTag class],
+                                @"EXT-X-PROGRAM-DATE-TIME" : [LSPProgramDateTimeTag class],
                                 };
     });
     return tagParameterTypeMap[tagName];
@@ -70,6 +72,7 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
                                 @"EXT-X-MAP" : @(LSPTagParameterTypeAttribtueList),
                                 @"EXT-X-BYTERANGE" : @(LSPTagParameterTypeByteRange),
                                 @"EXT-X-KEY" : @(LSPTagParameterTypeAttribtueList),
+                                @"EXT-X-PROGRAM-DATE-TIME" : @(LSPTagParameterTypeDate),
                                 };
     });
     return [tagParameterTypeMap[tagName] integerValue];
@@ -242,6 +245,17 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
                         tag = [[[tagClass class] alloc] initWithByteRange:byteRange];
                     }
                 }
+            }
+                break;
+            case LSPTagParameterTypeDate: {
+                Class tagClass = [LSPTagParser classForTagName:name];
+                
+                if (![tagClass instancesRespondToSelector:@selector(initWithDate:)]) {
+                    break;
+                }
+                
+                NSDate *date = [NSDate date];
+                tag = [[[tagClass class] alloc] initWithDate:date];
             }
                 break;
             default:

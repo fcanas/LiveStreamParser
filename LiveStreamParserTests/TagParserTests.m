@@ -377,4 +377,18 @@
     XCTAssertEqualObjects(tag.keyFormatVersions, versionsArray);
 }
 
+- (void)testProgramDateTimeTag
+{
+    NSString *tagString = @"#EXT-X-PROGRAM-DATE-TIME:2010-02-19T14:54:23.031+08:00";
+    LSPTagParser *parser = [[LSPTagParser alloc] initWithString:tagString];
+    
+    LSPProgramDateTimeTag *tag = (LSPProgramDateTimeTag *)[parser nextTag];
+    XCTAssertTrue([tag isKindOfClass:[LSPProgramDateTimeTag class]]);
+    
+    NSISO8601DateFormatter *formatter = [[NSISO8601DateFormatter alloc] init];
+    NSDate *date = [formatter dateFromString:@"2010-02-19T14:54:23.031+08:00"];
+    
+    XCTAssertEqualObjects(tag.date, date);
+}
+
 @end

@@ -277,6 +277,17 @@ typedef NS_ENUM(NSInteger, LSPEncryptionMethod) {
 
 @end
 
+@interface LSPProgramDateTimeTag : NSObject <LSPTag>
+
+- (instancetype)initWithDate:(NSDate *)date;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+@property (nonatomic, nonnull, copy) NSDate *date;
+
+@end
+
+
 #pragma mark - Media Playlist Tags
 
 /**

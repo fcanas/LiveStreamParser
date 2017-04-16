@@ -723,5 +723,28 @@
 
 @end
 
+@interface ProgramDateTimeTagTests : XCTestCase
+
+@end
+
+@implementation ProgramDateTimeTagTests
+
+- (void)testName
+{
+    NSDate *date = [NSDate date];
+    LSPProgramDateTimeTag *tag = [[LSPProgramDateTimeTag alloc] initWithDate:date];
+    XCTAssertEqualObjects(tag.name, @"EXT-X-PROGRAM-DATE-TIME");
+}
+
+- (void)testDate
+{
+    NSDate *date = [NSDate date];
+    LSPProgramDateTimeTag *tag = [[LSPProgramDateTimeTag alloc] initWithDate:date];
+    XCTAssertEqualObjects(tag.name, @"EXT-X-PROGRAM-DATE-TIME");
+    XCTAssertEqualObjects(tag.date, date);
+}
+
+@end
+
 
 

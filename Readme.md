@@ -26,6 +26,8 @@
 - [x] EXT-X-KEY
 - [x] EXT-X-MAP
 - [ ] EXT-X-PROGRAM-DATE-TIME
+    - [x] Tag Definition
+    - [ ] Date Parsing - It turns out [NSISO8601DateFormatter is dysfunctional](https://twitter.com/fcanas/status/853738641356705792)
 - [ ] EXT-X-DATERANGE
 - [ ] EXT-X-BITRATE ??
 
