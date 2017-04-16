@@ -515,6 +515,22 @@ typedef NS_ENUM(NSInteger, LSPEncryptionMethod) {
 
 @end
 
+/**
+ A tag for EXT-X-BYTERANGE
+ 
+ Indicates the next segment is defined by a range in the resource indicated by
+ its URI.
+ */
+@interface LSPByteRangeTag : NSObject <LSPTag>
+
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithByteRange:(LSPByteRange *)byteRange;
+
+@property (nonatomic, nonnull) LSPByteRange *byteRange;
+
+@end
+
 
 #pragma mark - Media Playlist Tags
 

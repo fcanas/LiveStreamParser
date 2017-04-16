@@ -625,3 +625,27 @@
 
 @end
 
+@interface ByteRangeTagTests : XCTestCase
+
+@end
+
+@implementation ByteRangeTagTests
+
+- (void)testName
+{
+    LSPByteRange *byteRange = [[LSPByteRange alloc] init];
+    LSPByteRangeTag *tag = [[LSPByteRangeTag alloc] initWithByteRange:byteRange];
+    XCTAssertEqualObjects(tag.name, @"EXT-X-BYTERANGE");
+}
+
+- (void)testByteRange
+{
+    LSPByteRange *byteRange = [[LSPByteRange alloc] init];
+    LSPByteRangeTag *tag = [[LSPByteRangeTag alloc] initWithByteRange:byteRange];
+    XCTAssertEqualObjects(tag.byteRange, byteRange);
+}
+
+@end
+
+
+

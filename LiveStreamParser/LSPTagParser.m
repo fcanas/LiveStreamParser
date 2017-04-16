@@ -22,6 +22,7 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
     LSPTagParameterTypeInteger,
     LSPTagParameterTypeAttribtueList,
     LSPTagParameterTypeNumberOptionalString,
+    LSPTagParameterTypeByteRange,
 };
 
 @implementation LSPTagParser
@@ -43,6 +44,7 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
                                 @"EXT-X-DISCONTINUITY-SEQUENCE" : [LSPDiscontinuitySequenceTag class],
                                 @"EXT-X-TARGETDURATION" : [LSPTargetDurationTag class],
                                 @"EXT-X-MAP" : [LSPMapTag class],
+                                @"EXT-X-BYTERANGE" : [LSPByteRangeTag class],
                                 };
     });
     return tagParameterTypeMap[tagName];
@@ -65,6 +67,7 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
                                 @"EXT-X-DISCONTINUITY-SEQUENCE" : @(LSPTagParameterTypeInteger),
                                 @"EXT-X-TARGETDURATION" : @(LSPTagParameterTypeInteger),
                                 @"EXT-X-MAP" : @(LSPTagParameterTypeAttribtueList),
+                                @"EXT-X-BYTERANGE" : @(LSPTagParameterTypeByteRange),
                                 };
     });
     return [tagParameterTypeMap[tagName] integerValue];
@@ -86,6 +89,25 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
         set = [NSMutableCharacterSet uppercaseLetterCharacterSet];
         [set formUnionWithCharacterSet:[NSCharacterSet decimalDigitCharacterSet]];
         [set addCharactersInString:@"-"];
+    });
+    return set;
+}
+
+
+/**
+ A Character Set that matches byte ranges
+ 
+ [0..9] and @
+ 
+ @return A character set for matching byte ranges
+ */
++ (NSCharacterSet *)byteRangeCharacterSet
+{
+    static NSMutableCharacterSet *set;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        set = [NSMutableCharacterSet decimalDigitCharacterSet];
+        [set addCharactersInString:@"@"];
     });
     return set;
 }
@@ -200,6 +222,23 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
                     [self.scanner scanString:@"," intoString:nil];
                     [self.scanner scanUpToCharactersFromSet:[NSCharacterSet newlineCharacterSet] intoString:&string];
                     tag = [[tagClass alloc] initWithDuration:number title:string];
+                }
+            }
+                break;
+            case LSPTagParameterTypeByteRange: {
+                Class tagClass = [LSPTagParser classForTagName:name];
+                
+                if (![tagClass instancesRespondToSelector:@selector(initWithByteRange:)]) {
+                    break;
+                }
+                
+                NSString *byteRangeString = nil;
+                
+                if ([self.scanner scanCharactersFromSet:[LSPTagParser byteRangeCharacterSet] intoString:&byteRangeString]) {
+                    LSPByteRange *byteRange = [[LSPByteRange alloc] initWithString:byteRangeString];
+                    if (byteRange != nil) {
+                        tag = [[[tagClass class] alloc] initWithByteRange:byteRange];
+                    }
                 }
             }
                 break;

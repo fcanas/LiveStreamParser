@@ -333,4 +333,32 @@
     XCTAssertEqualObjects(tag.byteRange, range);
 }
 
+- (void)testByteRangeTag
+{
+    NSString *tagString = @"#EXT-X-BYTERANGE:64@1024";
+    LSPTagParser *parser = [[LSPTagParser alloc] initWithString:tagString];
+    
+    LSPByteRangeTag *tag = (LSPByteRangeTag *)[parser nextTag];
+    XCTAssertNotNil(tag);
+    XCTAssertTrue([tag isKindOfClass:[LSPByteRangeTag class]]);
+    
+    LSPByteRange *range = [[LSPByteRange alloc] initWithLength:64 offset:1024];
+    
+    XCTAssertEqualObjects(tag.byteRange, range);
+    
+    // No Offset
+    
+    tagString = @"#EXT-X-BYTERANGE:1048576";
+    parser = [[LSPTagParser alloc] initWithString:tagString];
+    
+    tag = (LSPByteRangeTag *)[parser nextTag];
+    XCTAssertNotNil(tag);
+    XCTAssertTrue([tag isKindOfClass:[LSPByteRangeTag class]]);
+    
+    range = [[LSPByteRange alloc] init];
+    range.length = 1048576;
+    
+    XCTAssertEqualObjects(tag.byteRange, range);
+}
+
 @end

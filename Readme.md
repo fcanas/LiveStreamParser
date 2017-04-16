@@ -21,7 +21,7 @@
 ### Media Segment Tags
 
 - [x] EXTINF
-- [ ] EXT-X-BYTERANGE
+- [x] EXT-X-BYTERANGE
 - [ ] EXT-X-DISCONTINUITY
 - [ ] EXT-X-KEY
 - [x] EXT-X-MAP

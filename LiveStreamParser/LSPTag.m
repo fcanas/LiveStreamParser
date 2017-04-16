@@ -623,6 +623,29 @@
 
 @end
 
+@implementation LSPByteRangeTag
+
+- (instancetype)initWithByteRange:(LSPByteRange *)byteRange
+{
+    self = [super init];
+    
+    if (self != nil) {
+        _byteRange = byteRange;
+    }
+
+    return self;
+}
+
+- (NSString *)name
+{
+    return @"EXT-X-BYTERANGE";
+}
+
+@end
+
+
+#pragma mark - Media Playlist Tags
+
 
 @implementation LSPMediaSequenceTag
 
