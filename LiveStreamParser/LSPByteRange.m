@@ -69,6 +69,10 @@
     if (other.length != self.length) {
         return NO;
     }
+    
+    if ((other.offset == nil) != (self.offset == nil)) {
+        return NO;
+    }
 
     if ([other.offset unsignedIntegerValue] != [self.offset unsignedIntegerValue]) {
         return NO;

@@ -20,6 +20,7 @@
 		E7A0E1C21E9A90D100E758BC /* MediaPlaylistParseTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A0E1C11E9A90D100E758BC /* MediaPlaylistParseTests.m */; };
 		E7A0E1C91E9C552500E758BC /* LSPByteRange.h in Headers */ = {isa = PBXBuildFile; fileRef = E7A0E1C71E9C552500E758BC /* LSPByteRange.h */; };
 		E7A0E1CA1E9C552500E758BC /* LSPByteRange.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A0E1C81E9C552500E758BC /* LSPByteRange.m */; };
+		E7A0E1CC1EA39AA300E758BC /* ByteRangeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A0E1CB1EA39AA300E758BC /* ByteRangeTests.m */; };
 		E7A50E311E6B8F4700295787 /* MasterPlaylistParseTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E7A50E301E6B8F4700295787 /* MasterPlaylistParseTests.m */; };
 /* End PBXBuildFile section */
 
@@ -52,6 +53,7 @@
 		E7A0E1C11E9A90D100E758BC /* MediaPlaylistParseTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MediaPlaylistParseTests.m; sourceTree = "<group>"; };
 		E7A0E1C71E9C552500E758BC /* LSPByteRange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSPByteRange.h; sourceTree = "<group>"; };
 		E7A0E1C81E9C552500E758BC /* LSPByteRange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LSPByteRange.m; sourceTree = "<group>"; };
+		E7A0E1CB1EA39AA300E758BC /* ByteRangeTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ByteRangeTests.m; sourceTree = "<group>"; };
 		E7A50E301E6B8F4700295787 /* MasterPlaylistParseTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MasterPlaylistParseTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -119,6 +121,7 @@
 				E757B2601E621E9E0046872B /* TagTests.m */,
 				E7A50E301E6B8F4700295787 /* MasterPlaylistParseTests.m */,
 				E7A0E1C11E9A90D100E758BC /* MediaPlaylistParseTests.m */,
+				E7A0E1CB1EA39AA300E758BC /* ByteRangeTests.m */,
 			);
 			path = LiveStreamParserTests;
 			sourceTree = "<group>";
@@ -253,6 +256,7 @@
 				E7A0E1C21E9A90D100E758BC /* MediaPlaylistParseTests.m in Sources */,
 				E7A50E311E6B8F4700295787 /* MasterPlaylistParseTests.m in Sources */,
 				E757B2611E621E9E0046872B /* TagTests.m in Sources */,
+				E7A0E1CC1EA39AA300E758BC /* ByteRangeTests.m in Sources */,
 				E757B25A1E620A030046872B /* TagParserTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
