@@ -361,4 +361,20 @@
     XCTAssertEqualObjects(tag.byteRange, range);
 }
 
+- (void)testKeyTag
+{
+    NSString *tagString = @"#EXT-X-KEY:METHOD=AES-128,URI=\"http://example.com/key\",IV=0x12345678901234567890123456ABCDEF,KEYFORMATVERSIONS=\"6/7/10\"";
+    LSPTagParser *parser = [[LSPTagParser alloc] initWithString:tagString];
+    
+    LSPKeyTag *tag = (LSPKeyTag *)[parser nextTag];
+    XCTAssertNotNil(tag);
+    XCTAssertTrue([tag isKindOfClass:[LSPKeyTag class]]);
+    
+    XCTAssertEqual(tag.method, LSPEncryptionMethodAES128);
+    XCTAssertEqualObjects(tag.uri, [NSURL URLWithString:@"http://example.com/key"]);
+    XCTAssertEqualObjects(tag.initializationVector, @"0x12345678901234567890123456ABCDEF");
+    NSArray *versionsArray = @[@6, @7, @10];
+    XCTAssertEqualObjects(tag.keyFormatVersions, versionsArray);
+}
+
 @end

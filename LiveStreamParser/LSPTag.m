@@ -417,80 +417,6 @@
 
 @implementation LSPSessionKeyTag
 
-+ (LSPAttributeType)attributeTypeForKey:(NSString *)key
-{
-    static NSDictionary<NSString *, NSNumber *> *attributeTypeForKey;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        attributeTypeForKey = @{@"METHOD": @(LSPAttributeTypeEnumeratedString),
-                                @"URI": @(LSPAttributeTypeQuotedString),
-                                @"IV": @(LSPAttributeTypeHexidecimalSequence),
-                                @"KEYFORMAT": @(LSPAttributeTypeQuotedString),
-                                @"KEYFORMATVERSIONS": @(LSPAttributeTypeQuotedString),
-                                };
-    });
-    return [attributeTypeForKey[key] integerValue];
-}
-
-- (nullable instancetype)initWithAttributes:(NSDictionary<NSString *, id> *)attributes
-{
-    self = [super init];
-    
-    if (self == nil) {
-        return nil;
-    }
-
-    NSString *method = attributes[@"METHOD"];
-    if ([method isKindOfClass:[NSString class]]) {
-        if ([method isEqualToString:@"NONE"]) {
-            _method = LSPEncryptionMethodNone;
-        } else if ([method isEqualToString:@"AES-128"]) {
-            _method = LSPEncryptionMethodAES128;
-        } else if ([method isEqualToString:@"SAMPLE-AES"]) {
-            _method = LSPEncryptionMethodSampleAES;
-        } else {
-            return nil;
-        }
-    } else {
-        return nil;
-    }
-    
-    NSString *uriString = attributes[@"URI"];
-    if ([uriString isKindOfClass:[NSString class]]) {
-        _uri = [NSURL URLWithString:uriString];
-    }
-    
-    if (_method != LSPEncryptionMethodNone && _uri == nil) {
-        return nil;
-    }
-
-    NSString *keyFormatString = attributes[@"KEYFORMAT"];
-    if ([keyFormatString isKindOfClass:[NSString class]]) {
-        _keyFormat = keyFormatString;
-    } else {
-        _keyFormat = @"identity";
-    }
-    
-    NSString *keyFormatVersionsString = attributes[@"KEYFORMATVERSIONS"];
-    if ([keyFormatVersionsString isKindOfClass:[NSString class]]) {
-        NSArray *components = [keyFormatVersionsString componentsSeparatedByString:@"/"];
-        NSMutableArray *versions = [[NSMutableArray alloc] initWithCapacity:components.count];
-        for (NSString *componentString in components) {
-            [versions addObject:@([componentString integerValue])];
-        }
-        _keyFormatVersions = [versions copy];
-    } else {
-        _keyFormatVersions = @[];
-    }
-    
-    NSString *ivString = attributes[@"IV"];
-    if ([ivString isKindOfClass:[NSString class]]) {
-        _initializationVector = ivString;
-    }
-    
-    return self;
-}
-
 - (NSString *)name
 {
     return @"EXT-X-SESSION-KEY";
@@ -563,6 +489,90 @@
 }
 
 @end
+
+@implementation LSPKeyTag
+
++ (LSPAttributeType)attributeTypeForKey:(NSString *)key
+{
+    static NSDictionary<NSString *, NSNumber *> *attributeTypeForKey;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        attributeTypeForKey = @{@"METHOD": @(LSPAttributeTypeEnumeratedString),
+                                @"URI": @(LSPAttributeTypeQuotedString),
+                                @"IV": @(LSPAttributeTypeHexidecimalSequence),
+                                @"KEYFORMAT": @(LSPAttributeTypeQuotedString),
+                                @"KEYFORMATVERSIONS": @(LSPAttributeTypeQuotedString),
+                                };
+    });
+    return [attributeTypeForKey[key] integerValue];
+}
+
+- (nullable instancetype)initWithAttributes:(NSDictionary<NSString *, id> *)attributes
+{
+    self = [super init];
+    
+    if (self == nil) {
+        return nil;
+    }
+    
+    NSString *method = attributes[@"METHOD"];
+    if ([method isKindOfClass:[NSString class]]) {
+        if ([method isEqualToString:@"NONE"]) {
+            _method = LSPEncryptionMethodNone;
+        } else if ([method isEqualToString:@"AES-128"]) {
+            _method = LSPEncryptionMethodAES128;
+        } else if ([method isEqualToString:@"SAMPLE-AES"]) {
+            _method = LSPEncryptionMethodSampleAES;
+        } else {
+            return nil;
+        }
+    } else {
+        return nil;
+    }
+    
+    NSString *uriString = attributes[@"URI"];
+    if ([uriString isKindOfClass:[NSString class]]) {
+        _uri = [NSURL URLWithString:uriString];
+    }
+    
+    if (_method != LSPEncryptionMethodNone && _uri == nil) {
+        return nil;
+    }
+    
+    NSString *keyFormatString = attributes[@"KEYFORMAT"];
+    if ([keyFormatString isKindOfClass:[NSString class]]) {
+        _keyFormat = keyFormatString;
+    } else {
+        _keyFormat = @"identity";
+    }
+    
+    NSString *keyFormatVersionsString = attributes[@"KEYFORMATVERSIONS"];
+    if ([keyFormatVersionsString isKindOfClass:[NSString class]]) {
+        NSArray *components = [keyFormatVersionsString componentsSeparatedByString:@"/"];
+        NSMutableArray *versions = [[NSMutableArray alloc] initWithCapacity:components.count];
+        for (NSString *componentString in components) {
+            [versions addObject:@([componentString integerValue])];
+        }
+        _keyFormatVersions = [versions copy];
+    } else {
+        _keyFormatVersions = @[];
+    }
+    
+    NSString *ivString = attributes[@"IV"];
+    if ([ivString isKindOfClass:[NSString class]]) {
+        _initializationVector = ivString;
+    }
+    
+    return self;
+}
+
+- (NSString *)name
+{
+    return @"EXT-X-KEY";
+}
+
+@end
+
 
 @implementation LSPMapTag
 

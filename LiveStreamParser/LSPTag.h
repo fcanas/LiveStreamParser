@@ -36,6 +36,12 @@ typedef NS_ENUM(NSInteger, LSPAttributeType) {
     LSPAttributeTypeDecimalResolution,
 };
 
+typedef NS_ENUM(NSInteger, LSPEncryptionMethod) {
+    LSPEncryptionMethodNone,
+    LSPEncryptionMethodAES128,
+    LSPEncryptionMethodSampleAES
+};
+
 /**
  A common protocol for all HLS tags.
  */
@@ -125,6 +131,8 @@ typedef NS_ENUM(NSInteger, LSPAttributeType) {
 
 @end
 
+#pragma mark - Basic Tags
+
 /**
  A tag for EXT-X-VERSION
  */
@@ -142,6 +150,117 @@ typedef NS_ENUM(NSInteger, LSPAttributeType) {
 @property (nonatomic, readonly) NSInteger version;
 
 @end
+
+#pragma mark - Media Segment Tags
+
+/**
+ Tag for #EXTINF
+ */
+@interface LSPInfoTag : NSObject <LSPTag>
+
+- (instancetype)init NS_UNAVAILABLE;
+
+/**
+ The duration of the next segment.
+ */
+@property (nonatomic) NSTimeInterval duration;
+
+/**
+ A human-readable title of the segment
+ */
+@property (nonatomic, nullable, readonly, copy) NSString *title;
+
+/**
+ Initializes a new LSPInfoTag.
+ 
+ An EXTINF tag has one or two arguments, not in an argument list. The duration
+ is not optional, and the title is. Because the tag is unique in its
+ construction, it has its own initializer.
+ 
+ @param duration duration of the segment the tag represents
+ @param title the title of the segment the tag represents
+ @return an initialized LSPInfoTag
+ */
+- (instancetype)initWithDuration:(NSTimeInterval)duration title:(nullable NSString *)title;
+
+@end
+
+@interface LSPKeyTag : NSObject <LSPAttributedTag>
+
+/**
+ AES-128, or SAMPLE-AES
+ */
+@property (nonatomic, readonly) LSPEncryptionMethod method;
+
+/**
+ Where to obtain the key. Required if method is not NONE
+ */
+@property (nonatomic, nullable, readonly) NSURL *uri;
+
+/**
+ 128-bit initialization vector for use with the key as a hex string.
+ 
+ Compatibility version >= 2
+ */
+@property (nonatomic, nullable, readonly) NSString *initializationVector;
+
+/**
+ How the key is represented. Absence is implicit "identity"
+ 
+ Version >= 5.
+ */
+@property (nonatomic, readonly) NSString *keyFormat;
+
+/**
+ Array of integers, indicates version compatibility of key
+ 
+ Initialized with a string consisting of integers separated by "/".
+ If parameter is omitted, will be an empyy array
+ 
+ Version >= 5
+ */
+@property (nonatomic, readonly) NSArray<NSNumber *> *keyFormatVersions;
+
+- (instancetype)initWithName:(NSString *)name NS_UNAVAILABLE;
+
+@end
+
+
+/**
+ A tag for EXT-X-MAP
+ 
+ How to obtain the Media Initialization Section required to parse the applicable
+ Media Segments.
+ */
+@interface LSPMapTag : NSObject <LSPAttributedTag>
+
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithURI:(NSURL *)uri byteRange:(nullable LSPByteRange *)byterange;
+
+@property (nonatomic, nonnull) NSURL *uri;
+
+@property (nonatomic, nullable) LSPByteRange *byteRange;
+
+@end
+
+/**
+ A tag for EXT-X-BYTERANGE
+ 
+ Indicates the next segment is defined by a range in the resource indicated by
+ its URI.
+ */
+@interface LSPByteRangeTag : NSObject <LSPTag>
+
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithByteRange:(LSPByteRange *)byteRange;
+
+@property (nonatomic, nonnull) LSPByteRange *byteRange;
+
+@end
+
+#pragma mark - Master Playlist Tags
 
 /**
  A tag for EXT-X-STREAM-INF
@@ -395,49 +514,7 @@ typedef NS_ENUM(NSInteger, LSPMediaType) {
 
 @end
 
-typedef NS_ENUM(NSInteger, LSPEncryptionMethod) {
-    LSPEncryptionMethodNone,
-    LSPEncryptionMethodAES128,
-    LSPEncryptionMethodSampleAES
-};
-
-@interface LSPSessionKeyTag : NSObject <LSPAttributedTag>
-
-/**
- AES-128, or SAMPLE-AES
- */
-@property (nonatomic, readonly) LSPEncryptionMethod method;
-
-/**
- Where to obtain the key. Required if method is not NONE
- */
-@property (nonatomic, nullable, readonly) NSURL *uri;
-
-/**
- 128-bit initialization vector for use with the key as a hex string.
- 
- Compatibility version >= 2
- */
-@property (nonatomic, nullable, readonly) NSString *initializationVector;
-
-/**
- How the key is represented. Absence is implicit "identity"
- 
- Version >= 5.
- */
-@property (nonatomic, readonly) NSString *keyFormat;
-
-/**
- Array of integers, indicates version compatibility of key
- 
- Initialized with a string consisting of integers separated by "/".
- If parameter is omitted, will be an empyy array
- 
- Version >= 5
- */
-@property (nonatomic, readonly) NSArray<NSNumber *> *keyFormatVersions;
-
-- (instancetype)initWithName:(NSString *)name NS_UNAVAILABLE;
+@interface LSPSessionKeyTag : LSPKeyTag
 
 @end
 
@@ -462,75 +539,6 @@ typedef NS_ENUM(NSInteger, LSPEncryptionMethod) {
 @property (nonatomic, readonly) BOOL precise;
 
 @end
-
-#pragma mark - Media Segment Tags
-
-/**
- Tag for #EXTINF
- */
-@interface LSPInfoTag : NSObject <LSPTag>
-
-- (instancetype)init NS_UNAVAILABLE;
-
-/**
- The duration of the next segment.
- */
-@property (nonatomic) NSTimeInterval duration;
-
-/**
- A human-readable title of the segment
- */
-@property (nonatomic, nullable, readonly, copy) NSString *title;
-
-/**
- Initializes a new LSPInfoTag.
- 
- An EXTINF tag has one or two arguments, not in an argument list. The duration
- is not optional, and the title is. Because the tag is unique in its
- construction, it has its own initializer.
-
- @param duration duration of the segment the tag represents
- @param title the title of the segment the tag represents
- @return an initialized LSPInfoTag
- */
-- (instancetype)initWithDuration:(NSTimeInterval)duration title:(nullable NSString *)title;
-
-@end
-
-/**
- A tag for EXT-X-MAP
- 
- How to obtain the Media Initialization Section required to parse the applicable
- Media Segments.
- */
-@interface LSPMapTag : NSObject <LSPAttributedTag>
-
-- (instancetype)init NS_UNAVAILABLE;
-
-- (instancetype)initWithURI:(NSURL *)uri byteRange:(nullable LSPByteRange *)byterange;
-
-@property (nonatomic, nonnull) NSURL *uri;
-
-@property (nonatomic, nullable) LSPByteRange *byteRange;
-
-@end
-
-/**
- A tag for EXT-X-BYTERANGE
- 
- Indicates the next segment is defined by a range in the resource indicated by
- its URI.
- */
-@interface LSPByteRangeTag : NSObject <LSPTag>
-
-- (instancetype)init NS_UNAVAILABLE;
-
-- (instancetype)initWithByteRange:(LSPByteRange *)byteRange;
-
-@property (nonatomic, nonnull) LSPByteRange *byteRange;
-
-@end
-
 
 #pragma mark - Media Playlist Tags
 

@@ -45,6 +45,7 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
                                 @"EXT-X-TARGETDURATION" : [LSPTargetDurationTag class],
                                 @"EXT-X-MAP" : [LSPMapTag class],
                                 @"EXT-X-BYTERANGE" : [LSPByteRangeTag class],
+                                @"EXT-X-KEY" : [LSPKeyTag class],
                                 };
     });
     return tagParameterTypeMap[tagName];
@@ -68,6 +69,7 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
                                 @"EXT-X-TARGETDURATION" : @(LSPTagParameterTypeInteger),
                                 @"EXT-X-MAP" : @(LSPTagParameterTypeAttribtueList),
                                 @"EXT-X-BYTERANGE" : @(LSPTagParameterTypeByteRange),
+                                @"EXT-X-KEY" : @(LSPTagParameterTypeAttribtueList),
                                 };
     });
     return [tagParameterTypeMap[tagName] integerValue];
