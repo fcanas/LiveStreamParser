@@ -298,4 +298,39 @@
     XCTAssertEqual(tag.duration, 7);
 }
 
+- (void)testMapTag
+{
+    NSString *tagString = @"#EXT-X-MAP:URI=\"http://www.example.com\"";
+    LSPTagParser *parser = [[LSPTagParser alloc] initWithString:tagString];
+    
+    LSPMapTag *tag = (LSPMapTag *)[parser nextTag];
+    XCTAssertNotNil(tag);
+    XCTAssertTrue([tag isKindOfClass:[LSPMapTag class]]);
+    XCTAssertEqualObjects(tag.uri, [NSURL URLWithString:@"http://www.example.com"]);
+    XCTAssertNil(tag.byteRange);
+    
+    tagString = @"#EXT-X-MAP:URI=\"http://www.example.com\",BYTERANGE=\"1234\"";
+    parser = [[LSPTagParser alloc] initWithString:tagString];
+    
+    tag = (LSPMapTag *)[parser nextTag];
+    XCTAssertNotNil(tag);
+    XCTAssertTrue([tag isKindOfClass:[LSPMapTag class]]);
+    XCTAssertEqualObjects(tag.uri, [NSURL URLWithString:@"http://www.example.com"]);
+    
+    LSPByteRange *range = [[LSPByteRange alloc] init];
+    range.length = 1234;
+    
+    XCTAssertEqualObjects(tag.byteRange, range);
+
+    tagString = @"#EXT-X-MAP:URI=\"http://www.example.com\",BYTERANGE=\"1234@5678\"";
+    parser = [[LSPTagParser alloc] initWithString:tagString];
+    
+    tag = (LSPMapTag *)[parser nextTag];
+    XCTAssertNotNil(tag);
+    XCTAssertTrue([tag isKindOfClass:[LSPMapTag class]]);
+    XCTAssertEqualObjects(tag.uri, [NSURL URLWithString:@"http://www.example.com"]);
+    range = [[LSPByteRange alloc] initWithLength:1234 offset:5678];
+    XCTAssertEqualObjects(tag.byteRange, range);
+}
+
 @end

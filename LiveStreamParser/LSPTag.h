@@ -9,6 +9,8 @@
 @import Foundation;
 @import CoreGraphics;
 
+#import "LSPByteRange.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -494,6 +496,25 @@ typedef NS_ENUM(NSInteger, LSPEncryptionMethod) {
 - (instancetype)initWithDuration:(NSTimeInterval)duration title:(nullable NSString *)title;
 
 @end
+
+/**
+ A tag for EXT-X-MAP
+ 
+ How to obtain the Media Initialization Section required to parse the applicable
+ Media Segments.
+ */
+@interface LSPMapTag : NSObject <LSPAttributedTag>
+
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithURI:(NSURL *)uri byteRange:(nullable LSPByteRange *)byterange;
+
+@property (nonatomic, nonnull) NSURL *uri;
+
+@property (nonatomic, nullable) LSPByteRange *byteRange;
+
+@end
+
 
 #pragma mark - Media Playlist Tags
 

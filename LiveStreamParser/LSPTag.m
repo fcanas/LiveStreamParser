@@ -562,6 +562,66 @@
 
 @end
 
+@implementation LSPMapTag
+
+- (instancetype)initWithAttributes:(NSDictionary<NSString *,id> *)attributes
+{
+    self = [super init];
+    
+    if (self) {
+        
+        NSString *uriString = attributes[@"URI"];
+        if ([uriString isKindOfClass:[NSString class]]) {
+            NSURL *uri = [NSURL URLWithString:uriString];
+            _uri = uri;
+        } else {
+            return nil;
+        }
+        
+        NSString *byteRangeString = attributes[@"BYTERANGE"];
+        if ([byteRangeString isKindOfClass:[NSString class]]) {
+            LSPByteRange *byteRange = [[LSPByteRange alloc] initWithString:byteRangeString];
+            if (byteRangeString != nil) {
+                _byteRange = byteRange;
+            }
+        }
+    }
+
+    return self;
+}
+
+- (instancetype)initWithURI:(NSURL *)uri byteRange:(nullable LSPByteRange *)byteRange
+{
+    self = [super init];
+    
+    if (self) {
+        _uri = [uri copy];
+        _byteRange = byteRange;
+    }
+
+    return self;
+}
+
++ (LSPAttributeType)attributeTypeForKey:(NSString *)key
+{
+    static NSDictionary<NSString *, NSNumber *> *attributeTypeForKey;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        attributeTypeForKey = @{@"URI": @(LSPAttributeTypeQuotedString),
+                                @"BYTERANGE": @(LSPAttributeTypeQuotedString),
+                                };
+    });
+    return [attributeTypeForKey[key] integerValue];
+}
+
+- (NSString *)name
+{
+    return @"EXT-X-MAP";
+}
+
+@end
+
+
 @implementation LSPMediaSequenceTag
 
 - (instancetype)init

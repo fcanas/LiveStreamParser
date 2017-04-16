@@ -588,6 +588,40 @@
 
 @end
 
+@interface MapTagTests : XCTestCase
 
+@end
 
+@implementation MapTagTests
+
+- (void)testName
+{
+    LSPMapTag *tag = [[LSPMapTag alloc] initWithURI:[NSURL URLWithString:@"http://www.example.com"] byteRange:nil];
+    XCTAssertEqualObjects(tag.name, @"EXT-X-MAP");
+}
+
+- (void)testURI
+{
+    NSURL *uri = [NSURL URLWithString:@"http://www.example.com"];
+    LSPMapTag *tag = [[LSPMapTag alloc] initWithURI:uri byteRange:nil];
+    XCTAssertEqualObjects(tag.uri, uri);
+}
+
+- (void)testByteRange
+{
+    NSURL *uri = [NSURL URLWithString:@"http://www.example.com"];
+    LSPByteRange *byteRange = [[LSPByteRange alloc] init];
+    LSPMapTag *tag = [[LSPMapTag alloc] initWithURI:uri byteRange:byteRange];
+    XCTAssertEqualObjects(tag.byteRange, byteRange);
+}
+
+- (void)testAttributeTypes
+{
+    XCTAssertTrue([LSPMapTag conformsToProtocol:@protocol(LSPAttributedTag
+                                                          )]);
+    XCTAssertEqual([[LSPMapTag class] attributeTypeForKey:@"URI"], LSPAttributeTypeQuotedString);
+    XCTAssertEqual([[LSPMapTag class] attributeTypeForKey:@"BYTERANGE"], LSPAttributeTypeQuotedString);
+}
+
+@end
 
