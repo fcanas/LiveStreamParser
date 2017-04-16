@@ -15,24 +15,42 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  Types available in an attribute list
-
- - LSPAttributeTypeUnknown: For use when an attribute name is unknown. May result in short-circuiting parsing for the current tag.
- - LSPAttributeTypeDecimalInteger: [0-9] in range 0 to 2^64-1 (implies 1 to 20 digits)
- - LSPAttributeTypeHexidecimalSequence: 0x or 0X prefix with characters [0..9], [A..F]. Max length is variable.
- - LSPAttributeTypeDecimalFloatingPoint: [0..9] and ., non-negative decimal
- - LSPAttributeTypeSignedDecimalFloatingPoint: [0..9], - and .
- - LSPAttributeTypeQuotedString:  within a pair of quotes (0x22). Must not contain CR (0xD) or LF (0xA) or " (0x22). Equality is determined by bytewise comparison.
- - LSPAttributeTypeEnumeratedString: unquoted string pre-defined by the Attribute it's used in. will never contain ", ', or whitespace.
- - LSPAttributeTypeDecimalResolution: two decimal-integer separated by x define a width and a height
  */
 typedef NS_ENUM(NSInteger, LSPAttributeType) {
+    /** 
+     For use when an attribute name is unknown. May result in short-circuiting
+     parsing for the current tag.
+     */
     LSPAttributeTypeUnknown,
+    /**
+     [0-9] in range 0 to 2^64-1 (implies 1 to 20 digits)
+     */
     LSPAttributeTypeDecimalInteger,
+    /**
+     0x or 0X prefix with characters [0..9], [A..F]. Max length is variable.
+     */
     LSPAttributeTypeHexidecimalSequence,
+    /**
+     [0..9] and ., non-negative decimal
+     */
     LSPAttributeTypeDecimalFloatingPoint,
+    /**
+     [0..9], - and .
+     */
     LSPAttributeTypeSignedDecimalFloatingPoint,
+    /**
+     Within a pair of quotes (0x22). Must not contain CR (0xD) or LF (0xA) or
+     " (0x22). Equality is determined by bytewise comparison.
+     */
     LSPAttributeTypeQuotedString,
+    /**
+     Unquoted string pre-defined by the Attribute it's used in. will never
+     contain ", ', or whitespace.
+     */
     LSPAttributeTypeEnumeratedString,
+    /**
+     Two decimal-integer separated by x define a width and a height
+     */
     LSPAttributeTypeDecimalResolution,
 };
 
@@ -185,6 +203,22 @@ typedef NS_ENUM(NSInteger, LSPEncryptionMethod) {
 
 @end
 
+/**
+ A tag for EXT-X-BYTERANGE
+ 
+ Indicates the next segment is defined by a range in the resource indicated by
+ its URI.
+ */
+@interface LSPByteRangeTag : NSObject <LSPTag>
+
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithByteRange:(LSPByteRange *)byteRange;
+
+@property (nonatomic, nonnull) LSPByteRange *byteRange;
+
+@end
+
 @interface LSPKeyTag : NSObject <LSPAttributedTag>
 
 /**
@@ -225,7 +259,6 @@ typedef NS_ENUM(NSInteger, LSPEncryptionMethod) {
 
 @end
 
-
 /**
  A tag for EXT-X-MAP
  
@@ -244,23 +277,145 @@ typedef NS_ENUM(NSInteger, LSPEncryptionMethod) {
 
 @end
 
+#pragma mark - Media Playlist Tags
+
 /**
- A tag for EXT-X-BYTERANGE
- 
- Indicates the next segment is defined by a range in the resource indicated by
- its URI.
+ A tag for EXT-X-TARGETDURATION
  */
-@interface LSPByteRangeTag : NSObject <LSPTag>
+@interface LSPTargetDurationTag : NSObject<LSPTag>
+
+- (instancetype)initWithName:(NSString *)name NS_UNAVAILABLE;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithByteRange:(LSPByteRange *)byteRange;
+- (instancetype)initWithIntegerAttribute:(NSInteger)duration;
 
-@property (nonatomic, nonnull) LSPByteRange *byteRange;
+@property (nonatomic, readonly) NSInteger duration;
+
+@end
+
+/**
+ A tag for EXT-X-MEDIA-SEQUENCE
+ */
+@interface LSPMediaSequenceTag : NSObject<LSPTag>
+
+- (instancetype)initWithName:(NSString *)name NS_UNAVAILABLE;
+
+/**
+ Initialized a version tag with the default version, 1
+ */
+- (instancetype)init;
+
+- (instancetype)initWithIntegerAttribute:(NSInteger)number;
+
+@property (nonatomic, readonly) NSInteger number;
+
+@end
+
+/**
+ A tag for EXT-X-DISCONTINUITY-SEQUENCE
+ */
+@interface LSPDiscontinuitySequenceTag : NSObject<LSPTag>
+
+- (instancetype)initWithName:(NSString *)name NS_UNAVAILABLE;
+
+/**
+ Initialized a version tag with the default version, 1
+ */
+- (instancetype)init;
+
+- (instancetype)initWithIntegerAttribute:(NSInteger)number;
+
+@property (nonatomic, readonly) NSInteger number;
 
 @end
 
 #pragma mark - Master Playlist Tags
+
+/**
+ The type of media specified in a media tag.
+ 
+ - LSPMediaTypeUnknown: The media type is unknown
+ - LSPMediaTypeAudio: Audio
+ - LSPMediaTypeVideo: Video
+ - LSPMediaTypeSubtitles: Subtitles
+ - LSPMediaTypeClosedCaptions: Closed Captions
+ */
+typedef NS_ENUM(NSInteger, LSPMediaType) {
+    LSPMediaTypeUnknown,
+    LSPMediaTypeAudio,
+    LSPMediaTypeVideo,
+    LSPMediaTypeSubtitles,
+    LSPMediaTypeClosedCaptions
+};
+
+/**
+ A tag for EXT-X-MEDIA
+ */
+@interface LSPMediaTag : NSObject <LSPAttributedTag>
+
+/**
+ The type of media represented by this Tag.
+ */
+@property (nonatomic, readonly) LSPMediaType type;
+
+/**
+ Identifies the Media Playlist
+ */
+@property (nonatomic, readonly, nullable) NSURL *uri;
+
+/**
+ Group to which Rendition belongs
+ */
+@property (nonatomic, readonly, copy) NSString *groupID;
+
+/**
+ Primary language used in the Rendition as a string described by RFC 5646
+ */
+@property (nonatomic, readonly, nullable, copy) NSString *language;
+
+/**
+ Associated language used in the Rendition as a string described by RFC 5646
+ */
+@property (nonatomic, readonly, nullable, copy) NSString *associatedLanguage;
+
+/**
+ Name of the rendition
+ */
+@property (nonatomic, readonly, copy) NSString *renditionName;
+
+/**
+ If YES, client should play this media until user says otherwise. Absence is NO
+ 
+ Absence in attribute dictionary implies NO
+ */
+@property (nonatomic, readonly) BOOL defaultRendition;
+
+/**
+ Makes media eligible for automatic playback based on environment reasons
+ (e.g. language)
+ 
+ Absence in attribute dictionary implies NO
+ */
+@property (nonatomic, readonly) BOOL autoselect;
+
+/**
+ Must only appear for TYPE=SUBTITLES. YES means content is essential.
+ 
+ Absence in attribute dictionary implies NO.
+ */
+@property (nonatomic, readonly) BOOL forced;
+
+@property (nonatomic, readonly, copy) NSString *instreamID;
+
+/**
+ UTIs
+ */
+@property (nonatomic, readonly, copy) NSArray<NSString *> *characteristics;
+
+- (instancetype)initWithName:(NSString *)name NS_UNAVAILABLE;
+
+@end
 
 /**
  A tag for EXT-X-STREAM-INF
@@ -392,91 +547,6 @@ typedef NS_ENUM(NSInteger, LSPEncryptionMethod) {
 @end
 
 /**
- The type of media specified in a media tag.
-
- - LSPMediaTypeUnknown: The media type is unknown
- - LSPMediaTypeAudio: Audio
- - LSPMediaTypeVideo: Video
- - LSPMediaTypeSubtitles: Subtitles
- - LSPMediaTypeClosedCaptions: Closed Captions
- */
-typedef NS_ENUM(NSInteger, LSPMediaType) {
-    LSPMediaTypeUnknown,
-    LSPMediaTypeAudio,
-    LSPMediaTypeVideo,
-    LSPMediaTypeSubtitles,
-    LSPMediaTypeClosedCaptions
-};
-
-/**
- A tag for EXT-X-MEDIA
- */
-@interface LSPMediaTag : NSObject <LSPAttributedTag>
-
-/**
- The type of media represented by this Tag.
- */
-@property (nonatomic, readonly) LSPMediaType type;
-
-/**
- Identifies the Media Playlist
- */
-@property (nonatomic, readonly, nullable) NSURL *uri;
-
-/**
- Group to which Rendition belongs
- */
-@property (nonatomic, readonly, copy) NSString *groupID;
-
-/**
- Primary language used in the Rendition as a string described by RFC 5646
- */
-@property (nonatomic, readonly, nullable, copy) NSString *language;
-
-/**
- Associated language used in the Rendition as a string described by RFC 5646
- */
-@property (nonatomic, readonly, nullable, copy) NSString *associatedLanguage;
-
-/**
- Name of the rendition
- */
-@property (nonatomic, readonly, copy) NSString *renditionName;
-
-/**
- If YES, client should play this media until user says otherwise. Absence is NO
- 
- Absence in attribute dictionary implies NO
- */
-@property (nonatomic, readonly) BOOL defaultRendition;
-
-/**
- Makes media eligible for automatic playback based on environment reasons 
- (e.g. language)
- 
- Absence in attribute dictionary implies NO
- */
-@property (nonatomic, readonly) BOOL autoselect;
-
-/**
- Must only appear for TYPE=SUBTITLES. YES means content is essential.
- 
- Absence in attribute dictionary implies NO.
- */
-@property (nonatomic, readonly) BOOL forced;
-
-@property (nonatomic, readonly, copy) NSString *instreamID;
-
-/**
- UTIs
- */
-@property (nonatomic, readonly, copy) NSArray<NSString *> *characteristics;
-
-- (instancetype)initWithName:(NSString *)name NS_UNAVAILABLE;
-
-@end
-
-/**
  A tag reprenenting EXT-X-SESSION-DATA
  */
 @interface LSPSessionDataTag : NSObject <LSPAttributedTag>
@@ -539,59 +609,5 @@ typedef NS_ENUM(NSInteger, LSPMediaType) {
 @property (nonatomic, readonly) BOOL precise;
 
 @end
-
-#pragma mark - Media Playlist Tags
-
-/**
- A tag for EXT-X-MEDIA-SEQUENCE
- */
-@interface LSPMediaSequenceTag : NSObject<LSPTag>
-
-- (instancetype)initWithName:(NSString *)name NS_UNAVAILABLE;
-
-/**
- Initialized a version tag with the default version, 1
- */
-- (instancetype)init;
-
-- (instancetype)initWithIntegerAttribute:(NSInteger)number;
-
-@property (nonatomic, readonly) NSInteger number;
-
-@end
-
-/**
- A tag for EXT-X-DISCONTINUITY-SEQUENCE
- */
-@interface LSPDiscontinuitySequenceTag : NSObject<LSPTag>
-
-- (instancetype)initWithName:(NSString *)name NS_UNAVAILABLE;
-
-/**
- Initialized a version tag with the default version, 1
- */
-- (instancetype)init;
-
-- (instancetype)initWithIntegerAttribute:(NSInteger)number;
-
-@property (nonatomic, readonly) NSInteger number;
-
-@end
-
-/**
- A tag for EXT-X-TARGETDURATION
- */
-@interface LSPTargetDurationTag : NSObject<LSPTag>
-
-- (instancetype)initWithName:(NSString *)name NS_UNAVAILABLE;
-
-- (instancetype)init NS_UNAVAILABLE;
-
-- (instancetype)initWithIntegerAttribute:(NSInteger)duration;
-
-@property (nonatomic, readonly) NSInteger duration;
-
-@end
-
 
 NS_ASSUME_NONNULL_END
