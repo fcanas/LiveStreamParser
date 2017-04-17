@@ -732,6 +732,39 @@
 
 @end
 
+@implementation LSPPlaylistTypeTag
+
+- (nullable instancetype)initWithEnumeratedString:(NSString *)enumeratedString
+{
+    if ([enumeratedString isEqualToString:@"VOD"]) {
+        return [self initWithType:LSPPlaylistTypeVOD];
+    } else if ([enumeratedString isEqualToString:@"EVENT"]) {
+        return [self initWithType:LSPPlaylistTypeEvent];
+    }
+
+    return nil;
+}
+
+- (instancetype)initWithType:(LSPPlaylistType)type
+{
+    self = [super init];
+    
+    if (self != nil) {
+        _type = type;
+    }
+
+    
+    return self;
+}
+
+- (NSString *)name
+{
+    return @"EXT-X-PLAYLIST-TYPE";
+}
+
+@end
+
+
 @implementation LSPTargetDurationTag
 
 - (instancetype)initWithIntegerAttribute:(NSInteger)duration

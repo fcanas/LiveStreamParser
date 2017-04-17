@@ -391,4 +391,31 @@
     XCTAssertEqualObjects(tag.date, date);
 }
 
+- (void)testPlaylistTypeTag
+{
+    NSString *tagString = @"#EXT-X-PLAYLIST-TYPE:VOD";
+    LSPTagParser *parser = [[LSPTagParser alloc] initWithString:tagString];
+    
+    LSPPlaylistTypeTag *tag = (LSPPlaylistTypeTag *)[parser nextTag];
+    XCTAssertTrue([tag isKindOfClass:[LSPPlaylistTypeTag class]]);
+    XCTAssertEqual(tag.type, LSPPlaylistTypeVOD);
+
+    // Event
+    
+    tagString = @"#EXT-X-PLAYLIST-TYPE:EVENT";
+    parser = [[LSPTagParser alloc] initWithString:tagString];
+    
+    tag = (LSPPlaylistTypeTag *)[parser nextTag];
+    XCTAssertTrue([tag isKindOfClass:[LSPPlaylistTypeTag class]]);
+    XCTAssertEqual(tag.type, LSPPlaylistTypeEvent);
+    
+    // Bad type
+    
+    tagString = @"#EXT-X-PLAYLIST-TYPE:EVENS";
+    parser = [[LSPTagParser alloc] initWithString:tagString];
+    
+    tag = (LSPPlaylistTypeTag *)[parser nextTag];
+    XCTAssertFalse([tag isKindOfClass:[LSPPlaylistTypeTag class]]);
+}
+
 @end

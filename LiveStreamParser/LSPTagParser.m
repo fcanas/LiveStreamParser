@@ -24,6 +24,7 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
     LSPTagParameterTypeNumberOptionalString,
     LSPTagParameterTypeByteRange,
     LSPTagParameterTypeDate,
+    LSPTagParameterTypeEnumeratedString,
 };
 
 @implementation LSPTagParser
@@ -48,6 +49,7 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
                                 @"EXT-X-BYTERANGE" : [LSPByteRangeTag class],
                                 @"EXT-X-KEY" : [LSPKeyTag class],
                                 @"EXT-X-PROGRAM-DATE-TIME" : [LSPProgramDateTimeTag class],
+                                @"EXT-X-PLAYLIST-TYPE" : [LSPPlaylistTypeTag class],
                                 };
     });
     return tagParameterTypeMap[tagName];
@@ -73,6 +75,7 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
                                 @"EXT-X-BYTERANGE" : @(LSPTagParameterTypeByteRange),
                                 @"EXT-X-KEY" : @(LSPTagParameterTypeAttribtueList),
                                 @"EXT-X-PROGRAM-DATE-TIME" : @(LSPTagParameterTypeDate),
+                                @"EXT-X-PLAYLIST-TYPE" : @(LSPTagParameterTypeEnumeratedString),
                                 };
     });
     return [tagParameterTypeMap[tagName] integerValue];
@@ -256,6 +259,21 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
                 
                 NSDate *date = [NSDate date];
                 tag = [[[tagClass class] alloc] initWithDate:date];
+            }
+                break;
+            case LSPTagParameterTypeEnumeratedString: {
+                Class tagClass = [LSPTagParser classForTagName:name];
+                
+                if (![tagClass instancesRespondToSelector:@selector(initWithEnumeratedString:)]) {
+                    break;
+                }
+                
+                NSString *enumeratedString = [self parseAttributeValueOfType:LSPAttributeTypeEnumeratedString];
+
+                if ([enumeratedString isKindOfClass:[NSString class]]) {
+                    tag = [[[tagClass class] alloc] initWithEnumeratedString:enumeratedString];
+                    
+                }
             }
                 break;
             default:

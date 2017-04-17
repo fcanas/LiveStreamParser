@@ -746,5 +746,30 @@
 
 @end
 
+@interface PlaylistTypeTagTests : XCTestCase
+
+@end
+
+@implementation PlaylistTypeTagTests
+
+- (void)testName
+{
+    LSPPlaylistTypeTag *tag = [[LSPPlaylistTypeTag alloc] init];
+    XCTAssertEqualObjects(tag.name, @"EXT-X-PLAYLIST-TYPE");
+}
+
+- (void)testType
+{
+    LSPPlaylistTypeTag *tag = [[LSPPlaylistTypeTag alloc] initWithEnumeratedString:@"VOD"];
+    XCTAssertEqual(tag.type, LSPPlaylistTypeVOD);
+    
+    tag = [[LSPPlaylistTypeTag alloc] initWithEnumeratedString:@"EVENT"];
+    XCTAssertEqual(tag.type, LSPPlaylistTypeEvent);
+
+    tag = [[LSPPlaylistTypeTag alloc] initWithEnumeratedString:@"COD"];
+    XCTAssertNil(tag);
+}
+
+@end
 
 

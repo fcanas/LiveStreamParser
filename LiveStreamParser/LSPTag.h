@@ -341,6 +341,23 @@ typedef NS_ENUM(NSInteger, LSPEncryptionMethod) {
 
 @end
 
+typedef NS_ENUM(NSUInteger, LSPPlaylistType) {
+    LSPPlaylistTypeEvent,
+    LSPPlaylistTypeVOD,
+};
+
+
+@interface LSPPlaylistTypeTag : NSObject <LSPTag>
+
+- (nullable instancetype)initWithEnumeratedString:(NSString *)enumeratedString;
+
+- (instancetype)initWithType:(LSPPlaylistType)type;
+
+@property (nonatomic) LSPPlaylistType type;
+
+@end
+
+
 #pragma mark - Master Playlist Tags
 
 /**
