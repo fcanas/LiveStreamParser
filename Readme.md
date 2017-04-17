@@ -29,7 +29,6 @@
     - [x] Tag Definition
     - [ ] Date Parsing - It turns out [NSISO8601DateFormatter is dysfunctional](https://twitter.com/fcanas/status/853738641356705792)
 - [ ] EXT-X-DATERANGE
-- [ ] EXT-X-BITRATE ??
 
 ### Media Playlist Tags
 
@@ -39,3 +38,10 @@
 - [x] EXT-X-ENDLIST
 - [ ] EXT-X-PLAYLIST-TYPE
 - [x] EXT-X-I-FRAMES-ONLY
+
+### Other
+
+- [ ] EXT-X-BITRATE - The undocumented `EXT-X-BITRATE` tag appears in Apple's
+                      own example HLS streams as a media segment tag.
+                      Technically, it would be a comment tag. Should it be
+                      handled independently? Probably not.
