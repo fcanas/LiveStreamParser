@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E74AB6A81EA6FAC300B26B9A /* LSPISO8601Parser.h in Headers */ = {isa = PBXBuildFile; fileRef = E74AB6A61EA6FAC300B26B9A /* LSPISO8601Parser.h */; };
+		E74AB6A91EA6FAC300B26B9A /* LSPISO8601Parser.m in Sources */ = {isa = PBXBuildFile; fileRef = E74AB6A71EA6FAC300B26B9A /* LSPISO8601Parser.m */; };
+		E74AB6AB1EA6FAD800B26B9A /* LSPISO8601ParserTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E74AB6AA1EA6FAD800B26B9A /* LSPISO8601ParserTests.m */; };
 		E757B2571E6209EA0046872B /* LSPTagParser.h in Headers */ = {isa = PBXBuildFile; fileRef = E757B2551E6209EA0046872B /* LSPTagParser.h */; };
 		E757B2581E6209EA0046872B /* LSPTagParser.m in Sources */ = {isa = PBXBuildFile; fileRef = E757B2561E6209EA0046872B /* LSPTagParser.m */; };
 		E757B25A1E620A030046872B /* TagParserTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E757B2591E620A030046872B /* TagParserTests.m */; };
@@ -36,6 +39,9 @@
 
 /* Begin PBXFileReference section */
 		E71218AC1E74D2C800F0C485 /* Readme.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Readme.md; sourceTree = "<group>"; };
+		E74AB6A61EA6FAC300B26B9A /* LSPISO8601Parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSPISO8601Parser.h; sourceTree = "<group>"; };
+		E74AB6A71EA6FAC300B26B9A /* LSPISO8601Parser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LSPISO8601Parser.m; sourceTree = "<group>"; };
+		E74AB6AA1EA6FAD800B26B9A /* LSPISO8601ParserTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LSPISO8601ParserTests.m; sourceTree = "<group>"; };
 		E757B2551E6209EA0046872B /* LSPTagParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LSPTagParser.h; sourceTree = "<group>"; };
 		E757B2561E6209EA0046872B /* LSPTagParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LSPTagParser.m; sourceTree = "<group>"; };
 		E757B2591E620A030046872B /* TagParserTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TagParserTests.m; sourceTree = "<group>"; };
@@ -107,6 +113,8 @@
 				E757B25F1E621AEB0046872B /* LSPXprojConfig.xcconfig */,
 				E7A0E1C71E9C552500E758BC /* LSPByteRange.h */,
 				E7A0E1C81E9C552500E758BC /* LSPByteRange.m */,
+				E74AB6A61EA6FAC300B26B9A /* LSPISO8601Parser.h */,
+				E74AB6A71EA6FAC300B26B9A /* LSPISO8601Parser.m */,
 			);
 			path = LiveStreamParser;
 			sourceTree = "<group>";
@@ -122,6 +130,7 @@
 				E7A50E301E6B8F4700295787 /* MasterPlaylistParseTests.m */,
 				E7A0E1C11E9A90D100E758BC /* MediaPlaylistParseTests.m */,
 				E7A0E1CB1EA39AA300E758BC /* ByteRangeTests.m */,
+				E74AB6AA1EA6FAD800B26B9A /* LSPISO8601ParserTests.m */,
 			);
 			path = LiveStreamParserTests;
 			sourceTree = "<group>";
@@ -134,6 +143,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E7A0E1C91E9C552500E758BC /* LSPByteRange.h in Headers */,
+				E74AB6A81EA6FAC300B26B9A /* LSPISO8601Parser.h in Headers */,
 				E757B2571E6209EA0046872B /* LSPTagParser.h in Headers */,
 				E757B25D1E6215FB0046872B /* LSPTag.h in Headers */,
 				E75ADEE61E61F27A005B49CE /* LiveStreamParser.h in Headers */,
@@ -246,6 +256,7 @@
 				E757B25E1E6215FB0046872B /* LSPTag.m in Sources */,
 				E7A0E1CA1E9C552500E758BC /* LSPByteRange.m in Sources */,
 				E757B2581E6209EA0046872B /* LSPTagParser.m in Sources */,
+				E74AB6A91EA6FAC300B26B9A /* LSPISO8601Parser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -258,6 +269,7 @@
 				E757B2611E621E9E0046872B /* TagTests.m in Sources */,
 				E7A0E1CC1EA39AA300E758BC /* ByteRangeTests.m in Sources */,
 				E757B25A1E620A030046872B /* TagParserTests.m in Sources */,
+				E74AB6AB1EA6FAD800B26B9A /* LSPISO8601ParserTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
