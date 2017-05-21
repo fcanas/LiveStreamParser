@@ -91,14 +91,15 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
  */
 + (NSCharacterSet *)tagAndAttributeNameCharacterSet
 {
-    static NSMutableCharacterSet *set;
+    static NSCharacterSet *sTagAndAttributeNameCharacterSet;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        set = [NSMutableCharacterSet uppercaseLetterCharacterSet];
+        NSMutableCharacterSet *set = [NSMutableCharacterSet uppercaseLetterCharacterSet];
         [set formUnionWithCharacterSet:[NSCharacterSet decimalDigitCharacterSet]];
         [set addCharactersInString:@"-"];
+        sTagAndAttributeNameCharacterSet = [set copy];
     });
-    return set;
+    return sTagAndAttributeNameCharacterSet;
 }
 
 
@@ -111,13 +112,14 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
  */
 + (NSCharacterSet *)byteRangeCharacterSet
 {
-    static NSMutableCharacterSet *set;
+    static NSCharacterSet *sByteRangeCharacterSet;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        set = [NSMutableCharacterSet decimalDigitCharacterSet];
+        NSMutableCharacterSet *set = [NSMutableCharacterSet decimalDigitCharacterSet];
         [set addCharactersInString:@"@"];
+        sByteRangeCharacterSet = [set copy];
     });
-    return set;
+    return sByteRangeCharacterSet;
 }
 
 /**
@@ -130,14 +132,16 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
  */
 + (NSCharacterSet *)enumeratedStringCharacterSet
 {
-    static NSMutableCharacterSet *set;
+    static NSCharacterSet *sEnumeratedStringCharacterSet;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+        NSMutableCharacterSet *set;
         set = [NSMutableCharacterSet characterSetWithCharactersInString:@"\"'\n\r,"];
         [set formUnionWithCharacterSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         [set invert];
+        sEnumeratedStringCharacterSet = [set copy];
     });
-    return set;
+    return sEnumeratedStringCharacterSet;
 }
 
 /**
@@ -150,12 +154,13 @@ typedef NS_ENUM(NSInteger, LSPTagParameterType) {
  */
 + (NSCharacterSet *)hexCharacterSet
 {
-    static NSCharacterSet *set;
+    static NSCharacterSet *sHexCharacterSet;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        set = [NSCharacterSet characterSetWithCharactersInString:@"0123456789ABCDEF"];
+        sHexCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@"0123456789ABCDEF"];
+        
     });
-    return set;
+    return sHexCharacterSet;
 }
 
 - (instancetype)initWithString:(NSString *)string
