@@ -6,6 +6,8 @@
 //  Copyright © 2017 Fabián Cañas. All rights reserved.
 //
 
+#import <LiveStreamParser/LSPSerializable.h>
+
 @import Foundation;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -13,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  Represents a Byte Range as needed by HLS
  */
-@interface LSPByteRange : NSObject
+@interface LSPByteRange : NSObject <LSPSerializable>
 
 - (nullable instancetype)initWithString:(NSString *)string;
 

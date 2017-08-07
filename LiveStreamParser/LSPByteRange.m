@@ -86,4 +86,15 @@
     return [NSString stringWithFormat:@"LSPByteRange(length:%@, offset:%@)", @(self.length), self.offset];
 }
 
+- (NSString *)serialize
+{
+    NSString *offsetString = @"";
+    
+    if (self.offset) {
+        offsetString = [NSString stringWithFormat:@"@%@", self.offset];
+    }
+
+    return [NSString stringWithFormat:@"%@%@", @(self.length), offsetString];
+}
+
 @end

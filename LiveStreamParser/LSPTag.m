@@ -10,6 +10,67 @@
 
 #import "LSPTag.h"
 
+extern NSString * _Nullable LSPPlaylistTypeString(LSPPlaylistType type)
+{
+    switch (type) {
+        case LSPPlaylistTypeVOD:
+            return @"VOD";
+        case LSPPlaylistTypeEvent:
+            return @"EVENT";
+        default:
+            return nil;
+    }
+}
+
+/**
+ A function that builds a string attribute list for the provided attributed tag
+ instance. This function is nearly equivalent to a common `serialize` method for
+ attributed tags.
+
+ @param tag the tag
+ @return An HLS attribute list for the provided attibuted tag.
+ */
+static NSString * _Nonnull LSPAttributeListForTag(id<LSPAttributedTag> tag)
+{
+    NSString *attributeList = nil;
+    for (NSString *key in [[tag class] attributeKeys]) {
+        NSString *stringValue = [tag valueStringForAttributeKey:key];
+        if (stringValue == nil) {
+            continue;
+        }
+        if (attributeList == nil) {
+            attributeList = [NSString stringWithFormat:@"%@=%@", key, stringValue];
+        } else {
+            attributeList = [attributeList stringByAppendingFormat:@",%@=%@", key, stringValue];
+        }
+    }
+
+    return attributeList ?: @"";
+}
+
+/**
+ An effective default implemetaion for `-serialize` for an `LSPAttributedTag`.
+
+ @param tag The tag to serialize
+ @return The serialized string representation of the tag
+ */
+static NSString * _Nonnull LSPSerializeAttributedTag(id<LSPAttributedTag> tag)
+{
+    return [NSString stringWithFormat:@"#%@:%@", [tag name], LSPAttributeListForTag(tag)];
+}
+
+/**
+ Returns a string with quotes around the string argument, or nil if the argument
+ is nil.
+
+ @param string A optional string
+ @return nil or the provided string wrapped in " characters
+ */
+static NSString * _Nullable LSPQuotedString(NSString * _Nullable string)
+{
+    return string ? [NSString stringWithFormat:@"\"%@\"", string] : nil;
+}
+
 @implementation LSPBasicTag
 
 @synthesize name = _name;
@@ -25,6 +86,11 @@
     _name = [name copy];
     
     return self;
+}
+
+- (NSString *)serialize
+{
+    return [NSString stringWithFormat:@"#%@", self.name];
 }
 
 @end
@@ -50,6 +116,11 @@
 - (NSString *)name
 {
     return @"uri-tag";
+}
+
+- (NSString *)serialize
+{
+    return [self.uri absoluteString];
 }
 
 @end
@@ -82,6 +153,11 @@
 - (NSString *)name
 {
     return @"EXT-X-VERSION";
+}
+
+- (NSString *)serialize
+{
+    return [NSString stringWithFormat:@"#%@:%@", [self name], @(self.version)];
 }
 
 @end
@@ -167,9 +243,60 @@
     return self;
 }
 
++ (nonnull NSArray<NSString *> *)attributeKeys
+{
+    return @[@"BANDWIDTH", @"AVERAGE-BANDWIDTH", @"CODECS", @"RESOLUTION", @"FRAME-RATE", @"AUDIO", @"VIDEO", @"SUBTITLES", @"CLOSED-CAPTIONS"];
+}
+
+- (nullable NSString *)valueStringForAttributeKey:(nonnull NSString *)key
+{
+    if ([key isEqualToString:@"BANDWIDTH"]) {
+        return [NSString stringWithFormat:@"%@", @(self.bandwidth)];
+    }
+    
+    if ([key isEqualToString:@"AVERAGE-BANDWIDTH"]) {
+        return [NSString stringWithFormat:@"%@", @(self.averageBandwidth)];
+    }
+
+    if ([key isEqualToString:@"CODECS"]) {
+        return [self.codecs componentsJoinedByString:@","];
+    }
+    
+    if ([key isEqualToString:@"RESOLUTION"]) {
+        return [NSString stringWithFormat:@"%@x%@", @(self.resolution.width), @(self.resolution.height)];
+    }
+    
+    if ([key isEqualToString:@"FRAME-RATE"]) {
+        return [NSString stringWithFormat:@"%@", @(self.frameRate)];
+    }
+    
+    if ([key isEqualToString:@"AUDIO"]) {
+        return self.audio;
+    }
+    
+    if ([key isEqualToString:@"VIDEO"]) {
+        return self.video;
+    }
+    
+    if ([key isEqualToString:@"SUBTITLES"]) {
+        return self.subtitles;
+    }
+    
+    if ([key isEqualToString:@"CLOSED-CAPTIONS"]) {
+        return self.closedCaptions;
+    }
+    
+    return nil;
+}
+
 - (NSString *)name
 {
     return @"EXT-X-STREAM-INF";
+}
+
+- (nonnull NSString *)serialize
+{
+    return LSPSerializeAttributedTag(self);
 }
 
 @end
@@ -232,9 +359,46 @@
     return self;
 }
 
++ (nonnull NSArray<NSString *> *)attributeKeys
+{
+    return @[@"BANDWIDTH", @"AVERAGE-BANDWIDTH", @"CODECS", @"RESOLUTION", @"FRAME-RATE", @"URI"];
+}
+
+
+- (nullable NSString *)valueStringForAttributeKey:(nonnull NSString *)key
+{
+    if ([key isEqualToString:@"BANDWIDTH"]) {
+        return [NSString stringWithFormat:@"%@", @(self.bandwidth)];
+    }
+    
+    if ([key isEqualToString:@"AVERAGE-BANDWIDTH"]) {
+        return [NSString stringWithFormat:@"%@", @(self.averageBandwidth)];
+    }
+    
+    if ([key isEqualToString:@"CODECS"]) {
+        return [self.codecs componentsJoinedByString:@","];
+    }
+    
+    if ([key isEqualToString:@"RESOLUTION"]) {
+        return [NSString stringWithFormat:@"%@x%@", @(self.resolution.width), @(self.resolution.height)];
+    }
+    
+    if ([key isEqualToString:@"FRAME-RATE"]) {
+        return [NSString stringWithFormat:@"%@", @(self.frameRate)];
+    }
+    
+    return nil;
+}
+
+
 - (NSString *)name
 {
     return @"EXT-X-I-FRAME-STREAM-INF";
+}
+
+- (nonnull NSString *)serialize
+{
+    return LSPSerializeAttributedTag(self);
 }
 
 @end
@@ -346,9 +510,80 @@
     return self;
 }
 
++ (nonnull NSArray<NSString *> *)attributeKeys
+{
+    return @[@"TYPE", @"GROUP-ID", @"LANGUAGE", @"NAME", @"ASSOC-LANGUAGE", @"DEFAULT", @"AUTOSELECT", @"FORCED", @"URI", @"INSTREAM-ID", @"CHARACTERISTICS"];
+}
+
+- (nullable NSString *)valueStringForAttributeKey:(nonnull NSString *)key
+{
+    if ([key isEqualToString:@"TYPE"]) {
+        switch (self.type) {
+            case LSPMediaTypeAudio:
+                return @"AUDIO";
+            case LSPMediaTypeVideo:
+                return @"VIDEO";
+            case LSPMediaTypeSubtitles:
+                return @"SUBTITLES";
+            case LSPMediaTypeClosedCaptions:
+                return @"CLOSED-CAPTIONS";
+            case LSPMediaTypeUnknown:
+                return nil;
+        }
+        return nil;
+    }
+
+    if ([key isEqualToString:@"NAME"]) {
+        return LSPQuotedString(self.renditionName);
+    }
+    
+    if ([key isEqualToString:@"GROUP-ID"]) {
+        return LSPQuotedString(self.groupID);
+    }
+    
+    if ([key isEqualToString:@"LANGUAGE"]) {
+        return LSPQuotedString(self.language);
+    }
+    
+    if ([key isEqualToString:@"ASSOC-LANGUAGE"]) {
+        return LSPQuotedString(self.associatedLanguage);
+    }
+
+    if ([key isEqualToString:@"URI"]) {
+        return LSPQuotedString([self.uri absoluteString]);
+    }
+    
+    if ([key isEqualToString:@"DEFAULT"]) {
+        return self.defaultRendition ? @"YES" : nil;
+    }
+    
+    if ([key isEqualToString:@"AUTOSELECT"]) {
+        return self.autoselect ? @"YES" : nil;
+    }
+
+    if ([key isEqualToString:@"FORCED"]) {
+        return self.forced ? @"YES" : nil;
+    }
+
+    if ([key isEqualToString:@"INSTREAM-ID"]) {
+        return LSPQuotedString(self.instreamID);
+    }
+    
+    if ([key isEqualToString:@"CHARACTERISTICS"]) {
+        return self.characteristics.count ? LSPQuotedString([self.characteristics componentsJoinedByString:@","]) : nil;
+    }
+    
+    return nil;
+}
+
 - (NSString *)name
 {
     return @"EXT-X-MEDIA";
+}
+
+- (nonnull NSString *)serialize
+{
+    return LSPSerializeAttributedTag(self);
 }
 
 @end
@@ -408,9 +643,41 @@
     return self;
 }
 
++ (nonnull NSArray<NSString *> *)attributeKeys
+{
+    return @[@"DATA-ID", @"VALUE", @"LANGUAGE", @"URI"];
+}
+
+- (nullable NSString *)valueStringForAttributeKey:(nonnull NSString *)key
+{
+    if ([key isEqualToString:@"DATA-ID"]) {
+        return LSPQuotedString(self.dataID);
+    }
+    
+    if ([key isEqualToString:@"VALUE"]) {
+        return LSPQuotedString(self.value);
+    }
+    
+    if ([key isEqualToString:@"URI"]) {
+        return LSPQuotedString([self.uri absoluteString]);
+    }
+
+    if ([key isEqualToString:@"LANGUAGE"]) {
+        return LSPQuotedString(self.language);
+    }
+
+    return nil;
+}
+
+
 - (NSString *)name
 {
     return @"EXT-X-SESSION-DATA";
+}
+
+- (nonnull NSString *)serialize
+{
+    return LSPSerializeAttributedTag(self);
 }
 
 @end
@@ -460,9 +727,33 @@
     return attributes[@"TIME-OFFSET"] ? [super init] : nil;
 }
 
++ (nonnull NSArray<NSString *> *)attributeKeys
+{
+    return @[@"TIME-OFFSET", @"PRECISE"];
+}
+
+
+- (nullable NSString *)valueStringForAttributeKey:(nonnull NSString *)key
+{
+    if ([key isEqualToString:@"TIME-OFFSET"]) {
+        return [NSString stringWithFormat:@"%@", @(self.timeOffset)];
+    }
+    
+    if ([key isEqualToString:@"PRECISE"]) {
+        return self.precise ? @"YES" : nil;
+    }
+
+    return nil;
+}
+
 - (NSString *)name
 {
     return @"EXT-X-START";
+}
+
+- (nonnull NSString *)serialize
+{
+    return LSPSerializeAttributedTag(self);
 }
 
 @end
@@ -486,6 +777,10 @@
 - (NSString *)name
 {
     return @"EXTINF";
+}
+
+- (nonnull NSString *)serialize {
+    return [NSString stringWithFormat:@"#%@:%@,%@", self.name, @(_duration), self.title ?: @""];
 }
 
 @end
@@ -566,9 +861,57 @@
     return self;
 }
 
++ (nonnull NSArray<NSString *> *)attributeKeys
+{
+    return @[@"METHOD", @"URI", @"KEYFORMAT", @"KEYFORMATVERSIONS", @"IV"];
+}
+
+- (nullable NSString *)valueStringForAttributeKey:(nonnull NSString *)key
+{
+    if ([key isEqualToString:@"METHOD"]) {
+        switch (self.method) {
+            case LSPEncryptionMethodNone:
+                return @"NONE";
+                break;
+            case LSPEncryptionMethodAES128:
+                return @"AES-128";
+                break;
+            case LSPEncryptionMethodSampleAES:
+                return @"SAMPLE-AES";
+                break;
+            default:
+                return nil;
+                break;
+        }
+    }
+    
+    if ([key isEqualToString:@"URI"]) {
+        return LSPQuotedString([self.uri absoluteString]);
+    }
+    
+    if ([key isEqualToString:@"KEYFORMAT"]) {
+        return LSPQuotedString(self.keyFormat);
+    }
+    
+    if ([key isEqualToString:@"KEYFORMATVERSIONS"]) {
+        return LSPQuotedString([self.keyFormatVersions componentsJoinedByString:@"/"]);
+    }
+    
+    if ([key isEqualToString:@"IV"]) {
+        return self.initializationVector;
+    }
+    
+    return nil;
+}
+
 - (NSString *)name
 {
     return @"EXT-X-KEY";
+}
+
+- (nonnull NSString *)serialize
+{
+    return LSPSerializeAttributedTag(self);
 }
 
 @end
@@ -626,9 +969,32 @@
     return [attributeTypeForKey[key] integerValue];
 }
 
++ (NSArray<NSString *> *)attributeKeys
+{
+    return @[@"URI", @"BYTERANGE"];
+}
+
+- (nullable NSString *)valueStringForAttributeKey:(nonnull NSString *)key
+{
+    if ([key isEqualToString:@"URI"]) {
+        return LSPQuotedString([self.uri absoluteString]);
+    }
+    
+    if ([key isEqualToString:@"BYTERANGE"]) {
+        return [self.byteRange serialize];
+    }
+
+    return nil;
+}
+
 - (NSString *)name
 {
     return @"EXT-X-MAP";
+}
+
+- (nonnull NSString *)serialize
+{
+    return LSPSerializeAttributedTag(self);
 }
 
 @end
@@ -651,6 +1017,12 @@
     return @"EXT-X-PROGRAM-DATE-TIME";
 }
 
+- (NSString *)serialize
+{
+    // TODO
+    return @"";
+}
+
 @end
 
 
@@ -671,6 +1043,12 @@
 {
     return @"EXT-X-BYTERANGE";
 }
+
+- (NSString *)serialize
+{
+    return [NSString stringWithFormat:@"#%@:%@", [self name], [self.byteRange serialize]];
+}
+
 
 @end
 
@@ -703,6 +1081,11 @@
     return @"EXT-X-MEDIA-SEQUENCE";
 }
 
+- (NSString *)serialize
+{
+    return [NSString stringWithFormat:@"#%@:%@", [self name], @(self.number)];
+}
+
 @end
 
 @implementation LSPDiscontinuitySequenceTag
@@ -728,6 +1111,11 @@
 - (NSString *)name
 {
     return @"EXT-X-DISCONTINUITY-SEQUENCE";
+}
+
+- (NSString *)serialize
+{
+    return [NSString stringWithFormat:@"#%@:%@", [self name], @(self.number)];
 }
 
 @end
@@ -762,6 +1150,11 @@
     return @"EXT-X-PLAYLIST-TYPE";
 }
 
+- (NSString *)serialize
+{
+    return [NSString stringWithFormat:@"#%@:%@", [self name], LSPPlaylistTypeString(self.type)];
+}
+
 @end
 
 
@@ -783,6 +1176,11 @@
 - (NSString *)name
 {
     return @"EXT-X-TARGETDURATION";
+}
+
+- (NSString *)serialize
+{
+    return [NSString stringWithFormat:@"#%@:%@", [self name], @(self.duration)];
 }
 
 @end
