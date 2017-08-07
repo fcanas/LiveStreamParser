@@ -9,7 +9,7 @@
 @import Foundation;
 @import CoreGraphics;
 
-#import "LSPByteRange.h"
+#import <LiveStreamParser/LSPByteRange.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -74,6 +74,8 @@ typedef NS_ENUM(NSInteger, LSPEncryptionMethod) {
  */
 @property(nonatomic, readonly) NSString *name;
 
+- (NSString *)serialize;
+
 @end
 
 /**
@@ -105,6 +107,13 @@ typedef NS_ENUM(NSInteger, LSPEncryptionMethod) {
 + (LSPAttributeType)attributeTypeForKey:(NSString *)key;
 
 /**
+ A list of attribute keys supported by the tag.
+
+ @return The list of attribute keys supported by the tag.
+ */
++ (NSArray<NSString *> *)attributeKeys;
+
+/**
  Initialized the receiving attribute tag class with parsed attribute list.
 
  @see +attributeTypeForKey:
@@ -113,6 +122,14 @@ typedef NS_ENUM(NSInteger, LSPEncryptionMethod) {
          with the provided attributes.
  */
 - (nullable instancetype)initWithAttributes:(NSDictionary<NSString *, id> *)attributes;
+
+/**
+ The receiver's string representation of the value for the provided key.
+
+ @param key The Attribute Key
+ @return A string value appropriate for filling an attribute list
+ */
+- (nullable NSString *)valueStringForAttributeKey:(NSString *)key;
 
 @end
 
@@ -219,6 +236,10 @@ typedef NS_ENUM(NSInteger, LSPEncryptionMethod) {
 
 @end
 
+
+/**
+ A tag for EXT-X-KEY
+ */
 @interface LSPKeyTag : NSObject <LSPAttributedTag>
 
 /**
@@ -277,6 +298,9 @@ typedef NS_ENUM(NSInteger, LSPEncryptionMethod) {
 
 @end
 
+/**
+ A tag for EXT-X-PROGRAM-DATE-TIME
+ */
 @interface LSPProgramDateTimeTag : NSObject <LSPTag>
 
 - (instancetype)initWithDate:(NSDate *)date;
@@ -346,7 +370,22 @@ typedef NS_ENUM(NSUInteger, LSPPlaylistType) {
     LSPPlaylistTypeVOD,
 };
 
+/**
+ Returns a string representation of an `LSPPlaylistType`.
+ 
+ If the passed value is not an LSPPlaylistType, nil will be returned.
 
+ @param type An LSPPlaylistType
+ @return A string representation of the playlist type
+ */
+extern NSString *_Nullable LSPPlaylistTypeString(LSPPlaylistType type);
+
+/**
+ A tag for EXT-X-PLAYLIST-TYPE
+ 
+ The presence of the tag indicates whether the playlist is a live event, or
+ video-on-demand, or VOD.
+ */
 @interface LSPPlaylistTypeTag : NSObject <LSPTag>
 
 - (nullable instancetype)initWithEnumeratedString:(NSString *)enumeratedString;
@@ -434,7 +473,7 @@ typedef NS_ENUM(NSInteger, LSPMediaType) {
  */
 @property (nonatomic, readonly) BOOL forced;
 
-@property (nonatomic, readonly, copy) NSString *instreamID;
+@property (nonatomic, readonly, nullable, copy) NSString *instreamID;
 
 /**
  UTIs
@@ -570,7 +609,7 @@ typedef NS_ENUM(NSInteger, LSPMediaType) {
 /**
  Identifies media playlist file.
  */
-@property (nonatomic, readonly) NSURL *uri;
+@property (nonatomic, readonly, nullable) NSURL *uri;
 
 @end
 
@@ -612,6 +651,9 @@ typedef NS_ENUM(NSInteger, LSPMediaType) {
 
 @end
 
+/**
+ Tag for EXT-X-SESSION-KEY
+ */
 @interface LSPSessionKeyTag : LSPKeyTag
 
 @end

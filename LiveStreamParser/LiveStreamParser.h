@@ -14,7 +14,7 @@ FOUNDATION_EXPORT double LiveStreamParserVersionNumber;
 //! Project version string for FCHLSParser.
 FOUNDATION_EXPORT const unsigned char LiveStreamParserVersionString[];
 
-#import <FCHLSParser/LSPTag.h>
-#import <FCHLSParser/LSPTagParser.h>
+#import <LiveStreamParser/LSPTag.h>
+#import <LiveStreamParser/LSPTagParser.h>
 
 

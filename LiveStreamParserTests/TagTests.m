@@ -25,6 +25,15 @@
     XCTAssertEqualObjects(tag1.name, tag3.name);
 }
 
+- (void)testBasicTagSerialization
+{
+    LSPBasicTag *tag1 = [[LSPBasicTag alloc] initWithName:@"EXTM3U"];
+    LSPBasicTag *tag2 = [[LSPBasicTag alloc] initWithName:@"EXT-X-VERSION"];
+
+    XCTAssertEqualObjects([tag1 serialize], @"#EXTM3U");
+    XCTAssertEqualObjects([tag2 serialize], @"#EXT-X-VERSION");
+}
+
 - (void)testVersionTag
 {
     LSPVersionTag *versionTag = [[LSPVersionTag alloc] init];
@@ -33,6 +42,14 @@
     XCTAssert(versionTag.version == 3);
     versionTag = [[LSPVersionTag alloc] initWithIntegerAttribute:0];
     XCTAssert(versionTag.version == 1);
+}
+
+- (void)testSerialization
+{
+    LSPVersionTag *versionTag = [[LSPVersionTag alloc] initWithIntegerAttribute:3];
+    XCTAssertEqualObjects([versionTag serialize], @"#EXT-X-VERSION:3");
+    versionTag = [[LSPVersionTag alloc] initWithIntegerAttribute:10];
+    XCTAssertEqualObjects([versionTag serialize], @"#EXT-X-VERSION:10");
 }
 
 @end
@@ -53,15 +70,23 @@
     XCTAssertEqualObjects(tag.uri, [NSURL URLWithString:@"http://www.example.com"]);
 }
 
+- (void)testSerialization
+{
+    LSPURITag *tag = [[LSPURITag alloc] initWithURIString:@"http://www.example.com"];
+    XCTAssertEqualObjects([tag serialize], @"http://www.example.com");
+    tag = [[LSPURITag alloc] initWithURIString:@"http://www.fabiancanas.com/12/13/14"];
+    XCTAssertEqualObjects([tag serialize], @"http://www.fabiancanas.com/12/13/14");
+}
+
 @end
+
+#pragma mark - Stream Info Tag
 
 @interface StreamInfoTagTests : XCTestCase
 
 @end
 
 @implementation StreamInfoTagTests
-
-#pragma mark - Stream Info Tag
 
 - (void)testBasicStreamInfoTag
 {
@@ -178,7 +203,25 @@
     XCTAssertEqualObjects(infoTag.closedCaptions, @"closed captions group");
 }
 
+- (void)testSerialization
+{
+    LSPStreamInfoTag *tag = [[LSPStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @1,
+                                                                           @"AVERAGE-BANDWIDTH":@9876,
+                                                                           @"CODECS":@"a,b,c",
+                                                                           @"RESOLUTION":[NSValue valueWithCGSize:CGSizeMake(123, 456)],
+                                                                           @"FRAME-RATE":@(28.1),
+                                                                           @"AUDIO":@"AAA",
+                                                                           @"VIDEO":@"VVV",
+                                                                           @"SUBTITLES":@"STSTST",
+                                                                           @"CLOSED-CAPTIONS":@"CCCCCC",
+                                                                           }];
+    NSString *expectedTag = @"#EXT-X-STREAM-INF:BANDWIDTH=1,AVERAGE-BANDWIDTH=9876,CODECS=a,b,c,RESOLUTION=123x456,FRAME-RATE=28.1,AUDIO=AAA,VIDEO=VVV,SUBTITLES=STSTST,CLOSED-CAPTIONS=CCCCCC";
+    XCTAssertEqualObjects([tag serialize], expectedTag);
+}
+
 @end
+
+#pragma mark - IFrame Stream Info Tag
 
 @interface IFrameStreamInfoTagTests : XCTestCase
 
@@ -252,7 +295,21 @@
     XCTAssertEqual(infoTag.frameRate, (double)65);
 }
 
+- (void)testSerialization
+{
+    LSPIFrameStreamInfoTag *tag = [[LSPIFrameStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @1,
+                                                                                       @"AVERAGE-BANDWIDTH":@9876,
+                                                                                       @"CODECS":@"a,b,c",
+                                                                                       @"RESOLUTION":[NSValue valueWithCGSize:CGSizeMake(123, 456)],
+                                                                                       @"FRAME-RATE":@(28.1),
+                                                                                       }];
+    NSString *expectedTag = @"#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=1,AVERAGE-BANDWIDTH=9876,CODECS=a,b,c,RESOLUTION=123x456,FRAME-RATE=28.1";
+    XCTAssertEqualObjects([tag serialize], expectedTag);
+}
+
 @end
+
+#pragma mark - Media Tag
 
 @interface MediaTagTests : XCTestCase
 
@@ -400,10 +457,44 @@
     tag = [[LSPMediaTag alloc] initWithAttributes:@{@"TYPE":@"VIDEO", @"GROUP-ID": @"group", @"NAME":@"rendition name", @"CHARACTERISTICS":@"one,two,three"}];
     NSArray *three = @[@"one", @"two", @"three"];
     XCTAssertEqualObjects(tag.characteristics, three);
+}
 
+- (void)testSerialization
+{
+    LSPMediaTag *tag = [[LSPMediaTag alloc] initWithAttributes:@{@"TYPE":@"AUDIO",
+                                                                 @"GROUP-ID":@"aud1",
+                                                                 @"LANGUAGE":@"eng",
+                                                                 @"NAME":@"English",
+                                                                 @"AUTOSELECT":@"YES",
+                                                                 @"DEFAULT":@"YES",
+                                                                 @"URI":@"a1/prog_index.m3u8"}];
+    XCTAssertEqualObjects([tag serialize], @"#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"aud1\",LANGUAGE=\"eng\",NAME=\"English\",DEFAULT=YES,AUTOSELECT=YES,URI=\"a1/prog_index.m3u8\"");
+    
+    tag = [[LSPMediaTag alloc] initWithAttributes:@{@"TYPE" : @"CLOSED-CAPTIONS",
+                                                    @"GROUP-ID" : @"cc1",
+                                                    @"NAME" : @"English",
+                                                    @"LANGUAGE" : @"eng",
+                                                    @"DEFAULT" : @"YES",
+                                                    @"AUTOSELECT" : @"YES",
+                                                    @"INSTREAM-ID" : @"CC1"}];
+    
+    XCTAssertEqualObjects([tag serialize], @"#EXT-X-MEDIA:TYPE=CLOSED-CAPTIONS,GROUP-ID=\"cc1\",LANGUAGE=\"eng\",NAME=\"English\",DEFAULT=YES,AUTOSELECT=YES,INSTREAM-ID=\"CC1\"");
+    
+    tag = [[LSPMediaTag alloc] initWithAttributes:@{@"TYPE" : @"SUBTITLES",
+                                                    @"GROUP-ID" : @"sub1",
+                                                    @"NAME" : @"English",
+                                                    @"LANGUAGE" : @"eng",
+                                                    @"DEFAULT" : @"YES",
+                                                    @"AUTOSELECT" : @"YES",
+                                                    @"FORCED" : @"YES",
+                                                    @"URI" : @"s1/eng/prog_index.m3u8"}];
+    
+    XCTAssertEqualObjects([tag serialize], @"#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID=\"sub1\",LANGUAGE=\"eng\",NAME=\"English\",DEFAULT=YES,AUTOSELECT=YES,FORCED=YES,URI=\"s1/eng/prog_index.m3u8\"");
 }
 
 @end
+
+#pragma mark - Session Data Tag
 
 @interface SessionDataTests : XCTestCase
 
@@ -417,7 +508,7 @@
     XCTAssertNil(tag, @"Session Data tags require a data id");
     
     tag = [[LSPSessionDataTag alloc] initWithAttributes:@{@"DATA-ID" : @"data id value"}];
-    XCTAssertNil(tag, @"Session data requires euther a VALUE or a URI");
+    XCTAssertNil(tag, @"Session data requires either a VALUE or a URI");
     
     
     tag = [[LSPSessionDataTag alloc] initWithAttributes:@{@"DATA-ID" : @"data id value", @"VALUE":@"session data value"}];
@@ -436,7 +527,18 @@
     XCTAssertEqualObjects(tag.language, @"en");
 }
 
+- (void)testSerialization
+{
+    LSPSessionDataTag *tag = [[LSPSessionDataTag alloc] initWithAttributes:@{@"DATA-ID" : @"data id value", @"VALUE":@"session data value"}];
+    XCTAssertEqualObjects([tag serialize], @"#EXT-X-SESSION-DATA:DATA-ID=\"data id value\",VALUE=\"session data value\"");
+    
+    tag = [[LSPSessionDataTag alloc] initWithAttributes:@{@"DATA-ID" : @"data id value", @"URI":@"session/data/path.json"}];
+    XCTAssertEqualObjects([tag serialize], @"#EXT-X-SESSION-DATA:DATA-ID=\"data id value\",URI=\"session/data/path.json\"");
+}
+
 @end
+
+#pragma mark - Session Key Tag
 
 @interface SessionKeyTests : XCTestCase
 
@@ -511,7 +613,20 @@
     XCTAssertNil(tag.initializationVector);
 }
 
+- (void)testSerialization
+{
+    LSPSessionKeyTag *tag = [[LSPSessionKeyTag alloc] initWithAttributes:@{
+                                                                           @"METHOD":@"AES-128",
+                                                                           @"URI":@"s1/keys/k1",
+                                                                           @"KEYFORMAT":@"key-format",
+                                                                           @"KEYFORMATVERSIONS":@"1/2/3/4",
+                                                                           }];
+    XCTAssertEqualObjects([tag serialize], @"#EXT-X-SESSION-KEY:METHOD=AES-128,URI=\"s1/keys/k1\",KEYFORMAT=\"key-format\",KEYFORMATVERSIONS=\"1/2/3/4\"");
+}
+
 @end
+
+#pragma mark - Start Tag
 
 @interface StartTagTests : XCTestCase
 
@@ -549,7 +664,21 @@
     XCTAssertTrue(tag.precise);
 }
 
+- (void)testSerialization
+{
+    LSPStartTag *tag = [[LSPStartTag alloc] initWithAttributes:@{@"TIME-OFFSET":@(1.5)}];
+    XCTAssertEqualObjects([tag serialize], @"#EXT-X-START:TIME-OFFSET=1.5");
+    
+    tag = [[LSPStartTag alloc] initWithAttributes:@{@"TIME-OFFSET":@(1.5), @"PRECISE":@"NO"}];
+    XCTAssertEqualObjects([tag serialize], @"#EXT-X-START:TIME-OFFSET=1.5");
+    
+    tag = [[LSPStartTag alloc] initWithAttributes:@{@"TIME-OFFSET":@(1.5), @"PRECISE":@"YES"}];
+    XCTAssertEqualObjects([tag serialize], @"#EXT-X-START:TIME-OFFSET=1.5,PRECISE=YES");
+}
+
 @end
+
+#pragma mark - Info Tag
 
 @interface InfoTagTests : XCTestCase
 
@@ -586,7 +715,21 @@
     XCTAssertEqualObjects(tag.title, @"mutable");
 }
 
+- (void)testSerialization
+{
+    LSPInfoTag *tag = [[LSPInfoTag alloc] initWithDuration:1.0 title:nil];
+    XCTAssertEqualObjects([tag serialize], @"#EXTINF:1,");
+    
+    tag = [[LSPInfoTag alloc] initWithDuration:3.0 title:@"serialize"];
+    XCTAssertEqualObjects([tag serialize], @"#EXTINF:3,serialize");
+    
+    tag = [[LSPInfoTag alloc] initWithDuration:3.2 title:@"serialize"];
+    XCTAssertEqualObjects([tag serialize], @"#EXTINF:3.2,serialize");
+}
+
 @end
+
+#pragma mark - Map Tag
 
 @interface MapTagTests : XCTestCase
 
@@ -623,7 +766,15 @@
     XCTAssertEqual([[LSPMapTag class] attributeTypeForKey:@"BYTERANGE"], LSPAttributeTypeQuotedString);
 }
 
+- (void)testSerialization
+{
+    LSPMapTag *tag = [[LSPMapTag alloc] initWithURI:[NSURL URLWithString:@"http://www.example.com/map/url"] byteRange:[[LSPByteRange alloc] initWithLength:123 offset:4567]];
+    XCTAssertEqualObjects([tag serialize], @"#EXT-X-MAP:URI=\"http://www.example.com/map/url\",BYTERANGE=123@4567");
+}
+
 @end
+
+#pragma mark - Byte Range Tag
 
 @interface ByteRangeTagTests : XCTestCase
 
@@ -645,8 +796,27 @@
     XCTAssertEqualObjects(tag.byteRange, byteRange);
 }
 
+- (void)testByteRangeSerialization
+{
+    LSPByteRange *byteRange = [[LSPByteRange alloc] init];
+    XCTAssertEqualObjects([byteRange serialize], @"0");
+    LSPByteRangeTag *tag = [[LSPByteRangeTag alloc] initWithByteRange:byteRange];
+    XCTAssertEqualObjects([tag serialize], @"#EXT-X-BYTERANGE:0");
+    
+    byteRange = [[LSPByteRange alloc] initWithString:@"7890"];
+    XCTAssertEqualObjects([byteRange serialize], @"7890");
+    tag = [[LSPByteRangeTag alloc] initWithByteRange:byteRange];
+    XCTAssertEqualObjects([tag serialize], @"#EXT-X-BYTERANGE:7890");
+    
+    byteRange = [[LSPByteRange alloc] initWithLength:1204 offset:80];
+    XCTAssertEqualObjects([byteRange serialize], @"1204@80");
+    tag = [[LSPByteRangeTag alloc] initWithByteRange:byteRange];
+    XCTAssertEqualObjects([tag serialize], @"#EXT-X-BYTERANGE:1204@80");
+}
+
 @end
 
+#pragma mark - Key Tag
 
 @interface KeyTests : XCTestCase
 
@@ -721,7 +891,20 @@
     XCTAssertNil(tag.initializationVector);
 }
 
+- (void)testSerialization
+{
+    LSPKeyTag *tag = [[LSPKeyTag alloc] initWithAttributes:@{
+                                                                           @"METHOD":@"AES-128",
+                                                                           @"URI":@"s1/keys/k1",
+                                                                           @"KEYFORMAT":@"key-format",
+                                                                           @"KEYFORMATVERSIONS":@"1/2/3/4",
+                                                                           }];
+    XCTAssertEqualObjects([tag serialize], @"#EXT-X-KEY:METHOD=AES-128,URI=\"s1/keys/k1\",KEYFORMAT=\"key-format\",KEYFORMATVERSIONS=\"1/2/3/4\"");
+}
+
 @end
+
+#pragma mark - Program Date Time Tag
 
 @interface ProgramDateTimeTagTests : XCTestCase
 
@@ -744,7 +927,14 @@
     XCTAssertEqualObjects(tag.date, date);
 }
 
+- (void)testSerialization
+{
+    
+}
+
 @end
+
+#pragma mark - Playlist Type Tag
 
 @interface PlaylistTypeTagTests : XCTestCase
 
@@ -762,12 +952,30 @@
 {
     LSPPlaylistTypeTag *tag = [[LSPPlaylistTypeTag alloc] initWithEnumeratedString:@"VOD"];
     XCTAssertEqual(tag.type, LSPPlaylistTypeVOD);
+    tag = [[LSPPlaylistTypeTag alloc] initWithType:LSPPlaylistTypeVOD];
+    XCTAssertEqual(tag.type, LSPPlaylistTypeVOD);
     
     tag = [[LSPPlaylistTypeTag alloc] initWithEnumeratedString:@"EVENT"];
+    XCTAssertEqual(tag.type, LSPPlaylistTypeEvent);
+    tag = [[LSPPlaylistTypeTag alloc] initWithType:LSPPlaylistTypeEvent];
     XCTAssertEqual(tag.type, LSPPlaylistTypeEvent);
 
     tag = [[LSPPlaylistTypeTag alloc] initWithEnumeratedString:@"COD"];
     XCTAssertNil(tag);
+}
+
+- (void)testSerialization
+{
+    LSPPlaylistTypeTag *tag = [[LSPPlaylistTypeTag alloc] initWithEnumeratedString:@"VOD"];
+    XCTAssertEqualObjects([tag serialize], @"#EXT-X-PLAYLIST-TYPE:VOD");
+    tag = [[LSPPlaylistTypeTag alloc] initWithType:LSPPlaylistTypeVOD];
+    XCTAssertEqualObjects([tag serialize], @"#EXT-X-PLAYLIST-TYPE:VOD");
+    
+    tag = [[LSPPlaylistTypeTag alloc] initWithEnumeratedString:@"EVENT"];
+    XCTAssertEqualObjects([tag serialize], @"#EXT-X-PLAYLIST-TYPE:EVENT");
+    tag = [[LSPPlaylistTypeTag alloc] initWithType:LSPPlaylistTypeEvent];
+    XCTAssertEqual(tag.type, LSPPlaylistTypeEvent);
+    XCTAssertEqualObjects([tag serialize], @"#EXT-X-PLAYLIST-TYPE:EVENT");
 }
 
 @end
