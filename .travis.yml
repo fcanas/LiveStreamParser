@@ -1,0 +1,7 @@
+language: objective-c
+xcode_project: LiveStreamParser.xcodeproj
+xcode_scheme: LiveStreamParserTests
+osx_image: xcode8.3
+script:
+  - xcodebuild test -scheme LiveStreamParserTests -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 6s,OS=10.3.1"
+  
