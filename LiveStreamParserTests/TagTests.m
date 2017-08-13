@@ -34,6 +34,24 @@
     XCTAssertEqualObjects([tag2 serialize], @"#EXT-X-VERSION");
 }
 
+- (void)testTagEquality
+{
+    LSPBasicTag *tag1 = [[LSPBasicTag alloc] initWithName:@"EXTM3U"];
+    LSPBasicTag *tag2 = [[LSPBasicTag alloc] initWithName:@"EXTM3U"];
+    XCTAssertEqualObjects(tag1, tag2);
+    
+    LSPBasicTag *tag3 = [[LSPBasicTag alloc] initWithName:@"EXT-X-VERSION"];
+    XCTAssertNotEqualObjects(tag1, tag3);
+}
+
+@end
+
+@interface VersionTagTests : XCTestCase
+
+@end
+
+@implementation VersionTagTests
+
 - (void)testVersionTag
 {
     LSPVersionTag *versionTag = [[LSPVersionTag alloc] init];
@@ -50,6 +68,15 @@
     XCTAssertEqualObjects([versionTag serialize], @"#EXT-X-VERSION:3");
     versionTag = [[LSPVersionTag alloc] initWithIntegerAttribute:10];
     XCTAssertEqualObjects([versionTag serialize], @"#EXT-X-VERSION:10");
+}
+
+- (void)testTagEquality
+{
+    LSPVersionTag *tag1 = [[LSPVersionTag alloc] initWithIntegerAttribute:3];
+    LSPVersionTag *tag2 = [[LSPVersionTag alloc] initWithIntegerAttribute:3];
+    XCTAssertEqualObjects(tag1, tag2);
+    LSPVersionTag *tag3 = [[LSPVersionTag alloc] initWithIntegerAttribute:4];
+    XCTAssertNotEqualObjects(tag1, tag3);
 }
 
 @end
@@ -76,6 +103,14 @@
     XCTAssertEqualObjects([tag serialize], @"http://www.example.com");
     tag = [[LSPURITag alloc] initWithURIString:@"http://www.fabiancanas.com/12/13/14"];
     XCTAssertEqualObjects([tag serialize], @"http://www.fabiancanas.com/12/13/14");
+}
+
+- (void)testTagEquality
+{
+    LSPURITag *tag1 = [[LSPURITag alloc] initWithURIString:@"http://www.example.com"];
+    LSPURITag *tag2 = [[LSPURITag alloc] initWithURIString:@"http://www.example.com"];
+    
+    XCTAssertEqualObjects(tag1, tag2);
 }
 
 @end
@@ -215,8 +250,45 @@
                                                                            @"SUBTITLES":@"STSTST",
                                                                            @"CLOSED-CAPTIONS":@"CCCCCC",
                                                                            }];
-    NSString *expectedTag = @"#EXT-X-STREAM-INF:BANDWIDTH=1,AVERAGE-BANDWIDTH=9876,CODECS=a,b,c,RESOLUTION=123x456,FRAME-RATE=28.1,AUDIO=AAA,VIDEO=VVV,SUBTITLES=STSTST,CLOSED-CAPTIONS=CCCCCC";
+    NSString *expectedTag = @"#EXT-X-STREAM-INF:BANDWIDTH=1,AVERAGE-BANDWIDTH=9876,CODECS=\"a,b,c\",RESOLUTION=123x456,FRAME-RATE=28.1,AUDIO=\"AAA\",VIDEO=\"VVV\",SUBTITLES=\"STSTST\",CLOSED-CAPTIONS=\"CCCCCC\"";
     XCTAssertEqualObjects([tag serialize], expectedTag);
+}
+
+- (void)testTagEquality
+{
+    LSPStreamInfoTag *tag1 = [[LSPStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @1,
+                                                                           @"AVERAGE-BANDWIDTH":@9876,
+                                                                           @"CODECS":@"a,b,c",
+                                                                           @"RESOLUTION":[NSValue valueWithCGSize:CGSizeMake(123, 456)],
+                                                                           @"FRAME-RATE":@(28.1),
+                                                                           @"AUDIO":@"AAA",
+                                                                           @"VIDEO":@"VVV",
+                                                                           @"SUBTITLES":@"STSTST",
+                                                                           @"CLOSED-CAPTIONS":@"CCCCCC",
+                                                                           }];
+    LSPStreamInfoTag *tag2 = [[LSPStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @1,
+                                                                           @"AVERAGE-BANDWIDTH":@9876,
+                                                                           @"CODECS":@"a,b,c",
+                                                                           @"RESOLUTION":[NSValue valueWithCGSize:CGSizeMake(123, 456)],
+                                                                           @"FRAME-RATE":@(28.1),
+                                                                           @"AUDIO":@"AAA",
+                                                                           @"VIDEO":@"VVV",
+                                                                           @"SUBTITLES":@"STSTST",
+                                                                           @"CLOSED-CAPTIONS":@"CCCCCC",
+                                                                           }];
+    XCTAssertEqualObjects(tag1, tag2);
+    
+    LSPStreamInfoTag *tag3 = [[LSPStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @2,
+                                                                            @"AVERAGE-BANDWIDTH":@9876,
+                                                                            @"CODECS":@"a,b,c",
+                                                                            @"RESOLUTION":[NSValue valueWithCGSize:CGSizeMake(123, 456)],
+                                                                            @"FRAME-RATE":@(28.1),
+                                                                            @"AUDIO":@"AAA",
+                                                                            @"VIDEO":@"VVV",
+                                                                            @"SUBTITLES":@"STSTST",
+                                                                            @"CLOSED-CAPTIONS":@"CCCCCC",
+                                                                            }];
+    XCTAssertNotEqualObjects(tag1, tag3);
 }
 
 @end
@@ -303,8 +375,34 @@
                                                                                        @"RESOLUTION":[NSValue valueWithCGSize:CGSizeMake(123, 456)],
                                                                                        @"FRAME-RATE":@(28.1),
                                                                                        }];
-    NSString *expectedTag = @"#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=1,AVERAGE-BANDWIDTH=9876,CODECS=a,b,c,RESOLUTION=123x456,FRAME-RATE=28.1";
+    NSString *expectedTag = @"#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=1,AVERAGE-BANDWIDTH=9876,CODECS=\"a,b,c\",RESOLUTION=123x456,FRAME-RATE=28.1";
     XCTAssertEqualObjects([tag serialize], expectedTag);
+}
+
+- (void)testTagEquality
+{
+    LSPIFrameStreamInfoTag *tag1 = [[LSPIFrameStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @1,
+                                                                                        @"AVERAGE-BANDWIDTH":@9876,
+                                                                                        @"CODECS":@"a,b,c",
+                                                                                        @"RESOLUTION":[NSValue valueWithCGSize:CGSizeMake(123, 456)],
+                                                                                        @"FRAME-RATE":@(28.1),
+                                                                                        }];
+    LSPIFrameStreamInfoTag *tag2 = [[LSPIFrameStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @1,
+                                                                                        @"AVERAGE-BANDWIDTH":@9876,
+                                                                                        @"CODECS":@"a,b,c",
+                                                                                        @"RESOLUTION":[NSValue valueWithCGSize:CGSizeMake(123, 456)],
+                                                                                        @"FRAME-RATE":@(28.1),
+                                                                                        }];
+    XCTAssertEqualObjects(tag1, tag2);
+    
+    LSPIFrameStreamInfoTag *tag3 = [[LSPIFrameStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @2,
+                                                                                        @"AVERAGE-BANDWIDTH":@9876,
+                                                                                        @"CODECS":@"a,b,c",
+                                                                                        @"RESOLUTION":[NSValue valueWithCGSize:CGSizeMake(123, 456)],
+                                                                                        @"FRAME-RATE":@(28.1),
+                                                                                        }];
+    
+    XCTAssertNotEqualObjects(tag3, tag1);
 }
 
 @end
@@ -492,6 +590,35 @@
     XCTAssertEqualObjects([tag serialize], @"#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID=\"sub1\",LANGUAGE=\"eng\",NAME=\"English\",DEFAULT=YES,AUTOSELECT=YES,FORCED=YES,URI=\"s1/eng/prog_index.m3u8\"");
 }
 
+- (void)testTagEquality
+{
+    LSPMediaTag *tag1 = [[LSPMediaTag alloc] initWithAttributes:@{@"TYPE":@"AUDIO",
+                                                                  @"GROUP-ID":@"aud1",
+                                                                  @"LANGUAGE":@"eng",
+                                                                  @"NAME":@"English",
+                                                                  @"AUTOSELECT":@"YES",
+                                                                  @"DEFAULT":@"YES",
+                                                                  @"URI":@"a1/prog_index.m3u8"}];
+    LSPMediaTag *tag2 = [[LSPMediaTag alloc] initWithAttributes:@{@"TYPE":@"AUDIO",
+                                                                  @"GROUP-ID":@"aud1",
+                                                                  @"LANGUAGE":@"eng",
+                                                                  @"NAME":@"English",
+                                                                  @"AUTOSELECT":@"YES",
+                                                                  @"DEFAULT":@"YES",
+                                                                  @"URI":@"a1/prog_index.m3u8"}];
+    
+    XCTAssertEqualObjects(tag1, tag2);
+    
+    LSPMediaTag *tag3 = [[LSPMediaTag alloc] initWithAttributes:@{@"TYPE" : @"CLOSED-CAPTIONS",
+                                                                  @"GROUP-ID" : @"cc1",
+                                                                  @"NAME" : @"English",
+                                                                  @"LANGUAGE" : @"eng",
+                                                                  @"DEFAULT" : @"YES",
+                                                                  @"AUTOSELECT" : @"YES",
+                                                                  @"INSTREAM-ID" : @"CC1"}];
+    XCTAssertNotEqualObjects(tag1, tag3);
+}
+
 @end
 
 #pragma mark - Session Data Tag
@@ -534,6 +661,16 @@
     
     tag = [[LSPSessionDataTag alloc] initWithAttributes:@{@"DATA-ID" : @"data id value", @"URI":@"session/data/path.json"}];
     XCTAssertEqualObjects([tag serialize], @"#EXT-X-SESSION-DATA:DATA-ID=\"data id value\",URI=\"session/data/path.json\"");
+}
+
+- (void)testTagEquality
+{
+    LSPSessionDataTag *tag1 = [[LSPSessionDataTag alloc] initWithAttributes:@{@"DATA-ID" : @"data id value", @"VALUE":@"session data value"}];
+    LSPSessionDataTag *tag2 = [[LSPSessionDataTag alloc] initWithAttributes:@{@"DATA-ID" : @"data id value", @"VALUE":@"session data value"}];
+    XCTAssertEqualObjects(tag1, tag2);
+    
+    LSPSessionDataTag *tag3 = [[LSPSessionDataTag alloc] initWithAttributes:@{@"DATA-ID" : @"data id value", @"URI":@"session/data/path.json"}];
+    XCTAssertNotEqualObjects(tag1, tag3);
 }
 
 @end
@@ -624,6 +761,31 @@
     XCTAssertEqualObjects([tag serialize], @"#EXT-X-SESSION-KEY:METHOD=AES-128,URI=\"s1/keys/k1\",KEYFORMAT=\"key-format\",KEYFORMATVERSIONS=\"1/2/3/4\"");
 }
 
+- (void)testTagEquality
+{
+    LSPSessionKeyTag *tag1 = [[LSPSessionKeyTag alloc] initWithAttributes:@{
+                                                                            @"METHOD":@"AES-128",
+                                                                            @"URI":@"s1/keys/k1",
+                                                                            @"KEYFORMAT":@"key-format",
+                                                                            @"KEYFORMATVERSIONS":@"1/2/3/4",
+                                                                            }];
+    LSPSessionKeyTag *tag2 = [[LSPSessionKeyTag alloc] initWithAttributes:@{
+                                                                            @"METHOD":@"AES-128",
+                                                                            @"URI":@"s1/keys/k1",
+                                                                            @"KEYFORMAT":@"key-format",
+                                                                            @"KEYFORMATVERSIONS":@"1/2/3/4",
+                                                                            }];
+    XCTAssertEqualObjects(tag1, tag2);
+    
+    LSPSessionKeyTag *tag3 = [[LSPSessionKeyTag alloc] initWithAttributes:@{
+                                                                            @"METHOD":@"AES-128",
+                                                                            @"URI":@"s1/keys/k2",
+                                                                            @"KEYFORMAT":@"key-format",
+                                                                            @"KEYFORMATVERSIONS":@"1/2/3/4",
+                                                                            }];
+    XCTAssertNotEqualObjects(tag1, tag3);
+}
+
 @end
 
 #pragma mark - Start Tag
@@ -674,6 +836,19 @@
     
     tag = [[LSPStartTag alloc] initWithAttributes:@{@"TIME-OFFSET":@(1.5), @"PRECISE":@"YES"}];
     XCTAssertEqualObjects([tag serialize], @"#EXT-X-START:TIME-OFFSET=1.5,PRECISE=YES");
+}
+
+- (void)testTagEquality
+{
+    LSPStartTag *tag1 = [[LSPStartTag alloc] initWithAttributes:@{@"TIME-OFFSET":@(1.5)}];
+    
+    LSPStartTag *tag2 = [[LSPStartTag alloc] initWithAttributes:@{@"TIME-OFFSET":@(1.5), @"PRECISE":@"NO"}];
+    
+    XCTAssertEqualObjects(tag1, tag2);
+    
+    LSPStartTag *tag3 = [[LSPStartTag alloc] initWithAttributes:@{@"TIME-OFFSET":@(1.5), @"PRECISE":@"YES"}];
+    
+    XCTAssertNotEqualObjects(tag1, tag3);
 }
 
 @end
@@ -727,6 +902,19 @@
     XCTAssertEqualObjects([tag serialize], @"#EXTINF:3.2,serialize");
 }
 
+- (void)testTagEquality
+{
+    LSPInfoTag *tag1 = [[LSPInfoTag alloc] initWithDuration:1.0 title:nil];
+    LSPInfoTag *tag2 = [[LSPInfoTag alloc] initWithDuration:1.0 title:nil];
+    XCTAssertEqualObjects(tag1, tag2);
+    
+    LSPInfoTag *tag3 = [[LSPInfoTag alloc] initWithDuration:1.0 title:@"title"];
+    LSPInfoTag *tag4 = [[LSPInfoTag alloc] initWithDuration:1.0 title:@"title"];
+    XCTAssertEqualObjects(tag3, tag4);
+    
+    XCTAssertNotEqualObjects(tag1, tag3);
+}
+
 @end
 
 #pragma mark - Map Tag
@@ -772,6 +960,18 @@
     XCTAssertEqualObjects([tag serialize], @"#EXT-X-MAP:URI=\"http://www.example.com/map/url\",BYTERANGE=123@4567");
 }
 
+- (void)testTagEquality
+{
+    LSPMapTag *tag1 = [[LSPMapTag alloc] initWithURI:[NSURL URLWithString:@"http://www.example.com/map/url"] byteRange:[[LSPByteRange alloc] initWithLength:123 offset:4567]];
+    LSPMapTag *tag2 = [[LSPMapTag alloc] initWithURI:[NSURL URLWithString:@"http://www.example.com/map/url"] byteRange:[[LSPByteRange alloc] initWithLength:123 offset:4567]];
+    
+    XCTAssertEqualObjects(tag1, tag2);
+    
+    LSPMapTag *tag3 = [[LSPMapTag alloc] initWithURI:[NSURL URLWithString:@"http://www.example.com/map/other"] byteRange:[[LSPByteRange alloc] initWithLength:123 offset:4567]];
+    
+    XCTAssertNotEqualObjects(tag1, tag3);
+}
+
 @end
 
 #pragma mark - Byte Range Tag
@@ -812,6 +1012,20 @@
     XCTAssertEqualObjects([byteRange serialize], @"1204@80");
     tag = [[LSPByteRangeTag alloc] initWithByteRange:byteRange];
     XCTAssertEqualObjects([tag serialize], @"#EXT-X-BYTERANGE:1204@80");
+}
+
+- (void)testTagEquality
+{
+    LSPByteRange *byteRange = [[LSPByteRange alloc] initWithString:@"7890"];
+    LSPByteRangeTag *tag1 = [[LSPByteRangeTag alloc] initWithByteRange:byteRange];
+    
+    byteRange = [[LSPByteRange alloc] initWithLength:1204 offset:80];
+    LSPByteRangeTag *tag2 = [[LSPByteRangeTag alloc] initWithByteRange:byteRange];
+    XCTAssertNotEqualObjects(tag1, tag2);
+    
+    byteRange = [[LSPByteRange alloc] initWithLength:1204 offset:80];
+    LSPByteRangeTag *tag3 = [[LSPByteRangeTag alloc] initWithByteRange:byteRange];
+    XCTAssertEqualObjects(tag2, tag3);
 }
 
 @end
@@ -894,12 +1108,37 @@
 - (void)testSerialization
 {
     LSPKeyTag *tag = [[LSPKeyTag alloc] initWithAttributes:@{
-                                                                           @"METHOD":@"AES-128",
-                                                                           @"URI":@"s1/keys/k1",
-                                                                           @"KEYFORMAT":@"key-format",
-                                                                           @"KEYFORMATVERSIONS":@"1/2/3/4",
-                                                                           }];
+                                                             @"METHOD":@"AES-128",
+                                                             @"URI":@"s1/keys/k1",
+                                                             @"KEYFORMAT":@"key-format",
+                                                             @"KEYFORMATVERSIONS":@"1/2/3/4",
+                                                             }];
     XCTAssertEqualObjects([tag serialize], @"#EXT-X-KEY:METHOD=AES-128,URI=\"s1/keys/k1\",KEYFORMAT=\"key-format\",KEYFORMATVERSIONS=\"1/2/3/4\"");
+}
+
+- (void)testTagEquality
+{
+    LSPKeyTag *tag1 = [[LSPKeyTag alloc] initWithAttributes:@{
+                                                             @"METHOD":@"AES-128",
+                                                             @"URI":@"s1/keys/k1",
+                                                             @"KEYFORMAT":@"key-format",
+                                                             @"KEYFORMATVERSIONS":@"1/2/3/4",
+                                                             }];
+    LSPKeyTag *tag2 = [[LSPKeyTag alloc] initWithAttributes:@{
+                                                              @"METHOD":@"AES-128",
+                                                              @"URI":@"s1/keys/k1",
+                                                              @"KEYFORMAT":@"key-format",
+                                                              @"KEYFORMATVERSIONS":@"1/2/3/4",
+                                                              }];
+    XCTAssertEqualObjects(tag1, tag2);
+    
+    LSPKeyTag *tag3 = [[LSPKeyTag alloc] initWithAttributes:@{
+                                                              @"METHOD":@"AES-128",
+                                                              @"URI":@"s1/keys/k3",
+                                                              @"KEYFORMAT":@"key-format",
+                                                              @"KEYFORMATVERSIONS":@"1/2/3/4",
+                                                              }];
+    XCTAssertNotEqualObjects(tag1, tag3);
 }
 
 @end
@@ -978,6 +1217,77 @@
     XCTAssertEqualObjects([tag serialize], @"#EXT-X-PLAYLIST-TYPE:EVENT");
 }
 
+- (void)testTagEquality
+{
+    LSPPlaylistTypeTag *tag1 = [[LSPPlaylistTypeTag alloc] initWithType:LSPPlaylistTypeVOD];
+    LSPPlaylistTypeTag *tag2 = [[LSPPlaylistTypeTag alloc] initWithEnumeratedString:@"VOD"];
+    
+    XCTAssertEqualObjects(tag1, tag2);
+    
+    LSPPlaylistTypeTag *tag3 = [[LSPPlaylistTypeTag alloc] initWithType:LSPPlaylistTypeEvent];
+    
+    XCTAssertNotEqualObjects(tag1, tag3);
+}
+
 @end
 
+@interface TargetDurationTagTests : XCTestCase
+
+@end
+
+@implementation TargetDurationTagTests
+
+- (void)testSerialization
+{
+    LSPTargetDurationTag *tag = [[LSPTargetDurationTag alloc] initWithIntegerAttribute:1];
+    XCTAssertEqualObjects([tag serialize], @"#EXT-X-TARGETDURATION:1");
+    
+    tag = [[LSPTargetDurationTag alloc] initWithIntegerAttribute:2];
+    XCTAssertEqualObjects([tag serialize], @"#EXT-X-TARGETDURATION:2");
+    
+    tag = [[LSPTargetDurationTag alloc] initWithIntegerAttribute:3];
+    XCTAssertEqualObjects([tag serialize], @"#EXT-X-TARGETDURATION:3");
+}
+
+- (void)testTagEquality
+{
+    LSPTargetDurationTag *tag1 = [[LSPTargetDurationTag alloc] initWithIntegerAttribute:1];
+    LSPTargetDurationTag *tag2 = [[LSPTargetDurationTag alloc] initWithIntegerAttribute:1];
+    XCTAssertEqualObjects(tag1, tag2);
+    
+    LSPTargetDurationTag *tag3 = [[LSPTargetDurationTag alloc] initWithIntegerAttribute:2];
+    XCTAssertNotEqualObjects(tag1, tag3);
+}
+
+@end
+
+@interface DiscontinuitySequenceTagTests : XCTestCase
+
+@end
+
+@implementation DiscontinuitySequenceTagTests
+
+- (void)testSerialization
+{
+    LSPDiscontinuitySequenceTag *tag = [[LSPDiscontinuitySequenceTag alloc] initWithIntegerAttribute:1];
+    XCTAssertEqualObjects([tag serialize], @"#EXT-X-DISCONTINUITY-SEQUENCE:1");
+    
+    tag = [[LSPDiscontinuitySequenceTag alloc] initWithIntegerAttribute:2];
+    XCTAssertEqualObjects([tag serialize], @"#EXT-X-DISCONTINUITY-SEQUENCE:2");
+    
+    tag = [[LSPDiscontinuitySequenceTag alloc] initWithIntegerAttribute:3];
+    XCTAssertEqualObjects([tag serialize], @"#EXT-X-DISCONTINUITY-SEQUENCE:3");
+}
+
+- (void)testTagEquality
+{
+    LSPDiscontinuitySequenceTag *tag1 = [[LSPDiscontinuitySequenceTag alloc] initWithIntegerAttribute:1];
+    LSPDiscontinuitySequenceTag *tag2 = [[LSPDiscontinuitySequenceTag alloc] initWithIntegerAttribute:1];
+    XCTAssertEqualObjects(tag1, tag2);
+    
+    LSPDiscontinuitySequenceTag *tag3 = [[LSPDiscontinuitySequenceTag alloc] initWithIntegerAttribute:2];
+    XCTAssertNotEqualObjects(tag1, tag3);
+}
+
+@end
 
