@@ -494,6 +494,12 @@ static inline BOOL LSPEqualObjects(id<NSObject>obj1, id<NSObject>obj2)
         _frameRate = [frameRate doubleValue];
     }
     
+    NSString *uriString = attributes[@"URI"];
+    if ([uriString isKindOfClass:[NSString class]]) {
+        NSURL *uri = [NSURL URLWithString:uriString];
+        _uri = uri;
+    }
+    
     return self;
 }
 
@@ -501,7 +507,6 @@ static inline BOOL LSPEqualObjects(id<NSObject>obj1, id<NSObject>obj2)
 {
     return @[@"BANDWIDTH", @"AVERAGE-BANDWIDTH", @"CODECS", @"RESOLUTION", @"FRAME-RATE", @"URI"];
 }
-
 
 - (nullable NSString *)valueStringForAttributeKey:(nonnull NSString *)key
 {
@@ -523,6 +528,10 @@ static inline BOOL LSPEqualObjects(id<NSObject>obj1, id<NSObject>obj2)
     
     if ([key isEqualToString:@"FRAME-RATE"]) {
         return [NSString stringWithFormat:@"%@", @(self.frameRate)];
+    }
+    
+    if ([key isEqualToString:@"URI"]) {
+        return LSPQuotedString([self.uri absoluteString]);
     }
     
     return nil;
