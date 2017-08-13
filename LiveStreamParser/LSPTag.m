@@ -252,7 +252,9 @@ static inline BOOL LSPEqualObjects(id<NSObject>obj1, id<NSObject>obj2)
                                 @"AUDIO": @(LSPAttributeTypeQuotedString),
                                 @"VIDEO": @(LSPAttributeTypeQuotedString),
                                 @"SUBTITLES": @(LSPAttributeTypeQuotedString),
-                                @"CLOSED-CAPTIONS": @(LSPAttributeTypeQuotedString)};
+                                @"CLOSED-CAPTIONS": @(LSPAttributeTypeQuotedString),
+                                @"HDCP-LEVEL": @(LSPAttributeTypeEnumeratedString),
+                                };
     });
     return [attributeTypeForKey[key] integerValue];
 }
@@ -315,12 +317,21 @@ static inline BOOL LSPEqualObjects(id<NSObject>obj1, id<NSObject>obj2)
         _closedCaptions = closedCaptions;
     }
     
+    NSString *hdcpString = attributes[@"HDCP-LEVEL"];
+    if ([hdcpString isKindOfClass:[NSString class]]) {
+        if ([hdcpString isEqualToString:@"TYPE-0"]) {
+            _hdcpLevel = LSPHDCPLevelType0;
+        } else {
+            _hdcpLevel = LSPHDCPLevelNone;
+        }
+    }
+    
     return self;
 }
 
 + (nonnull NSArray<NSString *> *)attributeKeys
 {
-    return @[@"BANDWIDTH", @"AVERAGE-BANDWIDTH", @"CODECS", @"RESOLUTION", @"FRAME-RATE", @"AUDIO", @"VIDEO", @"SUBTITLES", @"CLOSED-CAPTIONS"];
+    return @[@"BANDWIDTH", @"AVERAGE-BANDWIDTH", @"CODECS", @"RESOLUTION", @"FRAME-RATE", @"AUDIO", @"VIDEO", @"SUBTITLES", @"CLOSED-CAPTIONS", @"HDCP-LEVEL"];
 }
 
 - (nullable NSString *)valueStringForAttributeKey:(nonnull NSString *)key
@@ -361,6 +372,17 @@ static inline BOOL LSPEqualObjects(id<NSObject>obj1, id<NSObject>obj2)
         return LSPQuotedString(self.closedCaptions);
     }
     
+    if ([key isEqualToString:@"HDCP-LEVEL"]) {
+        switch (self.hdcpLevel) {
+            case LSPHDCPLevelNone:
+                return nil;
+            case LSPHDCPLevelType0:
+                return @"TYPE-0";
+            default:
+                return nil;
+        }
+    }
+    
     return nil;
 }
 
@@ -376,7 +398,7 @@ static inline BOOL LSPEqualObjects(id<NSObject>obj1, id<NSObject>obj2)
 
 - (NSUInteger)hash
 {
-    return _bandwidth ^ _averageBandwidth ^ [_codecs hash] ^ (NSUInteger)_resolution.width ^ (NSUInteger)_resolution.height ^ (NSUInteger)_frameRate ^ [_audio hash] ^ [_video hash] ^ [_subtitles hash] ^ [_closedCaptions hash];
+    return _bandwidth ^ _averageBandwidth ^ [_codecs hash] ^ (NSUInteger)_resolution.width ^ (NSUInteger)_resolution.height ^ (NSUInteger)_frameRate ^ [_audio hash] ^ [_video hash] ^ [_subtitles hash] ^ [_closedCaptions hash] ^ _hdcpLevel;
 }
 
 - (BOOL)isEqual:(id)object
@@ -434,6 +456,10 @@ static inline BOOL LSPEqualObjects(id<NSObject>obj1, id<NSObject>obj2)
         return NO;
     }
     
+    if (self.hdcpLevel != other.hdcpLevel) {
+        return NO;
+    }
+    
     return YES;
 }
 
@@ -450,7 +476,9 @@ static inline BOOL LSPEqualObjects(id<NSObject>obj1, id<NSObject>obj2)
                                 @"AVERAGE-BANDWIDTH": @(LSPAttributeTypeDecimalInteger),
                                 @"CODECS": @(LSPAttributeTypeQuotedString),
                                 @"RESOLUTION": @(LSPAttributeTypeDecimalResolution),
-                                @"URI": @(LSPAttributeTypeQuotedString)};
+                                @"URI": @(LSPAttributeTypeQuotedString),
+                                @"HDCP-LEVEL": @(LSPAttributeTypeEnumeratedString),
+                                };
     });
     return [attributeTypeForKey[key] integerValue];
 }
@@ -494,12 +522,21 @@ static inline BOOL LSPEqualObjects(id<NSObject>obj1, id<NSObject>obj2)
         _uri = uri;
     }
     
+    NSString *hdcpString = attributes[@"HDCP-LEVEL"];
+    if ([hdcpString isKindOfClass:[NSString class]]) {
+        if ([hdcpString isEqualToString:@"TYPE-0"]) {
+            _hdcpLevel = LSPHDCPLevelType0;
+        } else {
+            _hdcpLevel = LSPHDCPLevelNone;
+        }
+    }
+    
     return self;
 }
 
 + (nonnull NSArray<NSString *> *)attributeKeys
 {
-    return @[@"BANDWIDTH", @"AVERAGE-BANDWIDTH", @"CODECS", @"RESOLUTION", @"URI"];
+    return @[@"BANDWIDTH", @"AVERAGE-BANDWIDTH", @"CODECS", @"RESOLUTION", @"URI", @"HDCP-LEVEL"];
 }
 
 - (nullable NSString *)valueStringForAttributeKey:(nonnull NSString *)key
@@ -522,6 +559,17 @@ static inline BOOL LSPEqualObjects(id<NSObject>obj1, id<NSObject>obj2)
     
     if ([key isEqualToString:@"URI"]) {
         return LSPQuotedString([self.uri absoluteString]);
+    }
+    
+    if ([key isEqualToString:@"HDCP-LEVEL"]) {
+        switch (self.hdcpLevel) {
+            case LSPHDCPLevelNone:
+                return nil;
+            case LSPHDCPLevelType0:
+                return @"TYPE-0";
+            default:
+                return nil;
+        }
     }
     
     return nil;
@@ -576,12 +624,16 @@ static inline BOOL LSPEqualObjects(id<NSObject>obj1, id<NSObject>obj2)
         return NO;
     }
     
+    if (self.hdcpLevel != other.hdcpLevel) {
+        return NO;
+    }
+    
     return YES;
 }
 
 - (NSUInteger)hash
 {
-    return [self.name hash] ^ _bandwidth ^ _averageBandwidth ^ [_codecs hash] ^ (NSUInteger)_resolution.width ^ (NSUInteger)_resolution.height ^ [_uri hash];
+    return [self.name hash] ^ _bandwidth ^ _averageBandwidth ^ [_codecs hash] ^ (NSUInteger)_resolution.width ^ (NSUInteger)_resolution.height ^ [_uri hash] ^ _hdcpLevel;
 }
 
 @end

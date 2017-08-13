@@ -60,6 +60,11 @@ typedef NS_ENUM(NSInteger, LSPEncryptionMethod) {
     LSPEncryptionMethodSampleAES
 };
 
+typedef NS_ENUM(NSInteger, LSPHDCPLevel) {
+    LSPHDCPLevelNone,
+    LSPHDCPLevelType0,
+};
+
 /**
  A common protocol for all HLS tags.
  */
@@ -547,6 +552,11 @@ typedef NS_ENUM(NSInteger, LSPMediaType) {
  */
 @property (nonatomic, nullable, readonly, copy) NSString *closedCaptions;
 
+/**
+ The HDCP level on this stream.
+ */
+@property (nonatomic, readonly) LSPHDCPLevel hdcpLevel;
+
 - (instancetype)initWithName:(NSString *)name NS_UNAVAILABLE;
 
 @end
@@ -591,6 +601,13 @@ typedef NS_ENUM(NSInteger, LSPMediaType) {
  Identifies media playlist file.
  */
 @property (nonatomic, readonly, nullable) NSURL *uri;
+
+/**
+ The HDCP level on this stream.
+ */
+@property (nonatomic, readonly) LSPHDCPLevel hdcpLevel;
+
+- (instancetype)initWithName:(NSString *)name NS_UNAVAILABLE;
 
 @end
 
