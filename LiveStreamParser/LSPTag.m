@@ -10,7 +10,7 @@
 
 #import "LSPTag.h"
 
-extern NSString * _Nullable LSPPlaylistTypeString(LSPPlaylistType type)
+static NSString * _Nullable LSPPlaylistTypeString(LSPPlaylistType type)
 {
     switch (type) {
         case LSPPlaylistTypeVOD:

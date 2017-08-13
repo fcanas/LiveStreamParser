@@ -371,16 +371,6 @@ typedef NS_ENUM(NSUInteger, LSPPlaylistType) {
 };
 
 /**
- Returns a string representation of an `LSPPlaylistType`.
- 
- If the passed value is not an LSPPlaylistType, nil will be returned.
-
- @param type An LSPPlaylistType
- @return A string representation of the playlist type
- */
-extern NSString *_Nullable LSPPlaylistTypeString(LSPPlaylistType type);
-
-/**
  A tag for EXT-X-PLAYLIST-TYPE
  
  The presence of the tag indicates whether the playlist is a live event, or
