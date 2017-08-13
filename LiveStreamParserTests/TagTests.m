@@ -355,27 +355,14 @@
     XCTAssert(CGSizeEqualToSize(infoTag.resolution, testSize));
 }
 
-- (void)testFrameRate
-{
-    LSPIFrameStreamInfoTag *infoTag =[[LSPIFrameStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @1}];
-    XCTAssertEqual(infoTag.frameRate, (NSUInteger)0, @"When no framerate is present, value should be zero since we're not indicating a missing value otherwise");
-    
-    infoTag = [[LSPIFrameStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @1, @"FRAME-RATE":@24}];
-    XCTAssertEqual(infoTag.frameRate, (double)24);
-    
-    infoTag = [[LSPIFrameStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @1, @"FRAME-RATE":@65}];
-    XCTAssertEqual(infoTag.frameRate, (double)65);
-}
-
 - (void)testSerialization
 {
     LSPIFrameStreamInfoTag *tag = [[LSPIFrameStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @1,
                                                                                        @"AVERAGE-BANDWIDTH":@9876,
                                                                                        @"CODECS":@"a,b,c",
                                                                                        @"RESOLUTION":[NSValue valueWithCGSize:CGSizeMake(123, 456)],
-                                                                                       @"FRAME-RATE":@(28.1),
                                                                                        }];
-    NSString *expectedTag = @"#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=1,AVERAGE-BANDWIDTH=9876,CODECS=\"a,b,c\",RESOLUTION=123x456,FRAME-RATE=28.1";
+    NSString *expectedTag = @"#EXT-X-I-FRAME-STREAM-INF:BANDWIDTH=1,AVERAGE-BANDWIDTH=9876,CODECS=\"a,b,c\",RESOLUTION=123x456";
     XCTAssertEqualObjects([tag serialize], expectedTag);
 }
 
@@ -385,13 +372,11 @@
                                                                                         @"AVERAGE-BANDWIDTH":@9876,
                                                                                         @"CODECS":@"a,b,c",
                                                                                         @"RESOLUTION":[NSValue valueWithCGSize:CGSizeMake(123, 456)],
-                                                                                        @"FRAME-RATE":@(28.1),
                                                                                         }];
     LSPIFrameStreamInfoTag *tag2 = [[LSPIFrameStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @1,
                                                                                         @"AVERAGE-BANDWIDTH":@9876,
                                                                                         @"CODECS":@"a,b,c",
                                                                                         @"RESOLUTION":[NSValue valueWithCGSize:CGSizeMake(123, 456)],
-                                                                                        @"FRAME-RATE":@(28.1),
                                                                                         }];
     XCTAssertEqualObjects(tag1, tag2);
     
@@ -399,7 +384,6 @@
                                                                                         @"AVERAGE-BANDWIDTH":@9876,
                                                                                         @"CODECS":@"a,b,c",
                                                                                         @"RESOLUTION":[NSValue valueWithCGSize:CGSizeMake(123, 456)],
-                                                                                        @"FRAME-RATE":@(28.1),
                                                                                         }];
     
     XCTAssertNotEqualObjects(tag3, tag1);

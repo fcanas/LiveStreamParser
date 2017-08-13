@@ -450,7 +450,6 @@ static inline BOOL LSPEqualObjects(id<NSObject>obj1, id<NSObject>obj2)
                                 @"AVERAGE-BANDWIDTH": @(LSPAttributeTypeDecimalInteger),
                                 @"CODECS": @(LSPAttributeTypeQuotedString),
                                 @"RESOLUTION": @(LSPAttributeTypeDecimalResolution),
-                                @"FRAME-RATE": @(LSPAttributeTypeDecimalFloatingPoint),
                                 @"URI": @(LSPAttributeTypeQuotedString)};
     });
     return [attributeTypeForKey[key] integerValue];
@@ -489,11 +488,6 @@ static inline BOOL LSPEqualObjects(id<NSObject>obj1, id<NSObject>obj2)
         _resolution = CGSizeZero;
     }
     
-    NSNumber *frameRate = attributes[@"FRAME-RATE"];
-    if ([frameRate isKindOfClass:[NSNumber class]]) {
-        _frameRate = [frameRate doubleValue];
-    }
-    
     NSString *uriString = attributes[@"URI"];
     if ([uriString isKindOfClass:[NSString class]]) {
         NSURL *uri = [NSURL URLWithString:uriString];
@@ -505,7 +499,7 @@ static inline BOOL LSPEqualObjects(id<NSObject>obj1, id<NSObject>obj2)
 
 + (nonnull NSArray<NSString *> *)attributeKeys
 {
-    return @[@"BANDWIDTH", @"AVERAGE-BANDWIDTH", @"CODECS", @"RESOLUTION", @"FRAME-RATE", @"URI"];
+    return @[@"BANDWIDTH", @"AVERAGE-BANDWIDTH", @"CODECS", @"RESOLUTION", @"URI"];
 }
 
 - (nullable NSString *)valueStringForAttributeKey:(nonnull NSString *)key
@@ -524,10 +518,6 @@ static inline BOOL LSPEqualObjects(id<NSObject>obj1, id<NSObject>obj2)
     
     if ([key isEqualToString:@"RESOLUTION"]) {
         return [NSString stringWithFormat:@"%@x%@", @(self.resolution.width), @(self.resolution.height)];
-    }
-    
-    if ([key isEqualToString:@"FRAME-RATE"]) {
-        return [NSString stringWithFormat:@"%@", @(self.frameRate)];
     }
     
     if ([key isEqualToString:@"URI"]) {
@@ -582,10 +572,6 @@ static inline BOOL LSPEqualObjects(id<NSObject>obj1, id<NSObject>obj2)
         return NO;
     }
     
-    if (self.frameRate != other.frameRate) {
-        return NO;
-    }
-    
     if (!LSPEqualObjects(self.uri, other.uri)) {
         return NO;
     }
@@ -595,7 +581,7 @@ static inline BOOL LSPEqualObjects(id<NSObject>obj1, id<NSObject>obj2)
 
 - (NSUInteger)hash
 {
-    return [self.name hash] ^ _bandwidth ^ _averageBandwidth ^ [_codecs hash] ^ (NSUInteger)_resolution.width ^ (NSUInteger)_resolution.height ^ (NSUInteger)_frameRate ^ [_uri hash];
+    return [self.name hash] ^ _bandwidth ^ _averageBandwidth ^ [_codecs hash] ^ (NSUInteger)_resolution.width ^ (NSUInteger)_resolution.height ^ [_uri hash];
 }
 
 @end
