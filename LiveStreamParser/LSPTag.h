@@ -588,15 +588,6 @@ typedef NS_ENUM(NSInteger, LSPMediaType) {
 @property (nonatomic, readonly) CGSize resolution;
 
 /**
- Maximum frame rate for all video in the variant stream.
- 
- Rounded to 3 decimal places. Should be present if video is ever >30fps
- 
- Not required. Will be zero if not present in attributes.
- */
-@property (nonatomic, readonly) double frameRate;
-
-/**
  Identifies media playlist file.
  */
 @property (nonatomic, readonly, nullable) NSURL *uri;
