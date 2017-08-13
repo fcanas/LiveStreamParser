@@ -238,6 +238,19 @@
     XCTAssertEqualObjects(infoTag.closedCaptions, @"closed captions group");
 }
 
+- (void)testHDCP
+{
+    // No HDCP
+    LSPStreamInfoTag *specifiedNoHDCP =[[LSPStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @1, @"HDCP-LEVEL" : @"NONE"}];
+    LSPStreamInfoTag *unspecifiedHDCP =[[LSPStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @1}];
+    XCTAssertEqualObjects(unspecifiedHDCP, specifiedNoHDCP);
+    XCTAssertEqual(specifiedNoHDCP.hdcpLevel, LSPHDCPLevelNone);
+    
+    // Type-0 HDCP
+    LSPStreamInfoTag *type0HDCP =[[LSPStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @1, @"HDCP-LEVEL" : @"TYPE-0"}];
+    XCTAssertEqual(type0HDCP.hdcpLevel, LSPHDCPLevelType0);
+}
+
 - (void)testSerialization
 {
     LSPStreamInfoTag *tag = [[LSPStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @1,
@@ -353,6 +366,19 @@
     CGSize testSize = CGSizeMake(123, 456);
     infoTag =[[LSPIFrameStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @1, @"RESOLUTION":[NSValue valueWithCGSize:testSize]}];
     XCTAssert(CGSizeEqualToSize(infoTag.resolution, testSize));
+}
+
+- (void)testHDCP
+{
+    // No HDCP
+    LSPIFrameStreamInfoTag *specifiedNoHDCP =[[LSPIFrameStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @1, @"HDCP-LEVEL" : @"NONE"}];
+    LSPIFrameStreamInfoTag *unspecifiedHDCP =[[LSPIFrameStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @1}];
+    XCTAssertEqualObjects(unspecifiedHDCP, specifiedNoHDCP);
+    XCTAssertEqual(specifiedNoHDCP.hdcpLevel, LSPHDCPLevelNone);
+    
+    // Type-0 HDCP
+    LSPIFrameStreamInfoTag *type0HDCP =[[LSPIFrameStreamInfoTag alloc] initWithAttributes:@{@"BANDWIDTH" : @1, @"HDCP-LEVEL" : @"TYPE-0"}];
+    XCTAssertEqual(type0HDCP.hdcpLevel, LSPHDCPLevelType0);
 }
 
 - (void)testSerialization
