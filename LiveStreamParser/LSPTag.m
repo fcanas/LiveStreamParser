@@ -71,6 +71,11 @@ static NSString * _Nullable LSPQuotedString(NSString * _Nullable string)
     return string ? [NSString stringWithFormat:@"\"%@\"", string] : nil;
 }
 
+static inline BOOL LSPEqualObjects(id<NSObject>obj1, id<NSObject>obj2)
+{
+    return obj1 == obj2 || [obj1 isEqual:obj2];
+}
+
 @implementation LSPBasicTag
 
 @synthesize name = _name;
@@ -92,6 +97,30 @@ static NSString * _Nullable LSPQuotedString(NSString * _Nullable string)
 {
     return [NSString stringWithFormat:@"#%@", self.name];
 }
+
+- (NSUInteger)hash
+{
+    return [_name hash];
+}
+
+- (BOOL)isEqual:(id)object
+{
+    if (object == nil) {
+        return NO;
+    }
+    
+    if (object == self) {
+        return YES;
+    }
+    
+    if (![object isKindOfClass:[self class]]) {
+        return NO;
+    }
+    __typeof(self) other = object;
+    
+    return [self.name isEqual:other.name];
+}
+
 
 @end
 
@@ -121,6 +150,29 @@ static NSString * _Nullable LSPQuotedString(NSString * _Nullable string)
 - (NSString *)serialize
 {
     return [self.uri absoluteString];
+}
+
+- (NSUInteger)hash
+{
+    return [self.uri hash];
+}
+
+- (BOOL)isEqual:(id)object
+{
+    if (object == nil) {
+        return NO;
+    }
+    
+    if (object == self) {
+        return YES;
+    }
+
+    if (![object isKindOfClass:[self class]]) {
+        return NO;
+    }
+    __typeof(self) other = object;
+
+    return [self.uri isEqual:other.uri];
 }
 
 @end
@@ -158,6 +210,29 @@ static NSString * _Nullable LSPQuotedString(NSString * _Nullable string)
 - (NSString *)serialize
 {
     return [NSString stringWithFormat:@"#%@:%@", [self name], @(self.version)];
+}
+
+- (NSUInteger)hash
+{
+    return (NSUInteger)(self.version ^ 0xf000);
+}
+
+- (BOOL)isEqual:(id)object
+{
+    if (object == nil) {
+        return NO;
+    }
+    
+    if (object == self) {
+        return YES;
+    }
+    
+    if (![object isKindOfClass:[self class]]) {
+        return NO;
+    }
+    __typeof(self) other = object;
+    
+    return self.version == other.version;
 }
 
 @end
@@ -259,7 +334,7 @@ static NSString * _Nullable LSPQuotedString(NSString * _Nullable string)
     }
 
     if ([key isEqualToString:@"CODECS"]) {
-        return [self.codecs componentsJoinedByString:@","];
+        return LSPQuotedString([self.codecs componentsJoinedByString:@","]);
     }
     
     if ([key isEqualToString:@"RESOLUTION"]) {
@@ -271,19 +346,19 @@ static NSString * _Nullable LSPQuotedString(NSString * _Nullable string)
     }
     
     if ([key isEqualToString:@"AUDIO"]) {
-        return self.audio;
+        return LSPQuotedString(self.audio);
     }
     
     if ([key isEqualToString:@"VIDEO"]) {
-        return self.video;
+        return LSPQuotedString(self.video);
     }
     
     if ([key isEqualToString:@"SUBTITLES"]) {
-        return self.subtitles;
+        return LSPQuotedString(self.subtitles);
     }
     
     if ([key isEqualToString:@"CLOSED-CAPTIONS"]) {
-        return self.closedCaptions;
+        return LSPQuotedString(self.closedCaptions);
     }
     
     return nil;
@@ -297,6 +372,69 @@ static NSString * _Nullable LSPQuotedString(NSString * _Nullable string)
 - (nonnull NSString *)serialize
 {
     return LSPSerializeAttributedTag(self);
+}
+
+- (NSUInteger)hash
+{
+    return _bandwidth ^ _averageBandwidth ^ [_codecs hash] ^ (NSUInteger)_resolution.width ^ (NSUInteger)_resolution.height ^ (NSUInteger)_frameRate ^ [_audio hash] ^ [_video hash] ^ [_subtitles hash] ^ [_closedCaptions hash];
+}
+
+- (BOOL)isEqual:(id)object
+{
+    if (object == nil) {
+        return NO;
+    }
+    
+    if (object == self) {
+        return YES;
+    }
+    
+    if (![object isKindOfClass:[self class]]) {
+        return NO;
+    }
+    __typeof(self) other = object;
+    
+    if (!LSPEqualObjects(self.name, other.name)) {
+        return NO;
+    }
+    
+    if (self.bandwidth != other.bandwidth) {
+        return NO;
+    }
+    
+    if (self.averageBandwidth != other.averageBandwidth) {
+        return NO;
+    }
+
+    if (!LSPEqualObjects(self.codecs, other.codecs)) {
+        return NO;
+    }
+    
+    if (!CGSizeEqualToSize(self.resolution, other.resolution)) {
+        return NO;
+    }
+    
+    if (self.frameRate != other.frameRate) {
+        return NO;
+    }
+    
+    if (!LSPEqualObjects(self.audio, other.audio)) {
+        return NO;
+    }
+
+    if (!LSPEqualObjects(self.video, other.video)) {
+        return NO;
+    }
+    
+    if (!LSPEqualObjects(self.subtitles, other.subtitles)) {
+        return NO;
+    }
+    
+    if (!LSPEqualObjects(self.closedCaptions, other.closedCaptions)) {
+        return NO;
+    }
+    
+    return YES;
 }
 
 @end
@@ -376,7 +514,7 @@ static NSString * _Nullable LSPQuotedString(NSString * _Nullable string)
     }
     
     if ([key isEqualToString:@"CODECS"]) {
-        return [self.codecs componentsJoinedByString:@","];
+        return LSPQuotedString([self.codecs componentsJoinedByString:@","]);
     }
     
     if ([key isEqualToString:@"RESOLUTION"]) {
@@ -390,7 +528,6 @@ static NSString * _Nullable LSPQuotedString(NSString * _Nullable string)
     return nil;
 }
 
-
 - (NSString *)name
 {
     return @"EXT-X-I-FRAME-STREAM-INF";
@@ -399,6 +536,57 @@ static NSString * _Nullable LSPQuotedString(NSString * _Nullable string)
 - (nonnull NSString *)serialize
 {
     return LSPSerializeAttributedTag(self);
+}
+
+- (BOOL)isEqual:(id)object
+{
+    if (object == nil) {
+        return NO;
+    }
+    
+    if (object == self) {
+        return YES;
+    }
+    
+    if (![object isKindOfClass:[self class]]) {
+        return NO;
+    }
+    __typeof(self) other = object;
+    
+    if (!LSPEqualObjects(self.name, other.name)) {
+        return NO;
+    }
+    
+    if (self.bandwidth != other.bandwidth) {
+        return NO;
+    }
+    
+    if (self.averageBandwidth != other.averageBandwidth) {
+        return NO;
+    }
+    
+    if (!LSPEqualObjects(self.codecs, other.codecs)) {
+        return NO;
+    }
+    
+    if (!CGSizeEqualToSize(self.resolution, other.resolution)) {
+        return NO;
+    }
+    
+    if (self.frameRate != other.frameRate) {
+        return NO;
+    }
+    
+    if (!LSPEqualObjects(self.uri, other.uri)) {
+        return NO;
+    }
+    
+    return YES;
+}
+
+- (NSUInteger)hash
+{
+    return [self.name hash] ^ _bandwidth ^ _averageBandwidth ^ [_codecs hash] ^ (NSUInteger)_resolution.width ^ (NSUInteger)_resolution.height ^ (NSUInteger)_frameRate ^ [_uri hash];
 }
 
 @end
@@ -586,6 +774,66 @@ static NSString * _Nullable LSPQuotedString(NSString * _Nullable string)
     return LSPSerializeAttributedTag(self);
 }
 
+- (BOOL)isEqual:(id)object
+{
+    if (object == nil) {
+        return NO;
+    }
+    
+    if (object == self) {
+        return YES;
+    }
+    
+    if (![object isKindOfClass:[self class]]) {
+        return NO;
+    }
+    __typeof(self) other = object;
+    
+    if (!LSPEqualObjects(self.uri, other.uri)) {
+        return NO;
+    }
+
+    if (!LSPEqualObjects(self.groupID, other.groupID)) {
+        return NO;
+    }
+    
+    if (!LSPEqualObjects(self.language, other.language)) {
+        return NO;
+    }
+    
+    if (!LSPEqualObjects(self.associatedLanguage, other.associatedLanguage)) {
+        return NO;
+    }
+    
+    if (!LSPEqualObjects(self.renditionName, other.renditionName)) {
+        return NO;
+    }
+    
+    if (self.defaultRendition != other.defaultRendition) {
+        return NO;
+    }
+    
+    if (self.autoselect != other.autoselect) {
+        return NO;
+    }
+    
+    if (self.forced != other.forced) {
+        return NO;
+    }
+    
+    if (!LSPEqualObjects(self.instreamID, other.instreamID)) {
+        return NO;
+    }
+    
+    return YES;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger booleanHash = (NSUInteger)_forced ^ ((NSUInteger)_autoselect << 1) ^ ((NSUInteger)_defaultRendition << 2);
+    return booleanHash ^ [_instreamID hash] ^ [_renditionName hash] ^ [_associatedLanguage hash] ^ [_language hash] ^ [_groupID hash] ^ [_uri hash];
+}
+
 @end
 
 
@@ -669,7 +917,6 @@ static NSString * _Nullable LSPQuotedString(NSString * _Nullable string)
     return nil;
 }
 
-
 - (NSString *)name
 {
     return @"EXT-X-SESSION-DATA";
@@ -680,6 +927,29 @@ static NSString * _Nullable LSPQuotedString(NSString * _Nullable string)
     return LSPSerializeAttributedTag(self);
 }
 
+- (BOOL)isEqual:(id)object
+{
+    if (object == nil) {
+        return NO;
+    }
+    
+    if (object == self) {
+        return YES;
+    }
+    
+    if (![object isKindOfClass:[self class]]) {
+        return NO;
+    }
+    __typeof(self) other = object;
+    
+    return [[self serialize] isEqual:[other serialize]];
+}
+
+- (NSUInteger)hash
+{
+    return [_dataID hash] ^ [_value hash] ^ [_language hash] ^ [_uri hash];
+}
+
 @end
 
 @implementation LSPSessionKeyTag
@@ -687,6 +957,24 @@ static NSString * _Nullable LSPQuotedString(NSString * _Nullable string)
 - (NSString *)name
 {
     return @"EXT-X-SESSION-KEY";
+}
+
+- (BOOL)isEqual:(id)object
+{
+    if (object == nil) {
+        return NO;
+    }
+    
+    if (object == self) {
+        return YES;
+    }
+    
+    if (![object isKindOfClass:[self class]]) {
+        return NO;
+    }
+    __typeof(self) other = object;
+    
+    return [[self serialize] isEqual:[other serialize]];
 }
 
 @end
@@ -756,6 +1044,29 @@ static NSString * _Nullable LSPQuotedString(NSString * _Nullable string)
     return LSPSerializeAttributedTag(self);
 }
 
+- (BOOL)isEqual:(id)object
+{
+    if (object == nil) {
+        return NO;
+    }
+    
+    if (object == self) {
+        return YES;
+    }
+    
+    if (![object isKindOfClass:[self class]]) {
+        return NO;
+    }
+    __typeof(self) other = object;
+    
+    return [[self serialize] isEqual:[other serialize]];
+}
+
+- (NSUInteger)hash
+{
+    return (NSUInteger)_timeOffset ^ _precise;
+}
+
 @end
 
 #pragma mark - Media Segment Tags
@@ -781,6 +1092,37 @@ static NSString * _Nullable LSPQuotedString(NSString * _Nullable string)
 
 - (nonnull NSString *)serialize {
     return [NSString stringWithFormat:@"#%@:%@,%@", self.name, @(_duration), self.title ?: @""];
+}
+
+- (BOOL)isEqual:(id)object
+{
+    if (object == nil) {
+        return NO;
+    }
+    
+    if (object == self) {
+        return YES;
+    }
+    
+    if (![object isKindOfClass:[self class]]) {
+        return NO;
+    }
+    __typeof(self) other = object;
+    
+    if (!LSPEqualObjects(self.title, other.title)) {
+        return NO;
+    }
+    
+    if (self.duration != other.duration) {
+        return NO;
+    }
+    
+    return YES;
+}
+
+- (NSUInteger)hash
+{
+    return [self.name hash] ^ (NSUInteger)_duration ^ [_title hash];
 }
 
 @end
@@ -914,6 +1256,29 @@ static NSString * _Nullable LSPQuotedString(NSString * _Nullable string)
     return LSPSerializeAttributedTag(self);
 }
 
+- (BOOL)isEqual:(id)object
+{
+    if (object == nil) {
+        return NO;
+    }
+    
+    if (object == self) {
+        return YES;
+    }
+    
+    if (![object isKindOfClass:[self class]]) {
+        return NO;
+    }
+    __typeof(self) other = object;
+    
+    return [[self serialize] isEqual:[other serialize]];
+}
+
+- (NSUInteger)hash
+{
+    return (NSUInteger)_method ^ [_uri hash] ^ [_keyFormat hash] ^ [_keyFormatVersions hash] ^ [_initializationVector hash];
+}
+
 @end
 
 
@@ -997,6 +1362,29 @@ static NSString * _Nullable LSPQuotedString(NSString * _Nullable string)
     return LSPSerializeAttributedTag(self);
 }
 
+- (BOOL)isEqual:(id)object
+{
+    if (object == nil) {
+        return NO;
+    }
+    
+    if (object == self) {
+        return YES;
+    }
+    
+    if (![object isKindOfClass:[self class]]) {
+        return NO;
+    }
+    __typeof(self) other = object;
+    
+    return [[self serialize] isEqualToString:[other serialize]];
+}
+
+- (NSUInteger)hash
+{
+    return [_uri hash] ^ [_byteRange hash];
+}
+
 @end
 
 @implementation LSPProgramDateTimeTag
@@ -1021,6 +1409,11 @@ static NSString * _Nullable LSPQuotedString(NSString * _Nullable string)
 {
     // TODO
     return @"";
+}
+
+- (NSUInteger)hash
+{
+    return [_date hash];
 }
 
 @end
@@ -1049,6 +1442,32 @@ static NSString * _Nullable LSPQuotedString(NSString * _Nullable string)
     return [NSString stringWithFormat:@"#%@:%@", [self name], [self.byteRange serialize]];
 }
 
+- (BOOL)isEqual:(id)object
+{
+    if (object == nil) {
+        return NO;
+    }
+    
+    if (object == self) {
+        return YES;
+    }
+    
+    if (![object isKindOfClass:[self class]]) {
+        return NO;
+    }
+    __typeof(self) other = object;
+    
+    if (!LSPEqualObjects(self.byteRange, other.byteRange)) {
+        return NO;
+    }
+
+    return YES;
+}
+
+- (NSUInteger)hash
+{
+    return [_byteRange hash];
+}
 
 @end
 
@@ -1086,6 +1505,11 @@ static NSString * _Nullable LSPQuotedString(NSString * _Nullable string)
     return [NSString stringWithFormat:@"#%@:%@", [self name], @(self.number)];
 }
 
+- (NSUInteger)hash
+{
+    return (NSUInteger)_number;
+}
+
 @end
 
 @implementation LSPDiscontinuitySequenceTag
@@ -1116,6 +1540,29 @@ static NSString * _Nullable LSPQuotedString(NSString * _Nullable string)
 - (NSString *)serialize
 {
     return [NSString stringWithFormat:@"#%@:%@", [self name], @(self.number)];
+}
+
+- (BOOL)isEqual:(id)object
+{
+    if (object == nil) {
+        return NO;
+    }
+    
+    if (object == self) {
+        return YES;
+    }
+    
+    if (![object isKindOfClass:[self class]]) {
+        return NO;
+    }
+    __typeof(self) other = object;
+    
+    return self.number == other.number;
+}
+
+- (NSUInteger)hash
+{
+    return (NSUInteger)_number;
 }
 
 @end
@@ -1155,6 +1602,29 @@ static NSString * _Nullable LSPQuotedString(NSString * _Nullable string)
     return [NSString stringWithFormat:@"#%@:%@", [self name], LSPPlaylistTypeString(self.type)];
 }
 
+- (BOOL)isEqual:(id)object
+{
+    if (object == nil) {
+        return NO;
+    }
+    
+    if (object == self) {
+        return YES;
+    }
+    
+    if (![object isKindOfClass:[self class]]) {
+        return NO;
+    }
+    __typeof(self) other = object;
+    
+    return self.type == other.type;
+}
+
+- (NSUInteger)hash
+{
+    return (NSUInteger)_type;
+}
+
 @end
 
 
@@ -1181,6 +1651,29 @@ static NSString * _Nullable LSPQuotedString(NSString * _Nullable string)
 - (NSString *)serialize
 {
     return [NSString stringWithFormat:@"#%@:%@", [self name], @(self.duration)];
+}
+
+- (BOOL)isEqual:(id)object
+{
+    if (object == nil) {
+        return NO;
+    }
+    
+    if (object == self) {
+        return YES;
+    }
+    
+    if (![object isKindOfClass:[self class]]) {
+        return NO;
+    }
+    __typeof(self) other = object;
+    
+    return self.duration == other.duration;
+}
+
+- (NSUInteger)hash
+{
+    return (NSUInteger)_duration;
 }
 
 @end

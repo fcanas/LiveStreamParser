@@ -310,6 +310,37 @@
     XCTAssertEqualObjects(mediaTag.instreamID, @"CC1");
 }
 
+- (void)testRounTripMasterPlaylist
+{
+    NSString *testPlaylistString = [NSString stringWithContentsOfURL:[[NSBundle bundleForClass:[self class]] URLForResource:@"master" withExtension:@"m3u8"] encoding:NSUTF8StringEncoding error:nil];
+    
+    // Sanity check to make sure we've loaded the test playlist
+    XCTAssertEqual(testPlaylistString.length, (NSUInteger)2621);
+    
+    LSPTagParser *parser = [[LSPTagParser alloc] initWithString:testPlaylistString];
+    
+    NSArray<id<LSPTag>> *playlist = [parser parse];
+    XCTAssertEqual(playlist.count, (NSUInteger)27);
+    
+    NSMutableString *reconstructedPlaylistString = [@"" mutableCopy];
+    for (id<LSPTag> tag in playlist) {
+        [reconstructedPlaylistString appendFormat:@"%@\n", [tag serialize]];
+    }
+    
+    LSPTagParser *secondParser = [[LSPTagParser alloc] initWithString:reconstructedPlaylistString];
+    NSArray<id<LSPTag>> *reparsedPlaylist = [secondParser parse];
+    
+    XCTAssertEqual(playlist.count, reparsedPlaylist.count);
+    
+    // We could use XCTAssertEqualObjects(playlist, reparsedPlaylist) here, but
+    // this way we know which tags break the round-trip test.
+    for (NSUInteger idx = 0; idx < playlist.count && idx < reparsedPlaylist.count; idx++) {
+        id<LSPTag> a = playlist[idx];
+        id<LSPTag> b = reparsedPlaylist[idx];
+        XCTAssertEqualObjects(a, b);
+    }
+}
+
 #pragma mark - Performance
 
 - (void)testPerformanceExample
