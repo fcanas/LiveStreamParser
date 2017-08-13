@@ -44,6 +44,9 @@
                   Identifier = "ProgramDateTimeTagTests/testSerialization">
                </Test>
                <Test
+                  Identifier = "ProgramDateTimeTagTests/testTagEquality">
+               </Test>
+               <Test
                   Identifier = "TagParserTests/testProgramDateTimeTag">
                </Test>
             </SkippedTests>

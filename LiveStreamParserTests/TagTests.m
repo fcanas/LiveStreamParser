@@ -10,7 +10,28 @@
 
 @import XCTest;
 
-@interface TagTests : XCTestCase
+@interface AbstractTagTestCase : XCTestCase
+@end
+
+@implementation AbstractTagTestCase
+
+- (void)testSerialization
+{
+    if (![[self class] isEqual:[AbstractTagTestCase class]]) {
+        XCTFail(@"Must be overridden by a subclass");
+    }
+}
+
+- (void)testTagEquality
+{
+    if (![[self class] isEqual:[AbstractTagTestCase class]]) {
+        XCTFail(@"Must be overridden by a subclass");
+    }
+}
+
+@end
+
+@interface TagTests : AbstractTagTestCase
 
 @end
 
@@ -25,7 +46,7 @@
     XCTAssertEqualObjects(tag1.name, tag3.name);
 }
 
-- (void)testBasicTagSerialization
+- (void)testSerialization
 {
     LSPBasicTag *tag1 = [[LSPBasicTag alloc] initWithName:@"EXTM3U"];
     LSPBasicTag *tag2 = [[LSPBasicTag alloc] initWithName:@"EXT-X-VERSION"];
@@ -46,7 +67,7 @@
 
 @end
 
-@interface VersionTagTests : XCTestCase
+@interface VersionTagTests : AbstractTagTestCase
 
 @end
 
@@ -81,7 +102,7 @@
 
 @end
 
-@interface URITagTests : XCTestCase
+@interface URITagTests : AbstractTagTestCase
 
 @end
 
@@ -117,7 +138,7 @@
 
 #pragma mark - Stream Info Tag
 
-@interface StreamInfoTagTests : XCTestCase
+@interface StreamInfoTagTests : AbstractTagTestCase
 
 @end
 
@@ -308,7 +329,7 @@
 
 #pragma mark - IFrame Stream Info Tag
 
-@interface IFrameStreamInfoTagTests : XCTestCase
+@interface IFrameStreamInfoTagTests : AbstractTagTestCase
 
 @end
 
@@ -419,7 +440,7 @@
 
 #pragma mark - Media Tag
 
-@interface MediaTagTests : XCTestCase
+@interface MediaTagTests : AbstractTagTestCase
 
 @end
 
@@ -633,7 +654,7 @@
 
 #pragma mark - Session Data Tag
 
-@interface SessionDataTests : XCTestCase
+@interface SessionDataTests : AbstractTagTestCase
 
 @end
 
@@ -687,7 +708,7 @@
 
 #pragma mark - Session Key Tag
 
-@interface SessionKeyTests : XCTestCase
+@interface SessionKeyTests : AbstractTagTestCase
 
 @end
 
@@ -800,7 +821,7 @@
 
 #pragma mark - Start Tag
 
-@interface StartTagTests : XCTestCase
+@interface StartTagTests : AbstractTagTestCase
 
 @end
 
@@ -865,7 +886,7 @@
 
 #pragma mark - Info Tag
 
-@interface InfoTagTests : XCTestCase
+@interface InfoTagTests : AbstractTagTestCase
 
 @end
 
@@ -929,7 +950,7 @@
 
 #pragma mark - Map Tag
 
-@interface MapTagTests : XCTestCase
+@interface MapTagTests : AbstractTagTestCase
 
 @end
 
@@ -986,7 +1007,7 @@
 
 #pragma mark - Byte Range Tag
 
-@interface ByteRangeTagTests : XCTestCase
+@interface ByteRangeTagTests : AbstractTagTestCase
 
 @end
 
@@ -1006,7 +1027,7 @@
     XCTAssertEqualObjects(tag.byteRange, byteRange);
 }
 
-- (void)testByteRangeSerialization
+- (void)testSerialization
 {
     LSPByteRange *byteRange = [[LSPByteRange alloc] init];
     XCTAssertEqualObjects([byteRange serialize], @"0");
@@ -1042,7 +1063,7 @@
 
 #pragma mark - Key Tag
 
-@interface KeyTests : XCTestCase
+@interface KeyTests : AbstractTagTestCase
 
 @end
 
@@ -1155,7 +1176,7 @@
 
 #pragma mark - Program Date Time Tag
 
-@interface ProgramDateTimeTagTests : XCTestCase
+@interface ProgramDateTimeTagTests : AbstractTagTestCase
 
 @end
 
@@ -1178,14 +1199,19 @@
 
 - (void)testSerialization
 {
-    
+    // TODO
+}
+
+- (void)testTagEquality
+{
+    // TODO
 }
 
 @end
 
 #pragma mark - Playlist Type Tag
 
-@interface PlaylistTypeTagTests : XCTestCase
+@interface PlaylistTypeTagTests : AbstractTagTestCase
 
 @end
 
@@ -1241,7 +1267,7 @@
 
 @end
 
-@interface TargetDurationTagTests : XCTestCase
+@interface TargetDurationTagTests : AbstractTagTestCase
 
 @end
 
@@ -1271,7 +1297,7 @@
 
 @end
 
-@interface DiscontinuitySequenceTagTests : XCTestCase
+@interface DiscontinuitySequenceTagTests : AbstractTagTestCase
 
 @end
 
